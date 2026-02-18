@@ -1,0 +1,99 @@
+{
+  "name": "vscode-craft-audit",
+  "displayName": "Craft Audit",
+  "description": "Real-time diagnostics for Craft CMS Twig templates",
+  "version": "0.1.0",
+  "publisher": "craft-audit",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "keywords": [
+    "craft-cms",
+    "twig",
+    "performance",
+    "n+1",
+    "eager-loading"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*.twig",
+    "workspaceContains:craft-audit.config.json"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "craftAudit.scanFile",
+        "title": "Craft Audit: Scan Current File"
+      },
+      {
+        "command": "craftAudit.scanWorkspace",
+        "title": "Craft Audit: Scan Workspace"
+      },
+      {
+        "command": "craftAudit.clearDiagnostics",
+        "title": "Craft Audit: Clear Diagnostics"
+      },
+      {
+        "command": "craftAudit.showOutput",
+        "title": "Craft Audit: Show Output"
+      }
+    ],
+    "configuration": {
+      "title": "Craft Audit",
+      "properties": {
+        "craftAudit.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable craft-audit diagnostics"
+        },
+        "craftAudit.executablePath": {
+          "type": "string",
+          "default": "craft-audit",
+          "description": "Path to craft-audit executable"
+        },
+        "craftAudit.configPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to craft-audit.config.json (relative to workspace)"
+        },
+        "craftAudit.runOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run diagnostics when saving .twig files"
+        },
+        "craftAudit.runOnOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run diagnostics when opening .twig files"
+        },
+        "craftAudit.severity": {
+          "type": "object",
+          "default": {
+            "high": "Error",
+            "medium": "Warning",
+            "low": "Information",
+            "info": "Information"
+          },
+          "description": "Map craft-audit severities to VS Code diagnostic severities"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.0"
+  }
+}
