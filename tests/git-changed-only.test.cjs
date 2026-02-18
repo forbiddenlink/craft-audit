@@ -9,6 +9,7 @@ const {
   getChangedTemplateIssuePaths,
   getChangedTemplateIssuePathsWithStatus,
   resolveBaseRef,
+  __testUtils: { isValidGitRef, isSafeRelativePath },
 } = require('../dist/core/git');
 
 function hasGit() {
@@ -157,4 +158,57 @@ test('resolveBaseRef maps auto from CI environment', () => {
   assert.equal(resolveBaseRef('auto', { BITBUCKET_PR_DESTINATION_BRANCH: 'master' }), 'master');
   assert.equal(resolveBaseRef('auto', {}), undefined);
   assert.equal(resolveBaseRef('origin/main', {}), 'origin/main');
+});
+
+test('isValidGitRef accepts valid ref names', () => {
+  assert.equal(isValidGitRef('main'), true);
+  assert.equal(isValidGitRef('feature/test'), true);
+  assert.equal(isValidGitRef('v1.0.0'), true);
+  assert.equal(isValidGitRef('origin/main'), true);
+  assert.equal(isValidGitRef('refs/heads/main'), true);
+  assert.equal(isValidGitRef('my_branch-name.1'), true);
+});
+
+test('isValidGitRef rejects dangerous ref names', () => {
+  // Option injection
+  assert.equal(isValidGitRef('--version'), false);
+  assert.equal(isValidGitRef('-n'), false);
+
+  // Parent traversal
+  assert.equal(isValidGitRef('main..develop'), false);
+  assert.equal(isValidGitRef('../../../etc/passwd'), false);
+
+  // Control characters
+  assert.equal(isValidGitRef('main\x00inject'), false);
+  assert.equal(isValidGitRef('main\ncommand'), false);
+  assert.equal(isValidGitRef('main\rcommand'), false);
+
+  // Empty or too long
+  assert.equal(isValidGitRef(''), false);
+  assert.equal(isValidGitRef('a'.repeat(300)), false);
+
+  // Invalid characters
+  assert.equal(isValidGitRef('main branch'), false);
+  assert.equal(isValidGitRef('main;rm -rf /'), false);
+});
+
+test('isSafeRelativePath accepts safe paths', () => {
+  assert.equal(isSafeRelativePath('templates/index.twig'), true);
+  assert.equal(isSafeRelativePath('src/components/Header.twig'), true);
+  assert.equal(isSafeRelativePath('a.twig'), true);
+  assert.equal(isSafeRelativePath('deeply/nested/path/file.html'), true);
+});
+
+test('isSafeRelativePath rejects traversal attempts', () => {
+  // Direct traversal
+  assert.equal(isSafeRelativePath('../secret.twig'), false);
+  assert.equal(isSafeRelativePath('../../etc/passwd'), false);
+
+  // Traversal within path
+  assert.equal(isSafeRelativePath('templates/../../../secret.twig'), false);
+  assert.equal(isSafeRelativePath('safe/../../unsafe.twig'), false);
+
+  // Absolute paths
+  assert.equal(isSafeRelativePath('/etc/passwd'), false);
+  assert.equal(isSafeRelativePath('/home/user/file.twig'), false);
 });

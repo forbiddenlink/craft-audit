@@ -108,6 +108,10 @@ function analyzeFile(string $filePath, string $basePath): array {
     $hasEagerLoading = false;
     $queryAssignments = [];
     $seenRelationIssues = [];
+    $usesWithInFile = false;
+    $usesEagerlyInFile = false;
+    $withLines = [];
+    $eagerlyLines = [];
 
     foreach ($lines as $lineNum => $line) {
         $lineNumber = $lineNum + 1;
@@ -158,6 +162,12 @@ function analyzeFile(string $filePath, string $basePath): array {
             }
 
             $hasEagerLoading = strpos($querySource, '.with(') !== false;
+
+            // Track loading strategy usage for consistency check
+            if ($hasEagerLoading) {
+                $usesWithInFile = true;
+                $withLines[] = $lineNumber;
+            }
             
             // Check for missing .limit() on entry queries
             foreach ($MISSING_LIMIT_QUERY_PATTERNS as $pattern) {
@@ -223,16 +233,24 @@ function analyzeFile(string $filePath, string $basePath): array {
                         }
                         $seenRelationIssues[$issueKey] = true;
 
-                        $issues[] = [
-                            'severity' => 'high',
-                            'category' => 'template',
-                            'pattern' => 'n+1',
-                            'file' => $relativePath,
-                            'line' => $lineNumber,
-                            'message' => "Potential N+1 query: {$forLoopVar}.{$fieldName}" . str_replace('\\', '', $method) . " inside loop",
-                            'suggestion' => "Add .with(['{$fieldName}']) to the query on line " . ($forLoopQueryLine ?: $forLoopStart),
-                            'code' => trim($line),
-                        ];
+                        // Check if using .eagerly() on this specific access (Craft 5)
+                        $hasEagerlyOnAccess = preg_match(
+                            '/' . preg_quote($forLoopVar, '/') . '\.' . preg_quote($fieldName, '/') . '\.eagerly\(\)/',
+                            $line
+                        );
+
+                        if (!$hasEagerlyOnAccess) {
+                            $issues[] = [
+                                'severity' => 'high',
+                                'category' => 'template',
+                                'pattern' => 'n+1',
+                                'file' => $relativePath,
+                                'line' => $lineNumber,
+                                'message' => "Potential N+1 query: {$forLoopVar}.{$fieldName}" . str_replace('\\', '', $method) . " inside loop",
+                                'suggestion' => "Add .with(['{$fieldName}']) to the query on line " . ($forLoopQueryLine ?: $forLoopStart) . ", or use .eagerly() for lazy loading (Craft 5+): {$forLoopVar}.{$fieldName}.eagerly()" . str_replace('\\', '', $method),
+                                'code' => trim($line),
+                            ];
+                        }
                     }
                 }
             }
@@ -240,6 +258,8 @@ function analyzeFile(string $filePath, string $basePath): array {
             // Check for .eagerly() usage (Craft 5 lazy eager loading)
             if (preg_match('/' . preg_quote($forLoopVar, '/') . '\.(\w+)\.eagerly\(\)/', $line)) {
                 // This is good - they're using lazy eager loading
+                $usesEagerlyInFile = true;
+                $eagerlyLines[] = $lineNumber;
                 continue;
             }
         }
@@ -271,7 +291,21 @@ function analyzeFile(string $filePath, string $basePath): array {
             }
         }
     }
-    
+
+    // Check for mixed loading strategy (using both .with() and .eagerly() in same file)
+    if ($usesWithInFile && $usesEagerlyInFile) {
+        $issues[] = [
+            'severity' => 'info',
+            'category' => 'template',
+            'pattern' => 'mixed-loading-strategy',
+            'file' => $relativePath,
+            'line' => $withLines[0] ?? 1,
+            'message' => 'Template uses both .with() and .eagerly() loading strategies',
+            'suggestion' => 'Consider using a consistent eager loading strategy. .with() loads upfront, .eagerly() loads lazily on demand (Craft 5+). Using .eagerly() throughout may simplify templates.',
+            'code' => "with() on lines: " . implode(', ', $withLines) . " | eagerly() on lines: " . implode(', ', $eagerlyLines),
+        ];
+    }
+
     return $issues;
 }
 

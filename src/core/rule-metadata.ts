@@ -30,6 +30,11 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'Template uses a pattern that can be replaced with a more efficient query or eager load.',
     helpUri: 'https://craftcms.com/docs/5.x/development/element-queries',
   },
+  'template/mixed-loading-strategy': {
+    title: 'Mixed eager loading strategies',
+    description: 'Template uses both .with() (upfront eager loading) and .eagerly() (lazy eager loading). Consider standardizing on one approach.',
+    helpUri: 'https://craftcms.com/docs/5.x/development/eager-loading.html',
+  },
   'template/unknown': {
     title: 'Template analyzer reported an unknown rule',
     description: 'The template analyzer reported an issue without a mapped rule identifier.',

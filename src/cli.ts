@@ -45,6 +45,7 @@ import { applyRuleSettings, RuleSettings } from './core/rule-tuning';
 import { sendSlackNotification, IntegrationSendOn } from './integrations/slack';
 import { publishBitbucketInsights } from './integrations/bitbucket';
 import { createClickUpTask } from './integrations/clickup';
+import { createLinearIssue } from './integrations/linear';
 import {
   filterIssuesByUnsyncedFingerprints,
   loadClickupSentFingerprints,
@@ -83,6 +84,13 @@ interface AuditCommandOptions {
   clickupOnlyNew?: boolean;
   clickupStateFile?: string;
   clickupFindingsUrl?: string;
+  createLinearIssue?: boolean;
+  linearTeamId?: string;
+  linearSendOn?: string;
+  linearTokenEnv?: string;
+  linearLabelIds?: string;
+  linearProjectId?: string;
+  linearFindingsUrl?: string;
   publishBitbucket?: boolean;
   bitbucketWorkspace?: string;
   bitbucketRepoSlug?: string;
@@ -245,6 +253,45 @@ async function runIntegrations(
         if (sentNow.length > 0) {
           writeClickupSentFingerprints(statePath, sentNow, options.verbose);
         }
+      }
+    }
+  }
+
+  const linearEnabled = Boolean(options.createLinearIssue);
+  if (linearEnabled) {
+    const teamId = options.linearTeamId;
+    const tokenEnv = options.linearTokenEnv ?? 'LINEAR_API_KEY';
+    const token = process.env[tokenEnv];
+
+    if (!teamId) {
+      console.error(chalk.yellow('Linear integration enabled but linearTeamId is missing.'));
+    } else if (!token) {
+      console.error(chalk.yellow(`Linear integration enabled but token env "${tokenEnv}" is not set.`));
+    } else {
+      const sendOn = normalizeSendOn(options.linearSendOn, 'high');
+      const findingsUrl = options.linearFindingsUrl ?? process.env.CRAFT_AUDIT_FINDINGS_URL;
+      const labelIds = options.linearLabelIds ? options.linearLabelIds.split(',').map((s) => s.trim()) : undefined;
+
+      const response = await createLinearIssue(
+        {
+          teamId,
+          token,
+          sendOn,
+          labelIds,
+          projectId: options.linearProjectId,
+          findingsUrl,
+        },
+        result
+      );
+
+      if (!response.ok && !response.skipped) {
+        console.error(chalk.yellow(`Linear issue creation failed: ${response.error ?? 'unknown error'}`));
+      } else if (options.verbose && response.ok && !response.skipped) {
+        console.error(
+          chalk.gray(
+            `Linear issue created: ${response.issueIdentifier ?? response.issueId}${response.issueUrl ? ` (${response.issueUrl})` : ''}`
+          )
+        );
       }
     }
   }
@@ -426,6 +473,48 @@ async function executeAuditCommand(projectPath: string, options: AuditCommandOpt
       'clickupFindingsUrl',
       options.clickupFindingsUrl,
       fileConfig.values.clickupFindingsUrl,
+      optionSources
+    ),
+    createLinearIssue: mergeOptionValue(
+      'createLinearIssue',
+      options.createLinearIssue,
+      fileConfig.values.createLinearIssue,
+      optionSources
+    ),
+    linearTeamId: mergeOptionValue(
+      'linearTeamId',
+      options.linearTeamId,
+      fileConfig.values.linearTeamId,
+      optionSources
+    ),
+    linearSendOn: mergeOptionValue(
+      'linearSendOn',
+      options.linearSendOn,
+      fileConfig.values.linearSendOn,
+      optionSources
+    ),
+    linearTokenEnv: mergeOptionValue(
+      'linearTokenEnv',
+      options.linearTokenEnv,
+      fileConfig.values.linearTokenEnv,
+      optionSources
+    ),
+    linearLabelIds: mergeOptionValue(
+      'linearLabelIds',
+      options.linearLabelIds,
+      fileConfig.values.linearLabelIds,
+      optionSources
+    ),
+    linearProjectId: mergeOptionValue(
+      'linearProjectId',
+      options.linearProjectId,
+      fileConfig.values.linearProjectId,
+      optionSources
+    ),
+    linearFindingsUrl: mergeOptionValue(
+      'linearFindingsUrl',
+      options.linearFindingsUrl,
+      fileConfig.values.linearFindingsUrl,
       optionSources
     ),
     publishBitbucket: mergeOptionValue(
@@ -839,6 +928,13 @@ program
     'State file for ClickUp dedupe (default: .craft-audit-clickup-state.json)'
   )
   .option('--clickup-findings-url <url>', 'URL included in ClickUp task body for findings artifact')
+  .option('--create-linear-issue', 'Enable Linear issue creation (token via LINEAR_API_KEY)')
+  .option('--linear-team-id <id>', 'Linear team ID for issue creation')
+  .option('--linear-send-on <mode>', 'Linear issue mode: always|issues|high')
+  .option('--linear-token-env <name>', 'Env var name for Linear API key', 'LINEAR_API_KEY')
+  .option('--linear-label-ids <ids>', 'Comma-separated Linear label IDs to apply')
+  .option('--linear-project-id <id>', 'Linear project ID for issue assignment')
+  .option('--linear-findings-url <url>', 'URL included in Linear issue body for findings artifact')
   .option('--publish-bitbucket', 'Publish Code Insights report+annotations to Bitbucket API')
   .option('--bitbucket-workspace <workspace>', 'Bitbucket workspace slug (defaults from BITBUCKET_REPO_FULL_NAME)')
   .option('--bitbucket-repo-slug <repo>', 'Bitbucket repository slug (defaults from BITBUCKET_REPO_FULL_NAME)')
@@ -897,6 +993,13 @@ program
     'State file for ClickUp dedupe (default: .craft-audit-clickup-state.json)'
   )
   .option('--clickup-findings-url <url>', 'URL included in ClickUp task body for findings artifact')
+  .option('--create-linear-issue', 'Enable Linear issue creation (token via LINEAR_API_KEY)')
+  .option('--linear-team-id <id>', 'Linear team ID for issue creation')
+  .option('--linear-send-on <mode>', 'Linear issue mode: always|issues|high')
+  .option('--linear-token-env <name>', 'Env var name for Linear API key', 'LINEAR_API_KEY')
+  .option('--linear-label-ids <ids>', 'Comma-separated Linear label IDs to apply')
+  .option('--linear-project-id <id>', 'Linear project ID for issue assignment')
+  .option('--linear-findings-url <url>', 'URL included in Linear issue body for findings artifact')
   .option('--publish-bitbucket', 'Publish Code Insights report+annotations to Bitbucket API')
   .option('--bitbucket-workspace <workspace>', 'Bitbucket workspace slug (defaults from BITBUCKET_REPO_FULL_NAME)')
   .option('--bitbucket-repo-slug <repo>', 'Bitbucket repository slug (defaults from BITBUCKET_REPO_FULL_NAME)')
@@ -953,6 +1056,88 @@ program
       console.error(chalk.red(error));
       process.exit(1);
     }
+  });
+
+program
+  .command('watch')
+  .description('Watch templates for changes and re-analyze on save')
+  .argument('<path>', 'Path to templates directory')
+  .option('--debounce <ms>', 'Debounce delay in milliseconds', '300')
+  .option('-v, --verbose', 'Verbose output')
+  .action(async (templatesPath: string, options: { debounce?: string; verbose?: boolean }) => {
+    const absolutePath = path.resolve(templatesPath);
+
+    if (!fs.existsSync(absolutePath)) {
+      console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
+      process.exit(1);
+    }
+
+    const debounceMs = parseInt(options.debounce ?? '300', 10);
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let isAnalyzing = false;
+
+    const runAnalysis = async () => {
+      if (isAnalyzing) return;
+      isAnalyzing = true;
+
+      console.clear();
+      console.log(chalk.bold.cyan('\n🔍 Craft CMS Template Watch Mode\n'));
+      console.log(chalk.gray(`Watching: ${absolutePath}`));
+      console.log(chalk.gray(`Debounce: ${debounceMs}ms\n`));
+
+      const spinner = ora('Analyzing templates...').start();
+
+      try {
+        const issues = await analyzeTwigTemplates(absolutePath, options.verbose);
+        spinner.stop();
+
+        const reporter = new ConsoleReporter();
+        reporter.reportTemplateIssues(issues);
+
+        console.log(chalk.gray('\n--- Watching for changes (Ctrl+C to stop) ---\n'));
+      } catch (error) {
+        spinner.fail('Template analysis failed');
+        console.error(chalk.red(String(error)));
+        console.log(chalk.gray('\n--- Watching for changes (Ctrl+C to stop) ---\n'));
+      }
+
+      isAnalyzing = false;
+    };
+
+    const scheduleAnalysis = () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = setTimeout(runAnalysis, debounceMs);
+    };
+
+    // Run initial analysis
+    await runAnalysis();
+
+    // Watch for changes recursively
+    const watchDir = (dir: string) => {
+      try {
+        fs.watch(dir, { recursive: true }, (eventType, filename) => {
+          if (!filename) return;
+          if (!filename.endsWith('.twig') && !filename.endsWith('.html')) return;
+
+          if (options.verbose) {
+            console.log(chalk.gray(`[${eventType}] ${filename}`));
+          }
+          scheduleAnalysis();
+        });
+      } catch (error) {
+        console.error(chalk.yellow(`Warning: Could not watch ${dir}: ${error}`));
+      }
+    };
+
+    watchDir(absolutePath);
+
+    // Keep process running
+    process.on('SIGINT', () => {
+      console.log(chalk.gray('\n\nStopping watch mode...'));
+      process.exit(0);
+    });
   });
 
 program

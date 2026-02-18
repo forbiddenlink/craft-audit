@@ -1,0 +1,14 @@
+{# Test fixture for Craft 5 .eagerly() detection #}
+
+{# Good: Using .eagerly() for lazy eager loading #}
+{% for entry in craft.entries.section('blog').all() %}
+  {% set image = entry.featuredImage.eagerly().one() %}
+  {{ image.url }}
+{% endfor %}
+
+{# Mixed strategy warning: Uses both .with() and .eagerly() #}
+{% set entries = craft.entries.section('news').with(['author']).all() %}
+{% for entry in entries %}
+  {# Using .with() above, but .eagerly() here - inconsistent #}
+  {% set gallery = entry.gallery.eagerly().all() %}
+{% endfor %}

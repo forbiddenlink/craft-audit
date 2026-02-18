@@ -80,3 +80,14 @@ test('tracks chained query assignments before loop analysis', { skip: !hasPhpRun
   );
   assert.equal(chained, undefined);
 });
+
+test('detects mixed .with() and .eagerly() loading strategies', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const mixedStrategy = issues.find(
+    (issue) =>
+      issue.file === 'eagerly-detection.twig' &&
+      issue.ruleId === 'template/mixed-loading-strategy'
+  );
+  assert.ok(mixedStrategy, 'expected mixed-loading-strategy issue for template using both .with() and .eagerly()');
+  assert.equal(mixedStrategy.severity, 'info');
+});

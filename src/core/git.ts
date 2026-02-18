@@ -215,3 +215,8 @@ export function getChangedTemplateIssuePathsWithStatus(
 
   return { paths: changed, gitAvailable, inRepo };
 }
+
+export const __testUtils = {
+  isValidGitRef,
+  isSafeRelativePath,
+};

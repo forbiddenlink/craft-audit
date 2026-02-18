@@ -43,3 +43,52 @@ test('security analyzer reports scan truncation when file cap is hit', async () 
   assert.ok(ruleIds.has('security/file-scan-truncated'));
 });
 
+test('security analyzer skips symlinks to prevent cycles', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-symlink-'));
+  const subDir = path.join(tempRoot, 'subdir');
+  fs.mkdirSync(subDir, { recursive: true });
+
+  fs.writeFileSync(path.join(subDir, 'file.php'), "<?php dump('test');", 'utf8');
+
+  // Create a symlink that would cause a cycle
+  try {
+    fs.symlinkSync(tempRoot, path.join(subDir, 'cycle-link'), 'dir');
+  } catch {
+    // Skip test if symlinks not supported (e.g., Windows without privileges)
+    return;
+  }
+
+  // Should complete without infinite loop or crash
+  const issues = await collectSecurityIssues(tempRoot, false, 100);
+
+  // Should still find the debug pattern in the real file
+  const debugIssues = issues.filter(i => i.ruleId === 'security/debug-output-pattern');
+  assert.ok(debugIssues.length > 0);
+});
+
+test('security analyzer handles directory cycles via realpath tracking', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cycle-'));
+  const dirA = path.join(tempRoot, 'a');
+  const dirB = path.join(tempRoot, 'b');
+  fs.mkdirSync(dirA, { recursive: true });
+  fs.mkdirSync(dirB, { recursive: true });
+
+  fs.writeFileSync(path.join(dirA, 'test.php'), "<?php var_dump('x');", 'utf8');
+
+  // Create mutual symlinks that could cause infinite traversal
+  try {
+    fs.symlinkSync(dirB, path.join(dirA, 'link-to-b'), 'dir');
+    fs.symlinkSync(dirA, path.join(dirB, 'link-to-a'), 'dir');
+  } catch {
+    // Skip test if symlinks not supported
+    return;
+  }
+
+  // Should complete without hanging
+  const issues = await collectSecurityIssues(tempRoot, false, 1000);
+
+  // Should find exactly one debug pattern (not duplicates from cycle)
+  const debugIssues = issues.filter(i => i.ruleId === 'security/debug-output-pattern');
+  assert.equal(debugIssues.length, 1);
+});
+

@@ -37,6 +37,13 @@ export interface AuditFileConfig {
   clickupOnlyNew?: boolean;
   clickupStateFile?: string;
   clickupFindingsUrl?: string;
+  createLinearIssue?: boolean;
+  linearTeamId?: string;
+  linearSendOn?: 'always' | 'issues' | 'high';
+  linearTokenEnv?: string;
+  linearLabelIds?: string;
+  linearProjectId?: string;
+  linearFindingsUrl?: string;
   publishBitbucket?: boolean;
   bitbucketWorkspace?: string;
   bitbucketRepoSlug?: string;
