@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { DiagnosticsManager } from './diagnostics';
+import { CraftAuditFix } from './runner';
 
 export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
     constructor(private diagnosticsManager: DiagnosticsManager) {}
@@ -20,6 +21,17 @@ export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
             return actions;
         }
 
+        // Add fix actions first (they appear at top of menu)
+        for (const diagnostic of craftAuditDiagnostics) {
+            const data = (diagnostic as any).data;
+            if (data?.fix) {
+                const fixAction = this.createFixAction(document, diagnostic, data.fix);
+                if (fixAction) {
+                    actions.push(fixAction);
+                }
+            }
+        }
+
         // Get unique rule IDs from diagnostics on this line
         const ruleIds = new Set<string>();
         for (const diagnostic of craftAuditDiagnostics) {
@@ -28,23 +40,53 @@ export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
             }
         }
 
-        // Add action for each rule
+        // Add suppress action for each rule
         for (const ruleId of ruleIds) {
             const action = this.createSuppressAction(document, range.start.line, ruleId);
             actions.push(action);
         }
 
-        // Add "suppress all" action if multiple rules
-        if (ruleIds.size > 1) {
-            const action = this.createSuppressAllAction(document, range.start.line);
-            actions.push(action);
-        } else if (ruleIds.size === 1) {
-            // Also offer suppress-all as an alternative
+        // Add "suppress all" action
+        if (ruleIds.size >= 1) {
             const action = this.createSuppressAllAction(document, range.start.line);
             actions.push(action);
         }
 
         return actions;
+    }
+
+    private createFixAction(
+        document: vscode.TextDocument,
+        diagnostic: vscode.Diagnostic,
+        fix: CraftAuditFix
+    ): vscode.CodeAction | null {
+        const line = diagnostic.range.start.line;
+        const lineText = document.lineAt(line).text;
+
+        // Find the search string on this line
+        const searchIndex = lineText.indexOf(fix.search);
+        if (searchIndex === -1) {
+            return null;
+        }
+
+        const label = fix.safe
+            ? `Fix: ${fix.description}`
+            : `Fix (unsafe): ${fix.description}`;
+
+        const action = new vscode.CodeAction(label, vscode.CodeActionKind.QuickFix);
+
+        // Safe fixes are preferred (appear first, work with "Fix All")
+        action.isPreferred = fix.safe;
+        action.diagnostics = [diagnostic];
+
+        // Create the edit
+        const edit = new vscode.WorkspaceEdit();
+        const start = new vscode.Position(line, searchIndex);
+        const end = new vscode.Position(line, searchIndex + fix.search.length);
+        edit.replace(document.uri, new vscode.Range(start, end), fix.replacement);
+
+        action.edit = edit;
+        return action;
     }
 
     private createSuppressAction(

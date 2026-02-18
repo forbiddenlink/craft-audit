@@ -66,6 +66,15 @@ export class DiagnosticsManager implements vscode.Disposable {
             diagnostic.message += `\n\nSuggestion: ${issue.suggestion}`;
         }
 
+        // Store fix data for code actions
+        if (issue.fix) {
+            (diagnostic as any).data = {
+                fix: issue.fix,
+                file: issue.file,
+                line: issue.line
+            };
+        }
+
         return diagnostic;
     }
 

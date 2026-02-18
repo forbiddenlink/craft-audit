@@ -3,6 +3,13 @@ import { spawn } from 'child_process';
 import * as path from 'path';
 import { CraftAuditConfig } from './config';
 
+export interface CraftAuditFix {
+    safe: boolean;
+    search: string;
+    replacement: string;
+    description: string;
+}
+
 export interface CraftAuditIssue {
     file: string;
     line: number;
@@ -11,6 +18,7 @@ export interface CraftAuditIssue {
     message: string;
     severity: string;
     suggestion?: string;
+    fix?: CraftAuditFix;
 }
 
 interface CraftAuditOutput {
@@ -22,6 +30,12 @@ interface CraftAuditOutput {
         message: string;
         severity: string;
         suggestion?: string;
+        fix?: {
+            safe: boolean;
+            search: string;
+            replacement: string;
+            description: string;
+        };
     }>;
 }
 
@@ -136,7 +150,8 @@ export class CraftAuditRunner {
                 rule: issue.ruleId,
                 message: issue.message,
                 severity: issue.severity,
-                suggestion: issue.suggestion
+                suggestion: issue.suggestion,
+                fix: issue.fix
             }));
         } catch (error) {
             this.outputChannel.appendLine(`Failed to parse output: ${error}`);
