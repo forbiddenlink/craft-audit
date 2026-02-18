@@ -94,12 +94,50 @@ $DEPRECATED_PATTERNS = [
 
 function analyzeFile(string $filePath, string $basePath): array {
     global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS;
-    
+
     $issues = [];
     $content = file_get_contents($filePath);
     $lines = explode("\n", $content);
     $relativePath = str_replace($basePath . '/', '', $filePath);
-    
+
+    // Parse suppression comments: {# craft-audit-disable-next-line [rule-id, ...] #}
+    // Maps line number -> array of suppressed rule patterns (empty array = all rules)
+    $suppressions = [];
+    foreach ($lines as $lineNum => $line) {
+        if (preg_match('/\{#\s*craft-audit-disable-next-line\s*([^#]*)\s*#\}/', $line, $matches)) {
+            $nextLine = $lineNum + 2; // +1 for 0-index, +1 for "next line"
+            $ruleList = trim($matches[1]);
+            if ($ruleList === '') {
+                // Suppress all rules on next line
+                $suppressions[$nextLine] = [];
+            } else {
+                // Suppress specific rules
+                $rules = array_map('trim', explode(',', $ruleList));
+                $suppressions[$nextLine] = $rules;
+            }
+        }
+    }
+
+    // Helper to check if an issue should be suppressed
+    $isSuppressed = function(int $line, string $pattern) use ($suppressions): bool {
+        if (!isset($suppressions[$line])) {
+            return false;
+        }
+        $rules = $suppressions[$line];
+        // Empty array means suppress all rules
+        if (empty($rules)) {
+            return true;
+        }
+        // Check if specific pattern is in suppressed list
+        // Match both "pattern" and "category/pattern" formats
+        foreach ($rules as $rule) {
+            if ($rule === $pattern || $rule === "template/{$pattern}") {
+                return true;
+            }
+        }
+        return false;
+    };
+
     // Track context
     $inForLoop = false;
     $forLoopStart = 0;
@@ -187,7 +225,7 @@ function analyzeFile(string $filePath, string $basePath): array {
                         }
                     }
 
-                    if (!$hasTerminalLimiter && !$hasNarrowingMethod) {
+                    if (!$hasTerminalLimiter && !$hasNarrowingMethod && !$isSuppressed($forLoopQueryLine, 'missing-limit')) {
                         $issues[] = [
                             'severity' => 'medium',
                             'category' => 'template',
@@ -239,7 +277,7 @@ function analyzeFile(string $filePath, string $basePath): array {
                             $line
                         );
 
-                        if (!$hasEagerlyOnAccess) {
+                        if (!$hasEagerlyOnAccess && !$isSuppressed($lineNumber, 'n+1')) {
                             $issues[] = [
                                 'severity' => 'high',
                                 'category' => 'template',
@@ -266,7 +304,7 @@ function analyzeFile(string $filePath, string $basePath): array {
         
         // Check for deprecated patterns
         foreach ($DEPRECATED_PATTERNS as $deprecated) {
-            if (preg_match($deprecated['pattern'], $line)) {
+            if (preg_match($deprecated['pattern'], $line) && !$isSuppressed($lineNumber, 'deprecated')) {
                 $issues[] = [
                     'severity' => 'medium',
                     'category' => 'template',
@@ -293,13 +331,14 @@ function analyzeFile(string $filePath, string $basePath): array {
     }
 
     // Check for mixed loading strategy (using both .with() and .eagerly() in same file)
-    if ($usesWithInFile && $usesEagerlyInFile) {
+    $mixedLine = $withLines[0] ?? 1;
+    if ($usesWithInFile && $usesEagerlyInFile && !$isSuppressed($mixedLine, 'mixed-loading-strategy')) {
         $issues[] = [
             'severity' => 'info',
             'category' => 'template',
             'pattern' => 'mixed-loading-strategy',
             'file' => $relativePath,
-            'line' => $withLines[0] ?? 1,
+            'line' => $mixedLine,
             'message' => 'Template uses both .with() and .eagerly() loading strategies',
             'suggestion' => 'Consider using a consistent eager loading strategy. .with() loads upfront, .eagerly() loads lazily on demand (Craft 5+). Using .eagerly() throughout may simplify templates.',
             'code' => "with() on lines: " . implode(', ', $withLines) . " | eagerly() on lines: " . implode(', ', $eagerlyLines),

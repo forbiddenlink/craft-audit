@@ -91,3 +91,32 @@ test('detects mixed .with() and .eagerly() loading strategies', { skip: !hasPhpR
   assert.ok(mixedStrategy, 'expected mixed-loading-strategy issue for template using both .with() and .eagerly()');
   assert.equal(mixedStrategy.severity, 'info');
 });
+
+test('suppresses issues with craft-audit-disable-next-line comment', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const suppressionIssues = issues.filter((issue) => issue.file === 'suppression.twig');
+
+  // Test 1 & 2: N+1 issues on lines 6 and 12 should be suppressed
+  const suppressedN1 = suppressionIssues.filter(
+    (issue) => issue.ruleId === 'template/n-plus-one-loop' && (issue.line === 6 || issue.line === 12)
+  );
+  assert.equal(suppressedN1.length, 0, 'N+1 issues with disable comment should be suppressed');
+
+  // Test 4: Deprecated on line 20 should NOT be suppressed (no comment)
+  const unsuppressedDeprecated = suppressionIssues.find(
+    (issue) => issue.ruleId === 'template/deprecated-api' && issue.line === 20
+  );
+  assert.ok(unsuppressedDeprecated, 'Deprecated issue without suppression should be reported');
+
+  // Test 6: N+1 on line 31 should NOT be suppressed (wrong rule in comment)
+  const wrongRuleSuppressed = suppressionIssues.find(
+    (issue) => issue.ruleId === 'template/n-plus-one-loop' && issue.line === 31
+  );
+  assert.ok(wrongRuleSuppressed, 'N+1 issue with wrong rule suppression should still be reported');
+
+  // Test 7: missing-limit on line 36 should be suppressed
+  const suppressedLimit = suppressionIssues.find(
+    (issue) => issue.ruleId === 'template/missing-limit' && issue.line === 36
+  );
+  assert.equal(suppressedLimit, undefined, 'missing-limit with suppression should be suppressed');
+});

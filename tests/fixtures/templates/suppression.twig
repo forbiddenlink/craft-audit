@@ -1,0 +1,38 @@
+{# Test fixture for inline suppression comments #}
+
+{# Test 1: Suppress specific rule - should NOT report N+1 #}
+{% for entry in craft.entries.section('news') %}
+  {# craft-audit-disable-next-line n+1 #}
+  <p>{{ entry.relatedArticles.one().title }}</p>
+{% endfor %}
+
+{# Test 2: Suppress with category prefix - should NOT report N+1 #}
+{% for entry in craft.entries.section('blog') %}
+  {# craft-audit-disable-next-line template/n+1 #}
+  <p>{{ entry.author.one().name }}</p>
+{% endfor %}
+
+{# Test 3: Suppress all rules - should NOT report deprecated #}
+{# craft-audit-disable-next-line #}
+{{ craft.request.path }}
+
+{# Test 4: No suppression - SHOULD report deprecated #}
+{{ craft.config.siteName }}
+
+{# Test 5: Suppress multiple rules - should NOT report either #}
+{% for entry in craft.entries.section('events') %}
+  {# craft-audit-disable-next-line n+1, deprecated #}
+  <p>{{ entry.venue.one().title }} - {{ craft.request.url }}</p>
+{% endfor %}
+
+{# Test 6: Wrong rule suppressed - SHOULD still report N+1 #}
+{% for entry in craft.entries.section('products') %}
+  {# craft-audit-disable-next-line deprecated #}
+  <p>{{ entry.category.one().title }}</p>
+{% endfor %}
+
+{# Test 7: Suppress missing-limit #}
+{# craft-audit-disable-next-line missing-limit #}
+{% for entry in craft.entries.section('all') %}
+  <p>{{ entry.title }}</p>
+{% endfor %}
