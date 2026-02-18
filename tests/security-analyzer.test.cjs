@@ -92,3 +92,72 @@ test('security analyzer handles directory cycles via realpath tracking', async (
   assert.equal(debugIssues.length, 1);
 });
 
+test('security analyzer detects hardcoded security key', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-security-key-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['securityKey' => 'my-hardcoded-secret-key-12345'];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const hardcodedKey = issues.find(i => i.ruleId === 'security/hardcoded-security-key');
+  assert.ok(hardcodedKey, 'should detect hardcoded security key');
+  assert.equal(hardcodedKey.severity, 'high');
+});
+
+test('security analyzer detects disabled CSRF protection', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-csrf-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['enableCsrfProtection' => false];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const csrfDisabled = issues.find(i => i.ruleId === 'security/csrf-disabled');
+  assert.ok(csrfDisabled, 'should detect disabled CSRF protection');
+  assert.equal(csrfDisabled.severity, 'high');
+});
+
+test('security analyzer detects dangerous file extensions', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-ext-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['extraAllowedFileExtensions' => ['php', 'svg', 'phar']];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const dangerousExt = issues.find(i => i.ruleId === 'security/dangerous-file-extensions');
+  assert.ok(dangerousExt, 'should detect dangerous file extensions');
+  assert.equal(dangerousExt.severity, 'high');
+  assert.ok(dangerousExt.message.includes('php'), 'should mention php extension');
+  assert.ok(dangerousExt.message.includes('phar'), 'should mention phar extension');
+});
+
+test('security analyzer ignores safe security key with env var', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-safe-key-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['securityKey' => \\$_ENV['CRAFT_SECURITY_KEY']];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const hardcodedKey = issues.find(i => i.ruleId === 'security/hardcoded-security-key');
+  assert.equal(hardcodedKey, undefined, 'should not flag env var security key');
+});
+

@@ -32,6 +32,8 @@ const RULE_ID_BY_PATTERN: Record<string, string> = {
   'missing-limit': 'template/missing-limit',
   'mixed-loading-strategy': 'template/mixed-loading-strategy',
   'xss-raw-output': 'security/xss-raw-output',
+  'ssti-dynamic-include': 'security/ssti-dynamic-include',
+  'missing-status-filter': 'template/missing-status-filter',
 };
 
 const DOCS_URL_BY_PATTERN: Record<string, string> = {
@@ -42,6 +44,8 @@ const DOCS_URL_BY_PATTERN: Record<string, string> = {
   'missing-limit': 'https://craftcms.com/docs/5.x/development/element-queries',
   'mixed-loading-strategy': 'https://craftcms.com/docs/5.x/development/eager-loading.html',
   'xss-raw-output': 'https://craftcms.com/docs/5.x/development/twig#escaping',
+  'ssti-dynamic-include': 'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/18-Testing_for_Server-side_Template_Injection',
+  'missing-status-filter': 'https://craftcms.com/docs/5.x/development/element-queries#status',
 };
 
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
@@ -51,6 +55,8 @@ function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
   if (pattern === 'missing-limit') return 'missing-limit';
   if (pattern === 'mixed-loading-strategy') return 'mixed-loading-strategy';
   if (pattern === 'xss-raw-output') return 'xss-raw-output';
+  if (pattern === 'ssti-dynamic-include') return 'ssti-dynamic-include';
+  if (pattern === 'missing-status-filter') return 'missing-status-filter';
   return 'inefficient-query';
 }
 
@@ -61,6 +67,8 @@ function confidenceForPattern(pattern: TemplateIssue['pattern']): number {
   if (pattern === 'missing-limit') return 0.74;
   if (pattern === 'mixed-loading-strategy') return 0.90;
   if (pattern === 'xss-raw-output') return 0.88;
+  if (pattern === 'ssti-dynamic-include') return 0.92;
+  if (pattern === 'missing-status-filter') return 0.70;
   return 0.65;
 }
 

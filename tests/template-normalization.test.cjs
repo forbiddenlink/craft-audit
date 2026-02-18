@@ -180,3 +180,69 @@ test('suppresses XSS issues with disable comment', { skip: !hasPhpRuntime() }, a
   );
   assert.equal(suppressedIssues.length, 0, 'XSS issues with disable comment should be suppressed');
 });
+
+test('detects SSTI patterns (dynamic includes and template_from_string)', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const sstiIssues = issues.filter((issue) => issue.file === 'ssti.twig');
+
+  // Test 1: Dynamic include with variable - HIGH
+  const dynamicInclude = sstiIssues.find(
+    (issue) => issue.ruleId === 'security/ssti-dynamic-include' && issue.line === 5
+  );
+  assert.ok(dynamicInclude, 'should detect dynamic include with variable');
+  assert.equal(dynamicInclude.severity, 'high');
+
+  // Test 2: template_from_string usage - HIGH
+  const templateFromString = sstiIssues.find(
+    (issue) => issue.ruleId === 'security/ssti-dynamic-include' && issue.line === 9
+  );
+  assert.ok(templateFromString, 'should detect template_from_string usage');
+
+  // Test 3: Dynamic source() - HIGH
+  const dynamicSource = sstiIssues.find(
+    (issue) => issue.ruleId === 'security/ssti-dynamic-include' && issue.line === 13
+  );
+  assert.ok(dynamicSource, 'should detect dynamic source() with variable');
+
+  // Test 4 & 5: Static includes should NOT be flagged
+  const staticIncludes = sstiIssues.filter(
+    (issue) => issue.ruleId === 'security/ssti-dynamic-include' && (issue.line === 16 || issue.line === 19)
+  );
+  assert.equal(staticIncludes.length, 0, 'static includes should not be flagged');
+});
+
+test('suppresses SSTI issues with disable comment', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const sstiIssues = issues.filter((issue) => issue.file === 'ssti.twig');
+
+  // Test 6 & 7: Suppressed lines should not be reported
+  const suppressedLines = [23, 27];
+  const suppressedIssues = sstiIssues.filter(
+    (issue) => issue.ruleId === 'security/ssti-dynamic-include' && suppressedLines.includes(issue.line)
+  );
+  assert.equal(suppressedIssues.length, 0, 'SSTI issues with disable comment should be suppressed');
+});
+
+test('detects missing .status() filter on .all() queries', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const statusIssues = issues.filter((issue) => issue.file === 'status-filter.twig');
+
+  // Test 1: .all() without .status() - LOW
+  const missingStatus = statusIssues.find(
+    (issue) => issue.ruleId === 'template/missing-status-filter' && issue.line === 4
+  );
+  assert.ok(missingStatus, 'should detect .all() without .status() filter');
+  assert.equal(missingStatus.severity, 'low');
+
+  // Test 2: Query with .status() should NOT be flagged
+  const withStatus = statusIssues.filter(
+    (issue) => issue.ruleId === 'template/missing-status-filter' && issue.line === 9
+  );
+  assert.equal(withStatus.length, 0, 'query with .status() should not be flagged');
+
+  // Test 4: Suppressed should NOT be flagged
+  const suppressed = statusIssues.filter(
+    (issue) => issue.ruleId === 'template/missing-status-filter' && issue.line === 17
+  );
+  assert.equal(suppressed.length, 0, 'suppressed missing-status-filter should not be flagged');
+});

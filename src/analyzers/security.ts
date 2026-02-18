@@ -144,6 +144,61 @@ function scanGeneralConfig(projectPath: string): SecurityIssue[] {
     });
   }
 
+  // Check for hardcoded security key (should use env variable)
+  if (/['"]securityKey['"]\s*=>\s*['"][^$][^'"]+['"]/i.test(content)) {
+    issues.push({
+      severity: 'high',
+      category: 'security',
+      type: 'hardcoded-key',
+      ruleId: 'security/hardcoded-security-key',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'Security key appears to be hardcoded in config file.',
+      suggestion: 'Use environment variable: "securityKey" => App::env("CRAFT_SECURITY_KEY")',
+      confidence: 0.95,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+      fingerprint: 'security/hardcoded-security-key:config/general.php',
+    });
+  }
+
+  // Check for disabled CSRF protection
+  if (/['"]enableCsrfProtection['"]\s*=>\s*false/i.test(content) ||
+      /->enableCsrfProtection\s*\(\s*false\s*\)/i.test(content)) {
+    issues.push({
+      severity: 'high',
+      category: 'security',
+      type: 'csrf-disabled',
+      ruleId: 'security/csrf-disabled',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'CSRF protection is disabled.',
+      suggestion: 'Enable CSRF protection to prevent cross-site request forgery attacks.',
+      confidence: 0.98,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#enablecsrfprotection',
+      fingerprint: 'security/csrf-disabled:config/general.php',
+    });
+  }
+
+  // Check for dangerous file extensions
+  const dangerousExtensions = ['php', 'phar', 'sh', 'bash', 'exe', 'bat', 'cmd'];
+  const extMatch = content.match(/['"]extraAllowedFileExtensions['"]\s*=>\s*\[([^\]]+)\]/i);
+  if (extMatch) {
+    const extensions = extMatch[1].toLowerCase();
+    const found = dangerousExtensions.filter(ext => extensions.includes(`'${ext}'`) || extensions.includes(`"${ext}"`));
+    if (found.length > 0) {
+      issues.push({
+        severity: 'high',
+        category: 'security',
+        type: 'dangerous-extensions',
+        ruleId: 'security/dangerous-file-extensions',
+        file: toRelative(projectPath, generalConfigPath),
+        message: `Dangerous file extensions allowed: ${found.join(', ')}`,
+        suggestion: 'Remove executable file extensions from extraAllowedFileExtensions to prevent RCE.',
+        confidence: 0.97,
+        docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#extraallowedfileextensions',
+        fingerprint: 'security/dangerous-file-extensions:config/general.php',
+      });
+    }
+  }
+
   return issues;
 }
 

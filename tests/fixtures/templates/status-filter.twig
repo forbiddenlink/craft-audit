@@ -1,0 +1,20 @@
+{# Test fixture for missing .status() filter detection #}
+
+{# Test 1: LOW - Query with .all() but no .status() #}
+{% for entry in craft.entries.section('news').all() %}
+  <p>{{ entry.title }}</p>
+{% endfor %}
+
+{# Test 2: SAFE - Query with .status() filter #}
+{% for entry in craft.entries.section('blog').status('live').all() %}
+  <p>{{ entry.title }}</p>
+{% endfor %}
+
+{# Test 3: SAFE - Query using .one() instead of .all() #}
+{% set entry = craft.entries.section('homepage').one() %}
+
+{# Test 4: SUPPRESSED - Query with suppression comment #}
+{# craft-audit-disable-next-line missing-status-filter #}
+{% for entry in craft.entries.section('all').all() %}
+  <p>{{ entry.title }}</p>
+{% endfor %}

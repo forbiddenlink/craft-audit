@@ -77,6 +77,28 @@ $XSS_RAW_PATTERN = '/\{\{\s*([^}|]+)\|raw\s*\}\}/';
 // Safe patterns that precede |raw - skip these
 $XSS_SAFE_PREFIXES = ['|purify', '|striptags', '|escape'];
 
+// SSTI (Server-Side Template Injection) patterns - CRITICAL security
+$SSTI_PATTERNS = [
+    // Dynamic include with variable (not a string literal)
+    [
+        'pattern' => '/\{%\s*include\s+(?![\'"])[a-zA-Z_]/',
+        'message' => 'Dynamic template include with variable (potential SSTI)',
+        'suggestion' => 'Use a literal string path or whitelist allowed templates. Never include user-controlled paths.',
+    ],
+    // template_from_string() usage
+    [
+        'pattern' => '/template_from_string\s*\(/',
+        'message' => 'template_from_string() can enable SSTI if input is user-controlled',
+        'suggestion' => 'Avoid template_from_string() with user input. Use pre-defined templates instead.',
+    ],
+    // source() with variable (file disclosure risk)
+    [
+        'pattern' => '/\{\{\s*source\s*\(\s*(?![\'"])[a-zA-Z_]/',
+        'message' => 'Dynamic source() with variable (potential path traversal)',
+        'suggestion' => 'Use literal paths with source() or validate/whitelist the path.',
+    ],
+];
+
 // Deprecated patterns in Craft 4/5
 $DEPRECATED_PATTERNS = [
     [
@@ -112,7 +134,7 @@ $DEPRECATED_PATTERNS = [
 ];
 
 function analyzeFile(string $filePath, string $basePath): array {
-    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES;
+    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS;
 
     $issues = [];
     $content = file_get_contents($filePath);
@@ -258,6 +280,22 @@ function analyzeFile(string $filePath, string $basePath): array {
                             'code' => trim($querySource),
                         ];
                     }
+
+                    // Check for missing .status() filter (may fetch drafts/disabled)
+                    $hasStatusFilter = strpos($querySource, '.status(') !== false;
+                    $fetchesAll = strpos($querySource, '.all()') !== false;
+                    if ($fetchesAll && !$hasStatusFilter && !$isSuppressed($forLoopQueryLine, 'missing-status-filter')) {
+                        $issues[] = [
+                            'severity' => 'low',
+                            'category' => 'template',
+                            'pattern' => 'missing-status-filter',
+                            'file' => $relativePath,
+                            'line' => $forLoopQueryLine,
+                            'message' => 'Query uses .all() without .status() filter - may include drafts/disabled entries',
+                            'suggestion' => "Add .status('live') to only fetch published entries, or .status(['live', 'pending']) if needed",
+                            'code' => trim($querySource),
+                        ];
+                    }
                     break;
                 }
             }
@@ -386,7 +424,25 @@ function analyzeFile(string $filePath, string $basePath): array {
                 }
             }
         }
-        
+
+        // Check for SSTI (Server-Side Template Injection) patterns
+        if (!$isSuppressed($lineNumber, 'ssti-dynamic-include')) {
+            foreach ($SSTI_PATTERNS as $sstiPattern) {
+                if (preg_match($sstiPattern['pattern'], $line)) {
+                    $issues[] = [
+                        'severity' => 'high',
+                        'category' => 'template',
+                        'pattern' => 'ssti-dynamic-include',
+                        'file' => $relativePath,
+                        'line' => $lineNumber,
+                        'message' => $sstiPattern['message'],
+                        'suggestion' => $sstiPattern['suggestion'],
+                        'code' => trim($line),
+                    ];
+                }
+            }
+        }
+
         // Check for queries without .all() or .one() (inefficient)
         foreach ($QUERY_PATTERNS as $pattern) {
             if (preg_match('/(' . $pattern . '\([^)]*\)(?:\.[^}]+)?)(?!\.(all|one|first|last|count|exists|ids)\(\))/', $line, $matches)) {

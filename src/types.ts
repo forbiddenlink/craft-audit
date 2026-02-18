@@ -28,7 +28,7 @@ export interface AuditIssue {
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter';
 }
 
 export interface SystemIssue extends AuditIssue {
@@ -48,7 +48,7 @@ export interface SystemIssue extends AuditIssue {
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions';
 }
 
 export interface VisualIssue extends AuditIssue {

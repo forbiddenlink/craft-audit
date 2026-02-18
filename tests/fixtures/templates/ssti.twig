@@ -1,0 +1,27 @@
+{# Test fixture for SSTI (Server-Side Template Injection) detection #}
+
+{# Test 1: HIGH - Dynamic include with variable #}
+{% set templateName = craft.app.request.getParam('template') %}
+{% include templateName %}
+
+{# Test 2: HIGH - template_from_string usage #}
+{% set userHtml = craft.app.request.getParam('html') %}
+{{ include(template_from_string(userHtml)) }}
+
+{# Test 3: HIGH - Dynamic source() #}
+{% set filePath = someVariable %}
+{{ source(filePath) }}
+
+{# Test 4: SAFE - Static include with literal string #}
+{% include '_partials/header.twig' %}
+
+{# Test 5: SAFE - Static source with literal string #}
+{{ source('assets/script.js') }}
+
+{# Test 6: SUPPRESSED - Dynamic include with suppression #}
+{# craft-audit-disable-next-line ssti-dynamic-include #}
+{% include dynamicTemplate %}
+
+{# Test 7: SUPPRESSED with category prefix #}
+{# craft-audit-disable-next-line security/ssti-dynamic-include #}
+{{ include(template_from_string(trustedHtml)) }}
