@@ -9,3 +9,4 @@ coverage/
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+test-craft-project/
