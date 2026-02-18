@@ -4,6 +4,13 @@
 
 export type Severity = 'high' | 'medium' | 'low' | 'info';
 
+export interface Fix {
+  safe: boolean;
+  search: string;
+  replacement: string;
+  description: string;
+}
+
 export interface FindingEvidence {
   snippet?: string;
   details?: string;
@@ -24,11 +31,12 @@ export interface AuditIssue {
   docsUrl?: string;
   evidence?: FindingEvidence;
   fingerprint?: string;
+  fix?: Fix;
 }
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag';
 }
 
 export interface SystemIssue extends AuditIssue {

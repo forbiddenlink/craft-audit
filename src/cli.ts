@@ -52,7 +52,7 @@ import {
   resolveClickupStatePath,
   writeClickupSentFingerprints,
 } from './integrations/state';
-import { runInteractiveFix } from './core/interactive-fix';
+import { runInteractiveFix, runBatchFix } from './core/interactive-fix';
 
 const program = new Command();
 
@@ -1061,16 +1061,30 @@ program
 
 program
   .command('fix')
-  .description('Interactive fix mode for template issues')
+  .description('Fix template issues (interactive or batch mode)')
   .argument('<path>', 'Path to templates directory')
+  .option('--safe', 'Apply only safe fixes automatically (non-interactive)')
+  .option('--unsafe', 'Apply all fixes including unsafe ones (non-interactive)')
+  .option('-i, --interactive', 'Interactive mode - review each fix individually')
+  .option('--dry-run', 'Show what would be fixed without making changes')
   .option('-v, --verbose', 'Verbose output')
-  .action(async (templatesPath: string, options: { verbose?: boolean }) => {
+  .action(async (templatesPath: string, options: { safe?: boolean; unsafe?: boolean; interactive?: boolean; dryRun?: boolean; verbose?: boolean }) => {
     const absolutePath = path.resolve(templatesPath);
 
     if (!fs.existsSync(absolutePath)) {
       console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
       process.exit(1);
     }
+
+    // Validate mutually exclusive options
+    const modeCount = [options.safe, options.unsafe, options.interactive].filter(Boolean).length;
+    if (modeCount > 1) {
+      console.error(chalk.red('Error: --safe, --unsafe, and --interactive are mutually exclusive.'));
+      process.exit(1);
+    }
+
+    // Default to interactive if no mode specified
+    const useInteractive = options.interactive || (!options.safe && !options.unsafe);
 
     const spinner = ora('Analyzing templates...').start();
 
@@ -1083,11 +1097,24 @@ program
         process.exit(0);
       }
 
-      console.log(chalk.gray(`\nFound ${issues.length} issue(s). Starting interactive fix mode...\n`));
+      const fixableCount = issues.filter(i => i.fix).length;
+      const safeCount = issues.filter(i => i.fix?.safe).length;
+      const unsafeCount = fixableCount - safeCount;
 
-      const result = await runInteractiveFix(issues, absolutePath, options);
+      console.log(chalk.gray(`\nFound ${issues.length} issue(s) (${fixableCount} fixable: ${safeCount} safe, ${unsafeCount} unsafe)\n`));
 
-      if (result.suppressed > 0 || result.fixed > 0) {
+      let result;
+      if (useInteractive) {
+        result = await runInteractiveFix(issues, absolutePath, { verbose: options.verbose });
+      } else {
+        result = await runBatchFix(issues, absolutePath, {
+          safeOnly: !options.unsafe,
+          dryRun: Boolean(options.dryRun),
+          verbose: Boolean(options.verbose),
+        });
+      }
+
+      if (!options.dryRun && (result.suppressed > 0 || result.fixed > 0)) {
         console.log(chalk.green('\nChanges applied successfully.'));
       }
     } catch (error) {

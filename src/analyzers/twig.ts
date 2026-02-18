@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
 
-import { TemplateIssue } from '../types';
+import { TemplateIssue, Fix } from '../types';
 
 const execFileAsync = promisify(execFile);
 
@@ -16,6 +16,7 @@ interface PhpTemplateIssue {
   message: string;
   suggestion?: string;
   code?: string;
+  fix?: Fix;
 }
 
 interface PhpTemplateAnalyzerResponse {
@@ -34,6 +35,8 @@ const RULE_ID_BY_PATTERN: Record<string, string> = {
   'xss-raw-output': 'security/xss-raw-output',
   'ssti-dynamic-include': 'security/ssti-dynamic-include',
   'missing-status-filter': 'template/missing-status-filter',
+  'dump-call': 'template/dump-call',
+  'include-tag': 'template/include-tag',
 };
 
 const DOCS_URL_BY_PATTERN: Record<string, string> = {
@@ -46,6 +49,8 @@ const DOCS_URL_BY_PATTERN: Record<string, string> = {
   'xss-raw-output': 'https://craftcms.com/docs/5.x/development/twig#escaping',
   'ssti-dynamic-include': 'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/18-Testing_for_Server-side_Template_Injection',
   'missing-status-filter': 'https://craftcms.com/docs/5.x/development/element-queries#status',
+  'dump-call': 'https://craftcms.com/docs/5.x/development/twig#debugging',
+  'include-tag': 'https://twig.symfony.com/doc/3.x/functions/include.html',
 };
 
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
@@ -57,6 +62,8 @@ function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
   if (pattern === 'xss-raw-output') return 'xss-raw-output';
   if (pattern === 'ssti-dynamic-include') return 'ssti-dynamic-include';
   if (pattern === 'missing-status-filter') return 'missing-status-filter';
+  if (pattern === 'dump-call') return 'dump-call';
+  if (pattern === 'include-tag') return 'include-tag';
   return 'inefficient-query';
 }
 
@@ -69,6 +76,8 @@ function confidenceForPattern(pattern: TemplateIssue['pattern']): number {
   if (pattern === 'xss-raw-output') return 0.88;
   if (pattern === 'ssti-dynamic-include') return 0.92;
   if (pattern === 'missing-status-filter') return 0.70;
+  if (pattern === 'dump-call') return 0.98;
+  if (pattern === 'include-tag') return 0.95;
   return 0.65;
 }
 
@@ -91,6 +100,7 @@ function toTemplateIssue(issue: PhpTemplateIssue): TemplateIssue {
     docsUrl: DOCS_URL_BY_PATTERN[pattern],
     evidence: issue.code ? { snippet: issue.code } : undefined,
     fingerprint,
+    fix: issue.fix,
   };
 }
 

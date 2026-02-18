@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 import chalk from 'chalk';
-import { AuditIssue } from '../types';
+import { AuditIssue, Fix } from '../types';
 
 export interface FixResult {
   fixed: number;
@@ -21,11 +21,24 @@ export interface FixAction {
   issue: AuditIssue;
 }
 
+export interface BatchFixOptions {
+  safeOnly: boolean;
+  dryRun: boolean;
+  verbose: boolean;
+}
+
 /**
  * Get the rule identifier for display
  */
 function getRuleDisplay(issue: AuditIssue): string {
   return issue.ruleId || 'unknown';
+}
+
+/**
+ * Get safety label for display
+ */
+function getSafetyLabel(fix: Fix): string {
+  return fix.safe ? chalk.green('SAFE') : chalk.yellow('UNSAFE');
 }
 
 /**
@@ -39,7 +52,9 @@ async function promptForAction(
 ): Promise<'y' | 'n' | 's' | 'q'> {
   return new Promise((resolve) => {
     console.log('');
-    console.log(chalk.bold(`[${index + 1}/${total}] ${chalk.yellow(getRuleDisplay(issue))}`));
+    const ruleDisplay = getRuleDisplay(issue);
+    const safetyDisplay = issue.fix ? ` (${getSafetyLabel(issue.fix)})` : '';
+    console.log(chalk.bold(`[${index + 1}/${total}] ${chalk.yellow(ruleDisplay)}${safetyDisplay}`));
     console.log(chalk.gray(`  File: ${issue.file || 'unknown'}:${issue.line || '?'}`));
     console.log(`  ${issue.message}`);
 
@@ -47,13 +62,20 @@ async function promptForAction(
       console.log(chalk.gray(`  Code: ${issue.code.slice(0, 80)}${issue.code.length > 80 ? '...' : ''}`));
     }
 
-    if (issue.suggestion) {
-      console.log(chalk.green(`  Fix: ${issue.suggestion}`));
+    // Show fix preview if available
+    if (issue.fix) {
+      console.log('');
+      console.log(chalk.cyan(`  Fix: ${issue.fix.description}`));
+      console.log(chalk.red(`    - ${issue.fix.search}`));
+      console.log(chalk.green(`    + ${issue.fix.replacement || '(remove line)'}`));
+    } else if (issue.suggestion) {
+      console.log(chalk.green(`  Suggestion: ${issue.suggestion}`));
     }
 
     console.log('');
+    const fixLabel = issue.fix ? '[y] Apply fix' : '[y] N/A';
     rl.question(
-      chalk.cyan('  [y] Apply fix  [n] Skip  [s] Suppress  [q] Quit > '),
+      chalk.cyan(`  ${fixLabel}  [n] Skip  [s] Suppress  [q] Quit > `),
       (answer) => {
         const normalized = answer.toLowerCase().trim();
         if (['y', 'n', 's', 'q'].includes(normalized)) {
@@ -92,6 +114,11 @@ function insertSuppressionComment(
       'template/missing-limit': 'missing-limit',
       'template/deprecated-api': 'deprecated',
       'template/mixed-loading-strategy': 'mixed-loading-strategy',
+      'template/xss-raw-output': 'xss-raw-output',
+      'template/ssti-dynamic-include': 'ssti-dynamic-include',
+      'template/missing-status-filter': 'missing-status-filter',
+      'template/dump-call': 'dump-call',
+      'template/include-tag': 'include-tag',
     };
 
     const suppressionRule = patternMap[ruleId] || ruleId;
@@ -108,22 +135,154 @@ function insertSuppressionComment(
 }
 
 /**
- * Check if issue type can be auto-fixed
+ * Check if issue can be auto-fixed
  */
-function canAutoFix(_issue: AuditIssue): boolean {
-  // Currently we don't support auto-fixing N+1 or other complex issues
-  // Only suppression is available for all issues
-  return false;
+function canAutoFix(issue: AuditIssue): boolean {
+  return issue.fix !== undefined;
 }
 
 /**
- * Apply auto-fix for an issue (placeholder for future implementation)
+ * Apply auto-fix for an issue using search/replace
  */
-function applyAutoFix(_issue: AuditIssue, _basePath: string): boolean {
-  // Future: implement auto-fixes for specific patterns
-  // - Add .with() for N+1 issues
-  // - Replace deprecated APIs
-  return false;
+function applyAutoFix(issue: AuditIssue, basePath: string): boolean {
+  if (!issue.fix || !issue.file || issue.line === undefined) {
+    return false;
+  }
+
+  const filePath = path.join(basePath, issue.file);
+  const fix = issue.fix;
+
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const lines = content.split('\n');
+
+    if (issue.line < 1 || issue.line > lines.length) {
+      return false;
+    }
+
+    const lineIndex = issue.line - 1;
+    const originalLine = lines[lineIndex];
+
+    // Handle line removal (empty replacement)
+    if (fix.replacement === '') {
+      lines.splice(lineIndex, 1);
+      fs.writeFileSync(filePath, lines.join('\n'));
+      return true;
+    }
+
+    // Handle search/replace on the line
+    if (!originalLine.includes(fix.search)) {
+      // Search string not found on line - fix may have already been applied or line changed
+      return false;
+    }
+
+    // Replace first occurrence on the line
+    const newLine = originalLine.replace(fix.search, fix.replacement);
+    lines[lineIndex] = newLine;
+
+    fs.writeFileSync(filePath, lines.join('\n'));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Apply fixes in batch mode (non-interactive)
+ */
+export async function runBatchFix(
+  issues: AuditIssue[],
+  templatesPath: string,
+  options: BatchFixOptions
+): Promise<FixResult> {
+  const result: FixResult = {
+    fixed: 0,
+    suppressed: 0,
+    skipped: 0,
+    total: issues.length,
+  };
+
+  // Filter to fixable issues
+  const fixableIssues = issues.filter((i) => {
+    if (!i.file || i.line === undefined || !i.fix) {
+      return false;
+    }
+    // In safe-only mode, skip unsafe fixes
+    if (options.safeOnly && !i.fix.safe) {
+      return false;
+    }
+    return true;
+  });
+
+  if (fixableIssues.length === 0) {
+    console.log(chalk.yellow('\nNo fixable issues found.'));
+    return result;
+  }
+
+  const safeCount = fixableIssues.filter((i) => i.fix?.safe).length;
+  const unsafeCount = fixableIssues.filter((i) => !i.fix?.safe).length;
+
+  console.log(chalk.bold.cyan('\n🔧 Batch Fix Mode\n'));
+  console.log(chalk.gray(`Found ${fixableIssues.length} fixable issue(s):`));
+  console.log(chalk.green(`  Safe:   ${safeCount}`));
+  console.log(chalk.yellow(`  Unsafe: ${unsafeCount}`));
+
+  if (options.dryRun) {
+    console.log(chalk.blue('\n[DRY RUN] Would apply the following fixes:\n'));
+  }
+
+  // Group by file and sort by line descending
+  const issuesByFile = new Map<string, AuditIssue[]>();
+  for (const issue of fixableIssues) {
+    const filePath = path.join(templatesPath, issue.file!);
+    const existing = issuesByFile.get(filePath) || [];
+    existing.push(issue);
+    issuesByFile.set(filePath, existing);
+  }
+
+  for (const [filePath, fileIssues] of issuesByFile) {
+    // Sort by line descending so we don't shift line numbers
+    fileIssues.sort((a, b) => (b.line || 0) - (a.line || 0));
+
+    for (const issue of fileIssues) {
+      const fix = issue.fix!;
+      const safetyLabel = fix.safe ? chalk.green('[SAFE]') : chalk.yellow('[UNSAFE]');
+
+      if (options.dryRun) {
+        console.log(`${safetyLabel} ${issue.file}:${issue.line}`);
+        console.log(chalk.gray(`  ${fix.description}`));
+        console.log(chalk.red(`    - ${fix.search}`));
+        console.log(chalk.green(`    + ${fix.replacement || '(remove line)'}`));
+        console.log('');
+        result.fixed++;
+      } else {
+        const success = applyAutoFix(issue, templatesPath);
+        if (success) {
+          result.fixed++;
+          if (options.verbose) {
+            console.log(chalk.green(`  ✓ ${safetyLabel} ${issue.file}:${issue.line} - ${fix.description}`));
+          }
+        } else {
+          result.skipped++;
+          console.log(chalk.red(`  ✗ Failed: ${issue.file}:${issue.line}`));
+        }
+      }
+    }
+  }
+
+  // Count skipped (non-fixable or filtered out)
+  result.skipped = issues.length - fixableIssues.length;
+
+  console.log(chalk.bold('\n📊 Summary\n'));
+  if (options.dryRun) {
+    console.log(`  Would fix: ${chalk.green(result.fixed)}`);
+  } else {
+    console.log(`  Fixed:     ${chalk.green(result.fixed)}`);
+  }
+  console.log(`  Skipped:   ${chalk.gray(result.skipped)}`);
+  console.log(`  Total:     ${result.total}`);
+
+  return result;
 }
 
 /**
@@ -154,9 +313,13 @@ export async function runInteractiveFix(
     return result;
   }
 
+  const withFix = fixableIssues.filter((i) => i.fix).length;
+  const safeCount = fixableIssues.filter((i) => i.fix?.safe).length;
+
   console.log(chalk.bold.cyan('\n🔧 Interactive Fix Mode\n'));
   console.log(chalk.gray(`Found ${fixableIssues.length} issue(s) to review.`));
-  console.log(chalk.gray('For each issue, choose an action:\n'));
+  console.log(chalk.gray(`  ${withFix} have auto-fixes (${safeCount} safe, ${withFix - safeCount} unsafe)`));
+  console.log(chalk.gray('\nFor each issue, choose an action:\n'));
   console.log(chalk.gray('  y - Apply suggested fix (if available)'));
   console.log(chalk.gray('  n - Skip this issue'));
   console.log(chalk.gray('  s - Suppress with inline comment'));

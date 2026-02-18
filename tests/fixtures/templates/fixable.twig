@@ -1,0 +1,26 @@
+{# Test fixture for auto-fix functionality #}
+
+{# Safe fix: missing-limit #}
+{% for entry in craft.entries.all() %}
+    {{ entry.title }}
+{% endfor %}
+
+{# Safe fix: missing-status-filter #}
+{% for item in craft.entries.section('news').all() %}
+    {{ item.title }}
+{% endfor %}
+
+{# Safe fix: deprecated craft.request #}
+{{ craft.request.getParam('q') }}
+
+{# Safe fix: deprecated getUrl() #}
+{{ image.getUrl() }}
+
+{# Safe fix: include tag -> include function #}
+{% include '_partials/header' %}
+
+{# Unsafe fix: |raw without sanitizer #}
+{{ content|raw }}
+
+{# Unsafe fix: dump call #}
+{{ dump(entry) }}

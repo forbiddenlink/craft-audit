@@ -77,6 +77,15 @@ $XSS_RAW_PATTERN = '/\{\{\s*([^}|]+)\|raw\s*\}\}/';
 // Safe patterns that precede |raw - skip these
 $XSS_SAFE_PREFIXES = ['|purify', '|striptags', '|escape'];
 
+// Debug patterns to remove
+$DEBUG_PATTERNS = [
+    '/\{\{\s*dump\s*\(/',  // {{ dump(...) }}
+    '/\{\{\s*dd\s*\(/',     // {{ dd(...) }} - dump and die
+];
+
+// Include tag pattern (should use include() function instead)
+$INCLUDE_TAG_PATTERN = '/\{%\s*include\s+[\'"]([^\'"]+)[\'"]\s*%\}/';
+
 // SSTI (Server-Side Template Injection) patterns - CRITICAL security
 $SSTI_PATTERNS = [
     // Dynamic include with variable (not a string literal)
@@ -105,36 +114,57 @@ $DEPRECATED_PATTERNS = [
         'pattern' => '/craft\.request\./',
         'message' => 'craft.request is deprecated',
         'suggestion' => 'Use craft.app.request instead',
+        'fix' => [
+            'safe' => true,
+            'search' => 'craft.request.',
+            'replacement' => 'craft.app.request.',
+            'description' => 'Replace with craft.app.request',
+        ],
     ],
     [
         'pattern' => '/\|date_modify\b/',
         'message' => '|date_modify filter is deprecated',
         'suggestion' => 'Use |date_modify or native Twig date functions',
+        'fix' => null, // No safe auto-fix available
     ],
     [
         'pattern' => '/getUrl\(\)/',
         'message' => 'getUrl() is deprecated for assets',
         'suggestion' => 'Use .url property instead',
+        'fix' => [
+            'safe' => true,
+            'search' => '.getUrl()',
+            'replacement' => '.url',
+            'description' => 'Replace with .url property',
+        ],
     ],
     [
         'pattern' => '/craft\.config\./',
         'message' => 'craft.config is deprecated',
         'suggestion' => 'Use craft.app.config.general instead',
+        'fix' => [
+            'safe' => true,
+            'search' => 'craft.config.',
+            'replacement' => 'craft.app.config.general.',
+            'description' => 'Replace with craft.app.config.general',
+        ],
     ],
     [
         'pattern' => '/{% includeJsFile/',
         'message' => 'includeJsFile tag is deprecated',
         'suggestion' => 'Use craft.app.view.registerJsFile() instead',
+        'fix' => null, // Complex replacement, not safe to auto-fix
     ],
     [
         'pattern' => '/{% includeCssFile/',
-        'message' => 'includeCssFile tag is deprecated', 
+        'message' => 'includeCssFile tag is deprecated',
         'suggestion' => 'Use craft.app.view.registerCssFile() instead',
+        'fix' => null, // Complex replacement, not safe to auto-fix
     ],
 ];
 
 function analyzeFile(string $filePath, string $basePath): array {
-    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS;
+    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS, $DEBUG_PATTERNS, $INCLUDE_TAG_PATTERN;
 
     $issues = [];
     $content = file_get_contents($filePath);
@@ -278,6 +308,12 @@ function analyzeFile(string $filePath, string $basePath): array {
                             'message' => 'Query in loop without .limit() may fetch too many results',
                             'suggestion' => 'Add .limit(n) to paginate results',
                             'code' => trim($querySource),
+                            'fix' => [
+                                'safe' => true,
+                                'search' => '.all()',
+                                'replacement' => '.limit(100).all()',
+                                'description' => 'Add .limit(100)',
+                            ],
                         ];
                     }
 
@@ -294,6 +330,12 @@ function analyzeFile(string $filePath, string $basePath): array {
                             'message' => 'Query uses .all() without .status() filter - may include drafts/disabled entries',
                             'suggestion' => "Add .status('live') to only fetch published entries, or .status(['live', 'pending']) if needed",
                             'code' => trim($querySource),
+                            'fix' => [
+                                'safe' => true,
+                                'search' => '.all()',
+                                'replacement' => ".status('live').all()",
+                                'description' => "Add .status('live')",
+                            ],
                         ];
                     }
                     break;
@@ -364,7 +406,7 @@ function analyzeFile(string $filePath, string $basePath): array {
         // Check for deprecated patterns
         foreach ($DEPRECATED_PATTERNS as $deprecated) {
             if (preg_match($deprecated['pattern'], $line) && !$isSuppressed($lineNumber, 'deprecated')) {
-                $issues[] = [
+                $issue = [
                     'severity' => 'medium',
                     'category' => 'template',
                     'pattern' => 'deprecated',
@@ -374,6 +416,10 @@ function analyzeFile(string $filePath, string $basePath): array {
                     'suggestion' => $deprecated['suggestion'],
                     'code' => trim($line),
                 ];
+                if (isset($deprecated['fix']) && $deprecated['fix'] !== null) {
+                    $issue['fix'] = $deprecated['fix'];
+                }
+                $issues[] = $issue;
             }
         }
 
@@ -420,6 +466,12 @@ function analyzeFile(string $filePath, string $basePath): array {
                         'message' => "Variable rendered with |raw filter: {$variable}",
                         'suggestion' => 'Verify this content is trusted. Use |purify for user-generated HTML or remove |raw.',
                         'code' => trim($line),
+                        'fix' => [
+                            'safe' => false,
+                            'search' => '|raw',
+                            'replacement' => '|e|raw',
+                            'description' => 'Add |e escape filter (may break intentional HTML)',
+                        ],
                     ];
                 }
             }
@@ -441,6 +493,52 @@ function analyzeFile(string $filePath, string $basePath): array {
                     ];
                 }
             }
+        }
+
+        // Check for debug output (dump/dd calls)
+        if (!$isSuppressed($lineNumber, 'dump-call')) {
+            foreach ($DEBUG_PATTERNS as $debugPattern) {
+                if (preg_match($debugPattern, $line)) {
+                    $issues[] = [
+                        'severity' => 'medium',
+                        'category' => 'template',
+                        'pattern' => 'dump-call',
+                        'file' => $relativePath,
+                        'line' => $lineNumber,
+                        'message' => 'Debug output (dump/dd) should not be in production templates',
+                        'suggestion' => 'Remove dump() or dd() calls before deploying to production',
+                        'code' => trim($line),
+                        'fix' => [
+                            'safe' => false,
+                            'search' => trim($line),
+                            'replacement' => '',
+                            'description' => 'Remove debug line (may be intentional)',
+                        ],
+                    ];
+                    break; // Only report once per line
+                }
+            }
+        }
+
+        // Check for {% include %} tag (should use include() function for performance)
+        if (!$isSuppressed($lineNumber, 'include-tag') && preg_match($INCLUDE_TAG_PATTERN, $line, $includeMatches)) {
+            $templatePath = $includeMatches[1];
+            $issues[] = [
+                'severity' => 'low',
+                'category' => 'template',
+                'pattern' => 'include-tag',
+                'file' => $relativePath,
+                'line' => $lineNumber,
+                'message' => 'Use include() function instead of {% include %} tag for better performance',
+                'suggestion' => "Replace {% include '{$templatePath}' %} with {{ include('{$templatePath}') }}",
+                'code' => trim($line),
+                'fix' => [
+                    'safe' => true,
+                    'search' => "{% include '{$templatePath}' %}",
+                    'replacement' => "{{ include('{$templatePath}') }}",
+                    'description' => 'Convert to include() function',
+                ],
+            ];
         }
 
         // Check for queries without .all() or .one() (inefficient)
