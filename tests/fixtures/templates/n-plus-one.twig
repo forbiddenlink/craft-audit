@@ -1,0 +1,6 @@
+{% for entry in craft.entries.section('news') %}
+  <article>
+    <h2>{{ entry.title }}</h2>
+    <p>{{ entry.relatedArticles.one().title }}</p>
+  </article>
+{% endfor %}

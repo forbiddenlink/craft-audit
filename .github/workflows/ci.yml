@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'codex/**'
+  pull_request:
+
+jobs:
+  build-and-smoke:
+    permissions:
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: CLI smoke test
+        run: node dist/cli.js --help
+
+      - name: PHP availability check
+        run: php -v
+
+      - name: Generate SARIF smoke output
+        run: |
+          tmpdir="$(mktemp -d)"
+          cat > "$tmpdir/composer.json" <<'JSON'
+          {"require":{"craftcms/cms":"^5.0","php":"^8.2"}}
+          JSON
+          node dist/cli.js audit-ci "$tmpdir" --skip-templates --skip-security --output sarif --output-file craft-audit.sarif
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: craft-audit.sarif
+          category: craft-audit-ci

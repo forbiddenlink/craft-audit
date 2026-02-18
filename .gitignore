@@ -1,0 +1,11 @@
+node_modules/
+dist/
+backstop_data/
+*.log
+coverage/
+.DS_Store
+
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

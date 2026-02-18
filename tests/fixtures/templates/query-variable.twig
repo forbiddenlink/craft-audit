@@ -1,0 +1,5 @@
+{% set posts = craft.entries.section('blog') %}
+{% for post in posts %}
+  <img src="{{ post.heroImage.one().url }}" alt="">
+{% endfor %}
+

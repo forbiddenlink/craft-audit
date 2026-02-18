@@ -1,0 +1,5 @@
+{% for item in craft.entries.section('news').all() %}
+  <img src="{{ item.image.one().url }}">
+  <img src="{{ item.image.one().url }}">
+  <img src="{{ item.image.one().url }}">
+{% endfor %}

@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/craft-audit.config.schema.json",
+  "title": "craft-audit configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "templates": {
+      "type": "string",
+      "description": "Path to templates directory."
+    },
+    "skipTemplates": {
+      "type": "boolean"
+    },
+    "changedOnly": {
+      "type": "boolean"
+    },
+    "baseRef": {
+      "type": "string",
+      "description": "Git base ref or auto."
+    },
+    "skipSystem": {
+      "type": "boolean"
+    },
+    "skipSecurity": {
+      "type": "boolean"
+    },
+    "securityFileLimit": {
+      "type": "number",
+      "minimum": 1,
+      "description": "Maximum number of files scanned by the security analyzer."
+    },
+    "skipVisual": {
+      "type": "boolean"
+    },
+    "production": {
+      "type": "string"
+    },
+    "staging": {
+      "type": "string"
+    },
+    "baseline": {
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "string" }
+      ]
+    },
+    "writeBaseline": {
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "string" }
+      ]
+    },
+    "output": {
+      "type": "string",
+      "enum": ["console", "json", "sarif", "bitbucket", "html"]
+    },
+    "outputFile": {
+      "type": "string"
+    },
+    "exitThreshold": {
+      "type": "string",
+      "enum": ["none", "high", "medium", "low", "info"]
+    },
+    "debugProfile": {
+      "type": "string",
+      "description": "Path to runtime debug profile JSON used to correlate findings."
+    },
+    "verbose": {
+      "type": "boolean"
+    },
+    "notifySlack": {
+      "type": "boolean"
+    },
+    "slackWebhookUrl": {
+      "type": "string"
+    },
+    "slackSendOn": {
+      "type": "string",
+      "enum": ["always", "issues", "high"]
+    },
+    "createClickupTask": {
+      "type": "boolean"
+    },
+    "clickupListId": {
+      "type": "string"
+    },
+    "clickupSendOn": {
+      "type": "string",
+      "enum": ["always", "issues", "high"]
+    },
+    "clickupTokenEnv": {
+      "type": "string"
+    },
+    "clickupOnlyNew": {
+      "type": "boolean"
+    },
+    "clickupStateFile": {
+      "type": "string"
+    },
+    "clickupFindingsUrl": {
+      "type": "string"
+    },
+    "publishBitbucket": {
+      "type": "boolean"
+    },
+    "bitbucketWorkspace": {
+      "type": "string"
+    },
+    "bitbucketRepoSlug": {
+      "type": "string"
+    },
+    "bitbucketCommit": {
+      "type": "string"
+    },
+    "bitbucketTokenEnv": {
+      "type": "string"
+    },
+    "bitbucketSendOn": {
+      "type": "string",
+      "enum": ["always", "issues", "high"]
+    },
+    "bitbucketReportId": {
+      "type": "string"
+    },
+    "bitbucketReportLink": {
+      "type": "string"
+    },
+    "preset": {
+      "type": "string",
+      "enum": ["strict", "balanced", "legacy-migration"]
+    },
+    "ruleSettings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["high", "medium", "low", "info"]
+          },
+          "ignorePaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

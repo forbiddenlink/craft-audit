@@ -1,0 +1,91 @@
+name: Nightly Full Audit
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      project_path:
+        description: 'Craft project root path'
+        required: false
+        default: '.'
+      production_url:
+        description: 'Production URL for visual checks (optional)'
+        required: false
+        default: ''
+      staging_url:
+        description: 'Staging URL for visual checks (optional)'
+        required: false
+        default: ''
+
+jobs:
+  full-audit:
+    permissions:
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Resolve audit settings
+        id: cfg
+        run: |
+          project_path="${{ github.event.inputs.project_path }}"
+          if [ -z "$project_path" ]; then project_path="."; fi
+          echo "project_path=$project_path" >> "$GITHUB_OUTPUT"
+
+          prod="${{ github.event.inputs.production_url }}"
+          stage="${{ github.event.inputs.staging_url }}"
+          if [ -z "$prod" ] || [ -z "$stage" ]; then
+            echo "visual=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "visual=true" >> "$GITHUB_OUTPUT"
+            echo "production_url=$prod" >> "$GITHUB_OUTPUT"
+            echo "staging_url=$stage" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run full audit (no visual)
+        if: steps.cfg.outputs.visual == 'false'
+        run: |
+          node dist/cli.js audit "${{ steps.cfg.outputs.project_path }}" \
+            --output sarif \
+            --output-file craft-audit-nightly.sarif \
+            --exit-threshold high
+
+      - name: Run full audit (with visual)
+        if: steps.cfg.outputs.visual == 'true'
+        run: |
+          node dist/cli.js audit "${{ steps.cfg.outputs.project_path }}" \
+            --production "${{ steps.cfg.outputs.production_url }}" \
+            --staging "${{ steps.cfg.outputs.staging_url }}" \
+            --output sarif \
+            --output-file craft-audit-nightly.sarif \
+            --exit-threshold high
+
+      - name: Upload nightly SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: craft-audit-nightly.sarif
+          category: craft-audit-nightly

@@ -1,0 +1,4 @@
+{% set relatedArticles = craft.entries.section('articles').relatedTo(entry).orderBy('postDate desc') %}
+{% for article in relatedArticles %}
+  <h2>{{ article.title }}</h2>
+{% endfor %}

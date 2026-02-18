@@ -1,0 +1,5 @@
+{% set query = craft.entries.section('events') %}
+{% set query = query.relatedTo(category) %}
+{% for event in query %}
+  <h2>{{ event.title }}</h2>
+{% endfor %}
