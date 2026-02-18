@@ -1,0 +1,24 @@
+{# Test fixture for XSS |raw filter detection #}
+
+{# Test 1: HIGH - Request param with |raw (definitely dangerous) #}
+<div>{{ craft.app.request.getParam('content')|raw }}</div>
+
+{# Test 2: HIGH - Deprecated craft.request with |raw #}
+<div>{{ craft.request.getParam('html')|raw }}</div>
+
+{# Test 3: MEDIUM - Regular variable with |raw #}
+<div>{{ entry.richTextField|raw }}</div>
+
+{# Test 4: SAFE - Variable with |purify then |raw (sanitized) #}
+<div>{{ entry.userContent|purify|raw }}</div>
+
+{# Test 5: SUPPRESSED - Should not report #}
+{# craft-audit-disable-next-line xss-raw-output #}
+<div>{{ trustedHtml|raw }}</div>
+
+{# Test 6: SUPPRESSED with category prefix #}
+{# craft-audit-disable-next-line security/xss-raw-output #}
+<div>{{ anotherTrustedHtml|raw }}</div>
+
+{# Test 7: Not suppressed - should report #}
+<div>{{ someVariable|raw }}</div>

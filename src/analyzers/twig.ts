@@ -31,6 +31,7 @@ const RULE_ID_BY_PATTERN: Record<string, string> = {
   'inefficient-query': 'template/inefficient-query',
   'missing-limit': 'template/missing-limit',
   'mixed-loading-strategy': 'template/mixed-loading-strategy',
+  'xss-raw-output': 'security/xss-raw-output',
 };
 
 const DOCS_URL_BY_PATTERN: Record<string, string> = {
@@ -40,6 +41,7 @@ const DOCS_URL_BY_PATTERN: Record<string, string> = {
   'inefficient-query': 'https://craftcms.com/docs/5.x/development/element-queries',
   'missing-limit': 'https://craftcms.com/docs/5.x/development/element-queries',
   'mixed-loading-strategy': 'https://craftcms.com/docs/5.x/development/eager-loading.html',
+  'xss-raw-output': 'https://craftcms.com/docs/5.x/development/twig#escaping',
 };
 
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
@@ -48,6 +50,7 @@ function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
   if (pattern === 'deprecated') return 'deprecated';
   if (pattern === 'missing-limit') return 'missing-limit';
   if (pattern === 'mixed-loading-strategy') return 'mixed-loading-strategy';
+  if (pattern === 'xss-raw-output') return 'xss-raw-output';
   return 'inefficient-query';
 }
 
@@ -57,6 +60,7 @@ function confidenceForPattern(pattern: TemplateIssue['pattern']): number {
   if (pattern === 'deprecated') return 0.95;
   if (pattern === 'missing-limit') return 0.74;
   if (pattern === 'mixed-loading-strategy') return 0.90;
+  if (pattern === 'xss-raw-output') return 0.88;
   return 0.65;
 }
 

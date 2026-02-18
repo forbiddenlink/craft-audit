@@ -120,3 +120,63 @@ test('suppresses issues with craft-audit-disable-next-line comment', { skip: !ha
   );
   assert.equal(suppressedLimit, undefined, 'missing-limit with suppression should be suppressed');
 });
+
+test('detects XSS risk with |raw filter on request params (high severity)', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
+
+  // Test 1: Request param with |raw - HIGH severity
+  const requestParamRaw = xssIssues.find(
+    (issue) => issue.ruleId === 'security/xss-raw-output' && issue.line === 4
+  );
+  assert.ok(requestParamRaw, 'should detect |raw on craft.app.request param');
+  assert.equal(requestParamRaw.severity, 'high', 'request param with |raw should be high severity');
+
+  // Test 2: Deprecated craft.request with |raw - HIGH severity
+  const deprecatedRequestRaw = xssIssues.find(
+    (issue) => issue.ruleId === 'security/xss-raw-output' && issue.line === 7
+  );
+  assert.ok(deprecatedRequestRaw, 'should detect |raw on deprecated craft.request');
+  assert.equal(deprecatedRequestRaw.severity, 'high');
+});
+
+test('detects XSS risk with |raw filter on variables (medium severity)', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
+
+  // Test 3: Regular variable with |raw - MEDIUM severity
+  const variableRaw = xssIssues.find(
+    (issue) => issue.ruleId === 'security/xss-raw-output' && issue.line === 10
+  );
+  assert.ok(variableRaw, 'should detect |raw on regular variable');
+  assert.equal(variableRaw.severity, 'medium', 'variable with |raw should be medium severity');
+
+  // Test 7: Another variable without suppression (line 24)
+  const anotherVariable = xssIssues.find(
+    (issue) => issue.ruleId === 'security/xss-raw-output' && issue.line === 24
+  );
+  assert.ok(anotherVariable, 'should detect unsuppressed |raw usage');
+});
+
+test('skips |raw when preceded by |purify', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
+
+  // Test 4: |purify|raw should NOT be flagged
+  const purifiedRaw = xssIssues.find(
+    (issue) => issue.ruleId === 'security/xss-raw-output' && issue.line === 13
+  );
+  assert.equal(purifiedRaw, undefined, '|purify|raw should not be flagged as XSS risk');
+});
+
+test('suppresses XSS issues with disable comment', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
+
+  // Test 5 & 6: Suppressed lines should not be reported (comments on 16/20, |raw on 17/21)
+  const suppressedLines = [17, 21];
+  const suppressedIssues = xssIssues.filter(
+    (issue) => issue.ruleId === 'security/xss-raw-output' && suppressedLines.includes(issue.line)
+  );
+  assert.equal(suppressedIssues.length, 0, 'XSS issues with disable comment should be suppressed');
+});

@@ -28,7 +28,7 @@ export interface AuditIssue {
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output';
 }
 
 export interface SystemIssue extends AuditIssue {

@@ -58,6 +58,25 @@ $RELATION_FIELD_METHODS = [
     '\.last\(\)',
 ];
 
+// XSS patterns - |raw filter on potentially unsafe content
+$XSS_HIGH_PATTERNS = [
+    // Request parameters rendered raw - definitely dangerous
+    [
+        'pattern' => '/\{\{\s*craft\.app\.request\.[^}]*\|raw/',
+        'message' => 'Request parameter rendered with |raw filter (XSS risk)',
+    ],
+    [
+        'pattern' => '/\{\{\s*craft\.request\.[^}]*\|raw/',
+        'message' => 'Request parameter rendered with |raw filter (XSS risk)',
+    ],
+];
+
+// General |raw usage pattern (medium severity)
+$XSS_RAW_PATTERN = '/\{\{\s*([^}|]+)\|raw\s*\}\}/';
+
+// Safe patterns that precede |raw - skip these
+$XSS_SAFE_PREFIXES = ['|purify', '|striptags', '|escape'];
+
 // Deprecated patterns in Craft 4/5
 $DEPRECATED_PATTERNS = [
     [
@@ -93,7 +112,7 @@ $DEPRECATED_PATTERNS = [
 ];
 
 function analyzeFile(string $filePath, string $basePath): array {
-    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS;
+    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES;
 
     $issues = [];
     $content = file_get_contents($filePath);
@@ -129,9 +148,11 @@ function analyzeFile(string $filePath, string $basePath): array {
             return true;
         }
         // Check if specific pattern is in suppressed list
-        // Match both "pattern" and "category/pattern" formats
+        // Match pattern with various category prefixes
         foreach ($rules as $rule) {
-            if ($rule === $pattern || $rule === "template/{$pattern}") {
+            if ($rule === $pattern ||
+                $rule === "template/{$pattern}" ||
+                $rule === "security/{$pattern}") {
                 return true;
             }
         }
@@ -315,6 +336,54 @@ function analyzeFile(string $filePath, string $basePath): array {
                     'suggestion' => $deprecated['suggestion'],
                     'code' => trim($line),
                 ];
+            }
+        }
+
+        // Check for XSS patterns - |raw filter usage
+        if (!$isSuppressed($lineNumber, 'xss-raw-output')) {
+            // First check high-severity patterns (request params)
+            $foundHighSeverity = false;
+            foreach ($XSS_HIGH_PATTERNS as $xssPattern) {
+                if (preg_match($xssPattern['pattern'], $line)) {
+                    $issues[] = [
+                        'severity' => 'high',
+                        'category' => 'template',
+                        'pattern' => 'xss-raw-output',
+                        'file' => $relativePath,
+                        'line' => $lineNumber,
+                        'message' => $xssPattern['message'],
+                        'suggestion' => 'Never render request parameters with |raw. Use |e or |purify for user content.',
+                        'code' => trim($line),
+                    ];
+                    $foundHighSeverity = true;
+                }
+            }
+
+            // Check general |raw usage (medium severity) if not already flagged
+            if (!$foundHighSeverity && preg_match($XSS_RAW_PATTERN, $line, $rawMatches)) {
+                $variable = trim($rawMatches[1]);
+
+                // Check if preceded by safe filter
+                $isSafe = false;
+                foreach ($XSS_SAFE_PREFIXES as $safePrefix) {
+                    if (strpos($line, $safePrefix . '|raw') !== false) {
+                        $isSafe = true;
+                        break;
+                    }
+                }
+
+                if (!$isSafe) {
+                    $issues[] = [
+                        'severity' => 'medium',
+                        'category' => 'template',
+                        'pattern' => 'xss-raw-output',
+                        'file' => $relativePath,
+                        'line' => $lineNumber,
+                        'message' => "Variable rendered with |raw filter: {$variable}",
+                        'suggestion' => 'Verify this content is trusted. Use |purify for user-generated HTML or remove |raw.',
+                        'code' => trim($line),
+                    ];
+                }
             }
         }
         
