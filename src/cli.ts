@@ -52,6 +52,7 @@ import {
   resolveClickupStatePath,
   writeClickupSentFingerprints,
 } from './integrations/state';
+import { runInteractiveFix } from './core/interactive-fix';
 
 const program = new Command();
 
@@ -1054,6 +1055,44 @@ program
     } catch (error) {
       spinner.fail('Template analysis failed');
       console.error(chalk.red(error));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('fix')
+  .description('Interactive fix mode for template issues')
+  .argument('<path>', 'Path to templates directory')
+  .option('-v, --verbose', 'Verbose output')
+  .action(async (templatesPath: string, options: { verbose?: boolean }) => {
+    const absolutePath = path.resolve(templatesPath);
+
+    if (!fs.existsSync(absolutePath)) {
+      console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
+      process.exit(1);
+    }
+
+    const spinner = ora('Analyzing templates...').start();
+
+    try {
+      const issues = await analyzeTwigTemplates(absolutePath, options.verbose);
+      spinner.stop();
+
+      if (issues.length === 0) {
+        console.log(chalk.green('\nNo issues found!'));
+        process.exit(0);
+      }
+
+      console.log(chalk.gray(`\nFound ${issues.length} issue(s). Starting interactive fix mode...\n`));
+
+      const result = await runInteractiveFix(issues, absolutePath, options);
+
+      if (result.suppressed > 0 || result.fixed > 0) {
+        console.log(chalk.green('\nChanges applied successfully.'));
+      }
+    } catch (error) {
+      spinner.fail('Analysis failed');
+      console.error(chalk.red(String(error)));
       process.exit(1);
     }
   });
