@@ -22,6 +22,7 @@
     "workspaceContains:craft-audit.config.json"
   ],
   "main": "./dist/extension.js",
+  "icon": "assets/icon.png",
   "contributes": {
     "commands": [
       {
