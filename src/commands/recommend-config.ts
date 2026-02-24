@@ -16,6 +16,7 @@ import {
 } from '../core/config';
 import { buildConfigRecommendation, ConfigRecommendation } from '../core/recommend-config';
 import { TOOL_VERSION } from '../core/version';
+import { validateProjectPath, ValidationError } from '../core/validate.js';
 
 export interface RecommendConfigCommandOptions {
   templates?: string;
@@ -28,20 +29,6 @@ export interface RecommendConfigCommandOptions {
 function toAnalyzerErrorDetails(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
-}
-
-function validateProjectPath(absolutePath: string): void {
-  if (!fs.existsSync(absolutePath)) {
-    console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
-    process.exit(1);
-  }
-  const craftFile = path.join(absolutePath, 'craft');
-  const composerJson = path.join(absolutePath, 'composer.json');
-  if (!fs.existsSync(craftFile) && !fs.existsSync(composerJson)) {
-    console.error(chalk.red('Error: This does not appear to be a Craft CMS project'));
-    console.error(chalk.gray('Expected to find "craft" executable or composer.json'));
-    process.exit(1);
-  }
 }
 
 function renderRecommendation(
@@ -78,28 +65,39 @@ export async function executeRecommendConfigCommand(
   options: RecommendConfigCommandOptions
 ): Promise<void> {
   const absolutePath = path.resolve(projectPath);
-  validateProjectPath(absolutePath);
+  try {
+    validateProjectPath(absolutePath);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      process.exitCode = 1;
+      return;
+    }
+    throw error;
+  }
 
   const fileConfig = loadAuditFileConfig(absolutePath, options.config, Boolean(options.verbose));
   if (fileConfig.errors.length > 0) {
     for (const err of fileConfig.errors) {
       console.error(chalk.red(`Error: ${err}`));
     }
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const outputFormat = options.output ?? 'console';
   if (!isSupportedRecommendOutputFormat(outputFormat)) {
     console.error(chalk.red(`Error: Unsupported output format "${outputFormat}".`));
     console.error(chalk.gray(`Supported values: ${SUPPORTED_RECOMMEND_OUTPUT_FORMATS.join(', ')}`));
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const templatesInput = options.templates ?? fileConfig.values.templates ?? 'templates';
   const templatesPath = path.resolve(absolutePath, templatesInput);
   if (!fs.existsSync(templatesPath)) {
     console.error(chalk.red(`Error: Templates path does not exist: ${templatesPath}`));
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const spinner = outputFormat === 'console' ? ora('Analyzing templates for recommendations...').start() : null;
@@ -110,7 +108,8 @@ export async function executeRecommendConfigCommand(
   } catch (error) {
     spinner?.fail('Template analysis failed');
     console.error(chalk.red(toAnalyzerErrorDetails(error)));
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const recommendation = buildConfigRecommendation(issues);

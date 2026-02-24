@@ -19,6 +19,7 @@ export interface CraftAuditIssue {
     severity: string;
     suggestion?: string;
     fix?: CraftAuditFix;
+    sourceContext?: string;
 }
 
 interface CraftAuditOutput {
@@ -30,6 +31,7 @@ interface CraftAuditOutput {
         message: string;
         severity: string;
         suggestion?: string;
+        sourceContext?: string;
         fix?: {
             safe: boolean;
             search: string;
@@ -45,52 +47,106 @@ export class CraftAuditRunner {
     constructor(private outputChannel: vscode.OutputChannel) {}
 
     async analyzeFile(filePath: string, config: CraftAuditConfig): Promise<CraftAuditIssue[]> {
-        // The templates command takes a directory path, not individual files.
-        // Pass the file's directory and filter results to the target file.
-        const templateDir = path.dirname(filePath);
-        const args = ['templates', templateDir, '--output', 'json'];
+        return vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Window,
+                title: `Craft Audit: analyzing ${path.basename(filePath)}`,
+            },
+            async () => {
+                // The templates command takes a directory path, not individual files.
+                // Pass the file's directory and filter results to the target file.
+                const templateDir = path.dirname(filePath);
+                const args = ['templates', templateDir, '--output', 'json', '--cache'];
 
-        if (config.configPath) {
-            const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-            if (workspaceFolder) {
-                args.push('--config', path.join(workspaceFolder.uri.fsPath, config.configPath));
+                if (config.configPath) {
+                    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                    if (workspaceFolder) {
+                        args.push('--config', path.join(workspaceFolder.uri.fsPath, config.configPath));
+                    }
+                }
+
+                if (config.qualityGate) {
+                    args.push('--quality-gate', config.qualityGate);
+                }
+
+                const output = await this.runCommand(config.executablePath, args, config.timeout);
+                const allIssues = this.parseOutput(output);
+                // Filter to only issues for the target file
+                const normalizedTarget = path.resolve(filePath);
+                return allIssues.filter(issue => path.resolve(issue.file) === normalizedTarget);
             }
-        }
-
-        const output = await this.runCommand(config.executablePath, args, config.timeout);
-        const allIssues = this.parseOutput(output);
-        // Filter to only issues for the target file
-        const normalizedTarget = path.resolve(filePath);
-        return allIssues.filter(issue => path.resolve(issue.file) === normalizedTarget);
+        );
     }
 
     async analyzeWorkspace(config: CraftAuditConfig): Promise<Map<string, CraftAuditIssue[]>> {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-        if (!workspaceFolder) {
-            return new Map();
-        }
+        return vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: 'Craft Audit: analyzing workspace',
+                cancellable: true,
+            },
+            async (_progress, token) => {
+                const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+                if (!workspaceFolder) {
+                    return new Map();
+                }
 
-        const args = ['audit', workspaceFolder.uri.fsPath, '--output', 'json'];
+                const args = ['audit', workspaceFolder.uri.fsPath, '--output', 'json', '--cache'];
 
-        if (config.configPath) {
-            args.push('--config', path.join(workspaceFolder.uri.fsPath, config.configPath));
-        }
+                if (config.configPath) {
+                    args.push('--config', path.join(workspaceFolder.uri.fsPath, config.configPath));
+                }
 
-        const output = await this.runCommand(config.executablePath, args, config.timeout);
-        const issues = this.parseOutput(output);
+                if (config.qualityGate) {
+                    args.push('--quality-gate', config.qualityGate);
+                }
 
-        // Group by file
-        const byFile = new Map<string, CraftAuditIssue[]>();
-        for (const issue of issues) {
-            const existing = byFile.get(issue.file) || [];
-            existing.push(issue);
-            byFile.set(issue.file, existing);
-        }
+                const output = await this.runCommand(config.executablePath, args, config.timeout, token);
+                const issues = this.parseOutput(output);
 
-        return byFile;
+                // Group by file
+                const byFile = new Map<string, CraftAuditIssue[]>();
+                for (const issue of issues) {
+                    const existing = byFile.get(issue.file) || [];
+                    existing.push(issue);
+                    byFile.set(issue.file, existing);
+                }
+
+                return byFile;
+            }
+        );
     }
 
-    private runCommand(executable: string, args: string[], timeoutMs: number): Promise<string> {
+    async clearCache(): Promise<void> {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (!workspaceFolder) {
+            return;
+        }
+
+        return new Promise((resolve, reject) => {
+            const proc = spawn('npx', ['craft-audit', 'cache', '--clear'], {
+                cwd: workspaceFolder,
+                shell: true,
+            });
+
+            proc.on('close', (code) => {
+                if (code === 0) {
+                    resolve();
+                } else {
+                    reject(new Error(`Failed to clear cache (exit code ${code})`));
+                }
+            });
+
+            proc.on('error', reject);
+        });
+    }
+
+    private runCommand(
+        executable: string,
+        args: string[],
+        timeoutMs: number,
+        cancellation?: vscode.CancellationToken
+    ): Promise<string> {
         return new Promise((resolve, reject) => {
             const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 
@@ -101,6 +157,12 @@ export class CraftAuditRunner {
             });
 
             this.runningProcesses.add(proc);
+
+            // Support cancellation from VS Code progress dialog
+            const cancelListener = cancellation?.onCancellationRequested(() => {
+                proc.kill();
+                reject(new Error('Analysis cancelled'));
+            });
 
             let stdout = '';
             let stderr = '';
@@ -114,6 +176,7 @@ export class CraftAuditRunner {
             });
 
             proc.on('error', (error) => {
+                cancelListener?.dispose();
                 if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
                     reject(new Error(
                         `craft-audit not found. Install it with: npm install -g craft-audit\n` +
@@ -126,6 +189,7 @@ export class CraftAuditRunner {
 
             proc.on('close', (code) => {
                 this.runningProcesses.delete(proc);
+                cancelListener?.dispose();
 
                 if (stderr) {
                     this.outputChannel.appendLine(`stderr: ${stderr}`);
@@ -164,7 +228,8 @@ export class CraftAuditRunner {
                 message: issue.message,
                 severity: issue.severity,
                 suggestion: issue.suggestion,
-                fix: issue.fix
+                fix: issue.fix,
+                sourceContext: issue.sourceContext,
             }));
         } catch (error) {
             this.outputChannel.appendLine(`Failed to parse output: ${error}`);

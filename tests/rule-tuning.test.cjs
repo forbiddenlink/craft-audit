@@ -57,8 +57,8 @@ test('rule tuning supports glob ignores for issue file paths', () => {
 });
 
 test('glob matcher supports ** and * semantics', () => {
-  const matcher = __testUtils.globToRegExp('foo/**/bar/*.twig');
-  assert.equal(matcher.test('foo/x/bar/a.twig'), true);
-  assert.equal(matcher.test('foo/x/y/bar/a.twig'), true);
-  assert.equal(matcher.test('foo/x/y/bar/a.html'), false);
+  const { matchesAnyPattern } = __testUtils;
+  assert.equal(matchesAnyPattern('foo/x/bar/a.twig', ['foo/**/bar/*.twig']), true);
+  assert.equal(matchesAnyPattern('foo/x/y/bar/a.twig', ['foo/**/bar/*.twig']), true);
+  assert.equal(matchesAnyPattern('foo/x/y/bar/a.html', ['foo/**/bar/*.twig']), false);
 });

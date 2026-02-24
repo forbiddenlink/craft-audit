@@ -1,0 +1,8 @@
+id: custom/no-inline-js
+meta:
+  description: "Disallow inline <script> tags in Twig templates"
+  severity: medium
+  category: security
+  docs: "Inline scripts make CSP harder to enforce and are a security risk"
+pattern: "<script[^>]*>"
+message: "Inline <script> tag found — move JavaScript to external files"

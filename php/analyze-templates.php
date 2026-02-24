@@ -109,6 +109,42 @@ $SSTI_PATTERNS = [
     ],
 ];
 
+// Accessibility patterns
+$ACCESSIBILITY_PATTERNS = [
+    // <img> without alt attribute
+    [
+        'pattern' => '/<img\b(?![^>]*\balt\s*=)[^>]*>/i',
+        'message' => 'Image tag missing alt attribute',
+        'suggestion' => 'Add an alt attribute to all <img> tags for screen reader accessibility. Use alt="" for decorative images.',
+        'a11yPattern' => 'img-missing-alt',
+        'severity' => 'medium',
+    ],
+    // <input> without associated label (no aria-label, skip hidden/submit/button/reset)
+    [
+        'pattern' => '/<input\b(?![^>]*type\s*=\s*["\'](?:hidden|submit|button|reset)["\'])(?![^>]*\baria-label)[^>]*>/i',
+        'message' => 'Form input may be missing an accessible label',
+        'suggestion' => 'Associate inputs with a <label> element, or add aria-label or aria-labelledby attribute.',
+        'a11yPattern' => 'input-missing-label',
+        'severity' => 'low',
+    ],
+    // Empty link text: <a href="..."></a> without aria-label
+    [
+        'pattern' => '/<a\b[^>]*href=[^>]*>\s*<\/a>/i',
+        'message' => 'Empty link with no accessible text',
+        'suggestion' => 'Add visible text content, aria-label, or aria-labelledby to links.',
+        'a11yPattern' => 'empty-link',
+        'severity' => 'medium',
+    ],
+    // Missing lang attribute on <html> tag
+    [
+        'pattern' => '/<html\b(?![^>]*\blang\s*=)[^>]*>/i',
+        'message' => 'HTML element missing lang attribute',
+        'suggestion' => 'Add lang attribute to <html> tag (e.g., <html lang="en">) for screen readers.',
+        'a11yPattern' => 'missing-lang',
+        'severity' => 'medium',
+    ],
+];
+
 // Deprecated patterns in Craft 4/5
 $DEPRECATED_PATTERNS = [
     [
@@ -177,7 +213,7 @@ $DEPRECATED_PATTERNS = [
 ];
 
 function analyzeFile(string $filePath, string $basePath): array {
-    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS, $DEBUG_PATTERNS, $INCLUDE_TAG_PATTERN;
+    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS, $DEBUG_PATTERNS, $INCLUDE_TAG_PATTERN, $ACCESSIBILITY_PATTERNS;
 
     $issues = [];
     $content = file_get_contents($filePath);
@@ -599,6 +635,23 @@ function analyzeFile(string $filePath, string $basePath): array {
                 ];
             }
             $inFormTag = false;
+        }
+
+        // Check for accessibility issues
+        foreach ($ACCESSIBILITY_PATTERNS as $a11yPattern) {
+            $patternId = $a11yPattern['a11yPattern'];
+            if (!$isSuppressed($lineNumber, $patternId) && preg_match($a11yPattern['pattern'], $line)) {
+                $issues[] = [
+                    'severity' => $a11yPattern['severity'],
+                    'category' => 'template',
+                    'pattern' => $patternId,
+                    'file' => $relativePath,
+                    'line' => $lineNumber,
+                    'message' => $a11yPattern['message'],
+                    'suggestion' => $a11yPattern['suggestion'],
+                    'code' => trim($line),
+                ];
+            }
         }
     }
 

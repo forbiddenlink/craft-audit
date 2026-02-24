@@ -198,3 +198,44 @@ test('all issues have category security and type http-header-check', async () =>
     await srv.close();
   }
 });
+
+// --- CORS misconfiguration checks ---
+
+test('detects CORS wildcard origin', async () => {
+  const srv = await startServer({
+    'Access-Control-Allow-Origin': '*',
+    'Strict-Transport-Security': 'max-age=31536000',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Content-Security-Policy': "default-src 'self'",
+    'Referrer-Policy': 'no-referrer',
+    'Permissions-Policy': 'camera=()',
+  });
+  try {
+    const issues = await checkHttpHeaders(srv.url);
+    const cors = issues.find(i => i.ruleId === 'security/cors-wildcard-origin');
+    assert.ok(cors, 'should flag CORS wildcard origin');
+    assert.ok(cors.message.includes('wildcard'), 'should mention wildcard');
+  } finally {
+    await srv.close();
+  }
+});
+
+test('no CORS issue for specific origin', async () => {
+  const srv = await startServer({
+    'Access-Control-Allow-Origin': 'https://example.com',
+    'Strict-Transport-Security': 'max-age=31536000',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Content-Security-Policy': "default-src 'self'",
+    'Referrer-Policy': 'no-referrer',
+    'Permissions-Policy': 'camera=()',
+  });
+  try {
+    const issues = await checkHttpHeaders(srv.url);
+    const cors = issues.find(i => i.ruleId === 'security/cors-wildcard-origin');
+    assert.equal(cors, undefined, 'should not flag specific CORS origin');
+  } finally {
+    await srv.close();
+  }
+});

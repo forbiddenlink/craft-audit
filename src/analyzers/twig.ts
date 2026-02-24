@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import { promisify } from 'node:util';
 
 import { TemplateIssue, Fix } from '../types';
+import { AnalysisCache } from '../core/cache.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -38,6 +39,10 @@ const RULE_ID_BY_PATTERN: Record<string, string> = {
   'dump-call': 'template/dump-call',
   'include-tag': 'template/include-tag',
   'form-missing-csrf': 'template/form-missing-csrf',
+  'img-missing-alt': 'template/img-missing-alt',
+  'input-missing-label': 'template/input-missing-label',
+  'empty-link': 'template/empty-link',
+  'missing-lang': 'template/missing-lang',
 };
 
 const DOCS_URL_BY_PATTERN: Record<string, string> = {
@@ -53,6 +58,10 @@ const DOCS_URL_BY_PATTERN: Record<string, string> = {
   'dump-call': 'https://craftcms.com/docs/5.x/development/twig#debugging',
   'include-tag': 'https://twig.symfony.com/doc/3.x/functions/include.html',
   'form-missing-csrf': 'https://craftcms.com/docs/5.x/development/forms#csrf',
+  'img-missing-alt': 'https://www.w3.org/WAI/tutorials/images/',
+  'input-missing-label': 'https://www.w3.org/WAI/tutorials/forms/labels/',
+  'empty-link': 'https://www.w3.org/WAI/WCAG21/Techniques/html/H30',
+  'missing-lang': 'https://www.w3.org/WAI/WCAG21/Techniques/html/H57',
 };
 
 const KNOWN_PATTERNS = new Set([
@@ -67,6 +76,10 @@ const KNOWN_PATTERNS = new Set([
   'dump-call',
   'include-tag',
   'form-missing-csrf',
+  'img-missing-alt',
+  'input-missing-label',
+  'empty-link',
+  'missing-lang',
 ]);
 
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
@@ -86,6 +99,10 @@ const CONFIDENCE_BY_PATTERN: Record<string, number> = {
   'dump-call': 0.98,
   'include-tag': 0.95,
   'form-missing-csrf': 0.90,
+  'img-missing-alt': 0.85,
+  'input-missing-label': 0.70,
+  'empty-link': 0.80,
+  'missing-lang': 0.90,
 };
 
 function confidenceForPattern(pattern: TemplateIssue['pattern']): number {
@@ -139,9 +156,29 @@ function parseResponse(stdout: string): PhpTemplateAnalyzerResponse {
   };
 }
 
+function findTemplateFiles(dir: string): string[] {
+  const files: string[] = [];
+  let entries: fs.Dirent[];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return files;
+  }
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...findTemplateFiles(fullPath));
+    } else if (entry.name.endsWith('.twig') || entry.name.endsWith('.html')) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
 export async function analyzeTwigTemplates(
   templatesPath: string,
-  verbose = false
+  verbose = false,
+  cache?: AnalysisCache
 ): Promise<TemplateIssue[]> {
   const phpScriptPath = path.resolve(__dirname, '../../php/analyze-templates.php');
 
@@ -151,6 +188,27 @@ export async function analyzeTwigTemplates(
 
   if (!fs.existsSync(phpScriptPath)) {
     throw new Error(`PHP analyzer not found: ${phpScriptPath}`);
+  }
+
+  // Check cache for all template files; if every file is a hit, skip PHP entirely
+  if (cache) {
+    const templateFiles = findTemplateFiles(templatesPath);
+    const cachedIssues: TemplateIssue[] = [];
+    let allCached = true;
+
+    for (const filePath of templateFiles) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      const cached = cache.get(filePath, content);
+      if (cached) {
+        cachedIssues.push(...(cached as TemplateIssue[]));
+      } else {
+        allCached = false;
+      }
+    }
+
+    if (allCached && templateFiles.length > 0) {
+      return cachedIssues;
+    }
   }
 
   try {
@@ -164,7 +222,26 @@ export async function analyzeTwigTemplates(
     }
 
     const response = parseResponse(stdout);
-    return response.issues.map(toTemplateIssue);
+    const issues = response.issues.map(toTemplateIssue);
+
+    // Store results per file in the cache
+    if (cache) {
+      const templateFiles = findTemplateFiles(templatesPath);
+      const issuesByFile = new Map<string, TemplateIssue[]>();
+      for (const issue of issues) {
+        if (issue.file) {
+          const existing = issuesByFile.get(issue.file) ?? [];
+          existing.push(issue);
+          issuesByFile.set(issue.file, existing);
+        }
+      }
+      for (const filePath of templateFiles) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        cache.set(filePath, content, issuesByFile.get(filePath) ?? []);
+      }
+    }
+
+    return issues;
   } catch (error) {
     const err = error as Error & { code?: string; stderr?: string; stdout?: string };
 

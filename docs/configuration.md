@@ -36,6 +36,16 @@ Note: `html` output requires `outputFile` to be set.
   "bitbucketSendOn": "issues",
   "bitbucketReportId": "craft-audit-pr",
   "bitbucketReportLink": "https://example.com/artifacts/craft-audit.sarif",
+  "cache": true,
+  "cacheLocation": ".craft-audit-cache.json",
+  "logLevel": "info",
+  "qualityGate": "recommended",
+  "rulesDir": "./my-rules",
+  "craft5Migration": false,
+  "generateCsp": false,
+  "watch": false,
+  "fixDryRun": false,
+  "siteUrl": "https://example.com",
   "ruleSettings": {
     "template/n-plus-one-loop": {
       "severity": "medium",
@@ -93,6 +103,16 @@ Note: `html` output requires `outputFile` to be set.
 - `linearFindingsUrl`
 - `title`
 - `ruleSettings`
+- `cache`
+- `cacheLocation`
+- `logLevel`
+- `qualityGate`
+- `rulesDir`
+- `craft5Migration`
+- `generateCsp`
+- `watch`
+- `fixDryRun`
+- `siteUrl`
 
 ## Integration env vars
 
@@ -147,3 +167,35 @@ Generate a starting preset and scoped overrides from real findings:
 
 `securityFileLimit` caps how many files the security analyzer will scan (default: 2000). Increase this value
 if your project has a large template/code surface and you want full debug-pattern coverage.
+
+## Quality gates
+
+Use `qualityGate` (or `--quality-gate <name>`) to apply a named exit-threshold and severity profile:
+
+| Profile | Description |
+|---------|-------------|
+| `strict` | Fails on any issue (info or above) |
+| `recommended` | Fails on medium or above |
+| `security-only` | Fails only on security category issues |
+| `relaxed` | Fails on high only |
+| `ci` | Recommended for CI pipelines — fails on high, skips visual |
+
+```bash
+craft-audit audit . --quality-gate ci
+```
+
+Quality gates override `exitThreshold` when set.
+
+## Custom rules
+
+`rulesDir` (or `--rules-dir <path>`) loads custom rule files from a directory. Supported formats:
+
+- **JavaScript** (`.js`) — Export a `RuleDefinition` with `meta` and `create` (ESLint-inspired API)
+- **YAML** (`.yaml`) — Declarative pattern-matching rules
+- **JSON** (`.rule.json`) — Declarative pattern-matching rules
+
+```bash
+craft-audit audit . --rules-dir ./my-rules
+```
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for the rule API and examples. Sample rules are in `examples/rules/`.

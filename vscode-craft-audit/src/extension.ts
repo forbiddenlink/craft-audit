@@ -26,7 +26,9 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('craftAudit.scanFile', () => scanCurrentFile()),
         vscode.commands.registerCommand('craftAudit.scanWorkspace', () => scanWorkspace()),
         vscode.commands.registerCommand('craftAudit.clearDiagnostics', () => clearDiagnostics()),
-        vscode.commands.registerCommand('craftAudit.showOutput', () => outputChannel.show())
+        vscode.commands.registerCommand('craftAudit.showOutput', () => outputChannel.show()),
+        vscode.commands.registerCommand('craftAudit.runAudit', () => scanWorkspace()),
+        vscode.commands.registerCommand('craftAudit.clearCache', () => clearCache())
     );
 
     // Register code action provider for .twig files
@@ -153,6 +155,16 @@ function updateStatusBar(count: number) {
     } else {
         statusBarItem.text = `$(warning) Craft Audit: ${count} issue${count === 1 ? '' : 's'}`;
         statusBarItem.tooltip = `${count} issue${count === 1 ? '' : 's'} found – click to re-scan`;
+    }
+}
+
+async function clearCache() {
+    try {
+        await runner.clearCache();
+        vscode.window.showInformationMessage('Craft Audit: Analysis cache cleared');
+    } catch (error) {
+        outputChannel.appendLine(`Error clearing cache: ${error}`);
+        vscode.window.showErrorMessage(`Craft Audit: Failed to clear cache – ${error}`);
     }
 }
 

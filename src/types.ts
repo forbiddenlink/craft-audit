@@ -36,7 +36,7 @@ export interface AuditIssue {
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf' | 'img-missing-alt' | 'input-missing-label' | 'empty-link' | 'missing-lang';
 }
 
 export interface SystemIssue extends AuditIssue {
@@ -57,7 +57,7 @@ export interface SystemIssue extends AuditIssue {
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'plugin-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
 }
 
 export interface VisualIssue extends AuditIssue {
@@ -100,6 +100,7 @@ export interface AuditConfig {
   verbose?: boolean;
   quiet?: boolean;
   siteUrl?: string;
+  craft5Migration?: boolean;
 }
 
 export interface AuditResult {
@@ -171,9 +172,18 @@ export interface AuditCommandOptions {
   fix?: boolean;
   batchFix?: boolean;
   dryRun?: boolean;
+  fixDryRun?: boolean;
   safeOnly?: boolean;
   siteUrl?: string;
+  cache?: boolean;
+  cacheLocation?: string;
+  clearCache?: boolean;
+  watch?: boolean;
+  rulesDir?: string;
   preset?: string;
+  qualityGate?: string;
+  generateCsp?: boolean;
+  craft5Migration?: boolean;
   ruleSettings?: import('./core/rule-tuning').RuleSettings;
   title?: string;
   commandName?: 'audit' | 'audit-ci';

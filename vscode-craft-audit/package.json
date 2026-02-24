@@ -19,7 +19,8 @@
   ],
   "activationEvents": [
     "workspaceContains:**/*.twig",
-    "workspaceContains:craft-audit.config.json"
+    "workspaceContains:craft-audit.config.json",
+    "onLanguage:twig"
   ],
   "main": "./dist/extension.js",
   "icon": "assets/icon.png",
@@ -40,6 +41,14 @@
       {
         "command": "craftAudit.showOutput",
         "title": "Craft Audit: Show Output"
+      },
+      {
+        "command": "craftAudit.runAudit",
+        "title": "Craft Audit: Run Audit on Workspace"
+      },
+      {
+        "command": "craftAudit.clearCache",
+        "title": "Craft Audit: Clear Analysis Cache"
       }
     ],
     "configuration": {
@@ -76,9 +85,25 @@
             "high": "Error",
             "medium": "Warning",
             "low": "Information",
-            "info": "Information"
+            "info": "Hint"
           },
           "description": "Map craft-audit severities to VS Code diagnostic severities"
+        },
+        "craftAudit.cliPath": {
+          "type": "string",
+          "default": "npx craft-audit",
+          "description": "Path to the craft-audit binary (e.g. 'npx craft-audit' or an absolute path)"
+        },
+        "craftAudit.qualityGate": {
+          "type": "string",
+          "default": "",
+          "description": "Quality gate profile name to use when running audits"
+        },
+        "craftAudit.minimumSeverity": {
+          "type": "string",
+          "default": "info",
+          "enum": ["info", "low", "medium", "high"],
+          "description": "Minimum severity level to display in diagnostics"
         }
       }
     }

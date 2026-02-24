@@ -214,6 +214,46 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'HTTP Header Check Failed',
     description: 'Could not connect to site URL to check security headers.',
   },
+  'security/world-readable-config': {
+    title: 'World-readable sensitive file',
+    description: 'A sensitive configuration file has overly permissive file permissions.',
+  },
+  'security/sensitive-file-in-webroot': {
+    title: 'Sensitive file in web root',
+    description: 'A sensitive file is present in the web-accessible directory.',
+  },
+  'security/world-readable-storage': {
+    title: 'World-readable storage directory',
+    description: 'The storage directory has overly permissive permissions.',
+  },
+  'security/cors-wildcard-origin': {
+    title: 'CORS Wildcard Origin',
+    description: 'Access-Control-Allow-Origin is set to *, allowing any website to make requests.',
+  },
+  'security/cors-credentials-wildcard': {
+    title: 'CORS Credentials with Wildcard',
+    description: 'CORS allows credentials with wildcard origin, indicating a security misconfiguration.',
+  },
+  'template/img-missing-alt': {
+    title: 'Image missing alt attribute',
+    description: 'An <img> tag is missing the alt attribute required for accessibility.',
+    helpUri: 'https://www.w3.org/WAI/tutorials/images/',
+  },
+  'template/input-missing-label': {
+    title: 'Form input missing accessible label',
+    description: 'A form input element is missing an associated label or aria-label.',
+    helpUri: 'https://www.w3.org/WAI/tutorials/forms/labels/',
+  },
+  'template/empty-link': {
+    title: 'Empty link with no text',
+    description: 'A link element has no visible text or aria-label for screen readers.',
+    helpUri: 'https://www.w3.org/WAI/WCAG21/Techniques/html/H30',
+  },
+  'template/missing-lang': {
+    title: 'HTML missing lang attribute',
+    description: 'The <html> element is missing the lang attribute for screen reader language identification.',
+    helpUri: 'https://www.w3.org/WAI/WCAG21/Techniques/html/H57',
+  },
   'visual/backstop-missing': {
     title: 'BackstopJS execution unavailable',
     description: 'BackstopJS could not be executed because Node/npm tooling was missing.',

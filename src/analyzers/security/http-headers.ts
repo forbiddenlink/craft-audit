@@ -166,5 +166,36 @@ export async function checkHttpHeaders(siteUrl: string): Promise<SecurityIssue[]
     }
   }
 
+  // CORS misconfiguration checks
+  const corsOrigin = response.headers.get('access-control-allow-origin');
+  if (corsOrigin === '*') {
+    issues.push({
+      severity: 'medium',
+      category: 'security',
+      type: 'http-header-check',
+      ruleId: 'security/cors-wildcard-origin',
+      message: 'Access-Control-Allow-Origin is set to wildcard (*), allowing any origin.',
+      suggestion: 'Restrict CORS to specific trusted origins instead of using wildcard.',
+      confidence: 0.9,
+      evidence: { url: siteUrl },
+      fingerprint: `security/cors-wildcard-origin:${siteUrl}`,
+    });
+  }
+
+  const corsCredentials = response.headers.get('access-control-allow-credentials');
+  if (corsCredentials?.toLowerCase() === 'true' && corsOrigin === '*') {
+    issues.push({
+      severity: 'high',
+      category: 'security',
+      type: 'http-header-check',
+      ruleId: 'security/cors-credentials-wildcard',
+      message: 'CORS allows credentials with wildcard origin — browsers block this but it indicates misconfiguration.',
+      suggestion: 'Use a specific origin when Access-Control-Allow-Credentials is true.',
+      confidence: 0.95,
+      evidence: { url: siteUrl },
+      fingerprint: `security/cors-credentials-wildcard:${siteUrl}`,
+    });
+  }
+
   return issues;
 }

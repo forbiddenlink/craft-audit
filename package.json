@@ -8,6 +8,7 @@
   },
   "files": [
     "dist/",
+    "data/",
     "php/analyze-templates.php",
     "craft-audit.config.schema.json"
   ],
@@ -16,7 +17,11 @@
     "dev": "ts-node src/cli.ts",
     "start": "node dist/cli.js",
     "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
     "test": "npm run build && node --test tests/*.test.cjs",
+    "test:watch": "npm run build && node --test --watch tests/*.test.cjs",
     "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
@@ -57,7 +62,7 @@
     "typescript": "^5.3.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "overrides": {
     "minimatch": ">=10.2.1"

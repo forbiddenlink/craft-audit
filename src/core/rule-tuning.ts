@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import { AuditIssue, Severity } from '../types';
 
 export interface RuleSetting {
@@ -8,28 +9,9 @@ export interface RuleSetting {
 
 export type RuleSettings = Record<string, RuleSetting>;
 
-function normalizePath(value: string): string {
-  return value.replace(/\\/g, '/').replace(/^\.\/+/, '');
-}
-
-function escapeRegex(value: string): string {
-  return value.replace(/[|\\{}()[\]^$+?.]/g, '\\$&');
-}
-
-function globToRegExp(pattern: string): RegExp {
-  const normalized = normalizePath(pattern);
-  const marker = '__CRAFT_AUDIT_GLOBSTAR__';
-  const escaped = escapeRegex(normalized)
-    .replace(/\*\*/g, marker)
-    .replace(/\*/g, '[^/]*')
-    .replace(new RegExp(marker, 'g'), '.*');
-  return new RegExp(`^${escaped}$`);
-}
-
 function matchesAnyPattern(filePath: string | undefined, patterns: string[] | undefined): boolean {
   if (!filePath || !patterns || patterns.length === 0) return false;
-  const normalizedPath = normalizePath(filePath);
-  return patterns.some((pattern) => globToRegExp(pattern).test(normalizedPath));
+  return patterns.some((pattern) => path.matchesGlob(filePath, pattern));
 }
 
 export function applyRuleSettings(
@@ -83,5 +65,5 @@ export function applyRuleSettings(
 }
 
 export const __testUtils = {
-  globToRegExp,
+  matchesAnyPattern,
 };

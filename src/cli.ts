@@ -19,10 +19,21 @@ import {
   SUPPORTED_RECOMMEND_OUTPUT_FORMATS,
 } from './core/config';
 import { TOOL_VERSION } from './core/version';
+import { logger, isLogLevel } from './core/logger';
 import { AuditCommandOptions } from './types';
 import { executeAuditCommand } from './commands/audit';
 import { executeRecommendConfigCommand, RecommendConfigCommandOptions } from './commands/recommend-config';
 import { executeInitCommand } from './commands/init';
+import { executeUpdateCvesCommand } from './commands/update-cves';
+
+// Graceful shutdown on SIGINT (Ctrl+C) and SIGTERM
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => {
+    process.stdout.write('\n');
+    process.exitCode = signal === 'SIGINT' ? 130 : 143;
+    process.exit();
+  });
+}
 
 interface TemplatesCommandOptions {
   verbose?: boolean;
@@ -97,9 +108,19 @@ function addSharedOptions(cmd: Command): Command {
     .option('--fix', 'Interactive guided fix mode')
     .option('--batch-fix', 'Non-interactive batch fix mode')
     .option('--dry-run', 'Preview fixes without writing changes')
+    .option('--fix-dry-run', 'Preview all fixable issues as diffs without applying')
     .option('--safe-only', 'Only apply safe fixes in batch mode')
     .option('--site-url <url>', 'Site URL for HTTP security header checks (opt-in)')
+    .option('--cache', 'Enable incremental analysis cache')
+    .option('--cache-location <path>', 'Cache file location', '.craft-audit-cache.json')
+    .option('--clear-cache', 'Clear the analysis cache and exit')
+    .option('--watch', 'Watch for file changes and re-run analysis')
+    .option('--rules-dir <path>', 'Load custom rules from directory')
+    .option('--quality-gate <name>', 'Use a named quality gate profile (strict, recommended, security-only, relaxed, ci)')
     .option('--exit-threshold <level>', 'Fail on severity threshold: none|high|medium|low|info', 'high')
+    .option('--generate-csp', 'Generate a recommended Content-Security-Policy header based on template analysis')
+    .option('--craft5-migration', 'Check for Craft 4→5 migration issues')
+    .option('--log-level <level>', 'Set log level (debug, info, warn, error, silent)', 'info')
     .option('-v, --verbose', 'Verbose output');
 }
 
@@ -127,6 +148,8 @@ addSharedOptions(
   )
   .option('--output-file <path>', 'Write final report payload to a file')
   .action(async (projectPath: string, options: AuditCommandOptions, command: Command) => {
+    const logLevel = options.verbose ? 'debug' : (options as Record<string, unknown>).logLevel as string;
+    if (logLevel && isLogLevel(logLevel)) logger.setLevel(logLevel);
     await executeAuditCommand(projectPath, {
       ...options,
       title: 'Craft CMS Audit',
@@ -150,6 +173,8 @@ addSharedOptions(
   )
   .option('--output-file <path>', 'Write final report payload to a file', 'craft-audit.sarif')
   .action(async (projectPath: string, options: AuditCommandOptions & { includeSystem?: boolean }, command: Command) => {
+    const logLevel = options.verbose ? 'debug' : (options as Record<string, unknown>).logLevel as string;
+    if (logLevel && isLogLevel(logLevel)) logger.setLevel(logLevel);
     await executeAuditCommand(projectPath, {
       ...options,
       changedOnly: true,
@@ -171,7 +196,8 @@ program
     
     if (!fs.existsSync(absolutePath)) {
       console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
-      process.exit(1);
+      process.exitCode = 1;
+      return;
     }
 
     console.log(chalk.bold.cyan('\n🔍 Craft CMS Template Audit\n'));
@@ -187,7 +213,8 @@ program
     } catch (error) {
       spinner.fail('Template analysis failed');
       console.error(chalk.red(error instanceof Error ? error.message : String(error)));
-      process.exit(1);
+      process.exitCode = 1;
+      return;
     }
   });
 
@@ -237,8 +264,16 @@ program
       reporter.reportVisualIssues(issues);
     } catch (error) {
       console.error(chalk.red('Visual regression test failed:'), error);
-      process.exit(1);
+      process.exitCode = 1;
+      return;
     }
+  });
+
+program
+  .command('update-cves')
+  .description('Fetch latest Craft CMS CVEs from GitHub Advisories and update the database')
+  .action(async () => {
+    await executeUpdateCvesCommand();
   });
 
 program

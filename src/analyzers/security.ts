@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
+import { checkFilePermissions } from './security/file-permissions';
 import { checkHttpHeaders } from './security/http-headers';
 
 const TEXT_FILE_EXTENSIONS = new Set([
@@ -381,7 +382,7 @@ async function scanDebugPatterns(
   return { issues, truncated, scannedFiles: allFiles.length };
 }
 
-interface CveEntry {
+export interface CveEntry {
   id: string;
   title: string;
   severity: 'high' | 'medium';
@@ -389,145 +390,12 @@ interface CveEntry {
   docsUrl: string;
 }
 
-const KNOWN_CVES: CveEntry[] = [
-  {
-    id: 'CVE-2026-25498',
-    title: 'Authenticated RCE via malicious attached Behavior',
-    severity: 'high',
-    affects: [
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.3' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2026-25498',
-  },
-  {
-    id: 'CVE-2026-25491',
-    title: 'Stored XSS via Entry Type labels',
-    severity: 'medium',
-    affects: [
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.3' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2026-25491',
-  },
-  {
-    id: 'GHSA-v2gc-rm6g-wrw9',
-    title: 'Cloud Metadata SSRF Protection Bypass via IPv6',
-    severity: 'high',
-    affects: [
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.13.8' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.8' },
-    ],
-    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-v2gc-rm6g-wrw9',
-  },
-  {
-    id: 'GHSA-gp2f-7wcm-5fhx',
-    title: 'Cloud Metadata SSRF via DNS Rebinding',
-    severity: 'high',
-    affects: [
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.13.8' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.8' },
-    ],
-    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-gp2f-7wcm-5fhx',
-  },
-  {
-    id: 'GHSA-fxp3-g6gw-4r4v',
-    title: 'GraphQL Asset Mutation Privilege Escalation',
-    severity: 'high',
-    affects: [
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.1' },
-    ],
-    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-fxp3-g6gw-4r4v',
-  },
-  {
-    id: 'GHSA-8jr8-7hr4-vhfx',
-    title: 'SSRF in GraphQL Asset Mutation via HTTP Redirect',
-    severity: 'high',
-    affects: [
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.1' },
-    ],
-    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-8jr8-7hr4-vhfx',
-  },
-  {
-    id: 'GHSA-2453-mppf-46cj',
-    title: 'SQL Injection in Element Indexes',
-    severity: 'high',
-    affects: [
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.1' },
-    ],
-    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-2453-mppf-46cj',
-  },
-  {
-    id: 'CVE-2025-32432',
-    title: 'RCE via image transformation endpoint (CVSS 10.0, actively exploited)',
-    severity: 'high',
-    affects: [
-      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.15' },
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.14.15' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.17' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2025-32432',
-  },
-  {
-    id: 'CVE-2024-58136',
-    title: 'Yii framework vulnerability allows RCE (chained with CVE-2025-32432)',
-    severity: 'high',
-    affects: [
-      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.15' },
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.14.15' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.17' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-58136',
-  },
-  {
-    id: 'CVE-2025-23209',
-    title: 'Code injection via crafted request (CISA KEV listed)',
-    severity: 'high',
-    affects: [
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.13.8' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.8' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2025-23209',
-  },
-  {
-    id: 'CVE-2024-56145',
-    title: 'RCE via Twig SSTI when register_argc_argv is On',
-    severity: 'high',
-    affects: [
-      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.14' },
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.12.8' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.3' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-56145',
-  },
-  {
-    id: 'CVE-2024-52293',
-    title: 'Path traversal in dashboard widget template path',
-    severity: 'high',
-    affects: [
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.4.3' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-52293',
-  },
-  {
-    id: 'CVE-2024-41800',
-    title: 'TOTP token MFA bypass via timing attack',
-    severity: 'medium',
-    affects: [
-      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.9' },
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.12.1' },
-      { minMajor: 5, maxMajor: 5, fixedAt: '5.2.3' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-41800',
-  },
-  {
-    id: 'CVE-2023-41892',
-    title: 'Unauthenticated RCE in Craft CMS 4.x',
-    severity: 'high',
-    affects: [
-      { minMajor: 4, maxMajor: 4, fixedAt: '4.4.15' },
-    ],
-    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2023-41892',
-  },
-];
+const CVE_JSON_PATH = path.resolve(__dirname, '../../data/known-cves.json');
+
+function loadKnownCves(): CveEntry[] {
+  const raw = fs.readFileSync(CVE_JSON_PATH, 'utf-8');
+  return JSON.parse(raw) as CveEntry[];
+}
 
 function parseVersion(versionStr: string): { major: number; minor: number; patch: number } | undefined {
   const match = /(\d+)\.(\d+)\.(\d+)/.exec(versionStr);
@@ -595,7 +463,8 @@ async function scanKnownCves(projectPath: string): Promise<SecurityIssue[]> {
   const version = parseVersion(craftVersion);
   if (!version) return issues;
 
-  for (const cve of KNOWN_CVES) {
+  const knownCves = loadKnownCves();
+  for (const cve of knownCves) {
     if (isVersionAffected(version, cve.affects)) {
       issues.push({
         severity: cve.severity,
@@ -623,11 +492,12 @@ export async function collectSecurityIssues(
   fileLimit = DEFAULT_FILE_LIMIT,
   siteUrl?: string
 ): Promise<SecurityIssue[]> {
-  const [generalIssues, envIssues, debugScan, cveIssues] = await Promise.all([
+  const [generalIssues, envIssues, debugScan, cveIssues, permissionIssues] = await Promise.all([
     scanGeneralConfig(projectPath),
     scanEnvFile(projectPath),
     scanDebugPatterns(projectPath, fileLimit),
     scanKnownCves(projectPath),
+    checkFilePermissions(projectPath),
   ]);
 
   const issues = [
@@ -635,6 +505,7 @@ export async function collectSecurityIssues(
     ...envIssues,
     ...debugScan.issues,
     ...cveIssues,
+    ...permissionIssues,
   ];
 
   // HTTP security headers check (opt-in via --site-url)

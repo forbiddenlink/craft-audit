@@ -28,10 +28,17 @@ async function runComposer(projectPath: string, args: string[]): Promise<Compose
     const { stdout, stderr } = await execFileAsync('composer', args, {
       cwd: projectPath,
       maxBuffer: 20 * 1024 * 1024,
+      timeout: 30_000,
     });
     return { ok: true, stdout, stderr };
   } catch (error) {
-    const err = error as Error & { code?: string | number; stdout?: string; stderr?: string };
+    const err = error as Error & { code?: string | number; stdout?: string; stderr?: string; killed?: boolean; signal?: string };
+    if (err.killed || err.signal === 'SIGTERM') {
+      process.stderr.write(
+        `[system/composer] composer ${args[0]} timed out after 30s – skipping\n`
+      );
+      return { ok: false, stdout: '', stderr: 'timeout', code: 'ETIMEDOUT' };
+    }
     if (err.code === 'ENOENT') {
       return { ok: false, stdout: '', stderr: '', missingCommand: true, code: err.code };
     }

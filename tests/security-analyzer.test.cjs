@@ -360,3 +360,39 @@ test('security analyzer detects all production config issues together', async ()
   assert.ok(ruleIds.has('security/default-cp-trigger'));
 });
 
+// --- File permission checks ---
+
+test('file permissions: detects world-readable .env file', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-perm-wr-'));
+  const envFile = path.join(tempRoot, '.env');
+  fs.writeFileSync(envFile, 'SECRET=abc\n', 'utf8');
+  fs.chmodSync(envFile, 0o644);
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const worldReadable = issues.filter(i => i.ruleId === 'security/world-readable-config');
+  assert.ok(worldReadable.length > 0, 'should detect world-readable .env');
+});
+
+test('file permissions: detects sensitive file in webroot', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-perm-web-'));
+  const webDir = path.join(tempRoot, 'web');
+  fs.mkdirSync(webDir, { recursive: true });
+  fs.writeFileSync(path.join(webDir, '.env'), 'SECRET=abc\n', 'utf8');
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const webroot = issues.find(i => i.ruleId === 'security/sensitive-file-in-webroot');
+  assert.ok(webroot, 'should detect sensitive file in webroot');
+  assert.equal(webroot.severity, 'high');
+});
+
+test('file permissions: no issues for properly secured files', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-perm-ok-'));
+  const envFile = path.join(tempRoot, '.env');
+  fs.writeFileSync(envFile, 'SECRET=abc\n', 'utf8');
+  fs.chmodSync(envFile, 0o600);
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const permIssues = issues.filter(i => i.type === 'permissions');
+  assert.equal(permIssues.length, 0, 'should not flag properly secured files');
+});
+

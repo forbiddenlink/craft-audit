@@ -42,8 +42,8 @@ export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
 
         // Add suppress action for each rule
         for (const ruleId of ruleIds) {
-            const action = this.createSuppressAction(document, range.start.line, ruleId);
-            actions.push(action);
+            actions.push(this.createSuppressAction(document, range.start.line, ruleId));
+            actions.push(this.createSuppressFileAction(document, ruleId));
         }
 
         // Add "suppress all" action
@@ -129,6 +129,26 @@ export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
         const position = new vscode.Position(line, 0);
 
         edit.insert(document.uri, position, suppressComment);
+        action.edit = edit;
+
+        return action;
+    }
+
+    private createSuppressFileAction(
+        document: vscode.TextDocument,
+        ruleId: string
+    ): vscode.CodeAction {
+        const action = new vscode.CodeAction(
+            `Suppress craft-audit rule '${ruleId}' for entire file`,
+            vscode.CodeActionKind.QuickFix
+        );
+
+        const edit = new vscode.WorkspaceEdit();
+
+        // Insert at the very top of the file
+        const suppressComment = `{# craft-audit-disable ${ruleId} #}\n`;
+        edit.insert(document.uri, new vscode.Position(0, 0), suppressComment);
+
         action.edit = edit;
 
         return action;

@@ -1,0 +1,8 @@
+id: custom/no-dump
+meta:
+  description: "Disallow {{ dump() }} in production templates"
+  severity: medium
+  category: template
+  docs: "dump() exposes internal data and should be removed before production"
+pattern: "dump\\("
+message: "Remove dump() calls before deploying to production"

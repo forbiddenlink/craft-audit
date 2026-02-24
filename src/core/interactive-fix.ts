@@ -10,6 +10,16 @@ import chalk from 'chalk';
 import { AuditIssue, Fix } from '../types';
 import { getSuppressionTag } from './suppression';
 
+/** Tracks the active readline interface for cleanup on unexpected exit. */
+let activeReadline: readline.Interface | null = null;
+
+process.on('exit', () => {
+  if (activeReadline) {
+    activeReadline.close();
+    activeReadline = null;
+  }
+});
+
 export interface FixResult {
   fixed: number;
   suppressed: number;
@@ -317,6 +327,7 @@ export async function runInteractiveFix(
     input: process.stdin,
     output: process.stdout,
   });
+  activeReadline = rl;
 
   const actions: FixAction[] = [];
 
@@ -345,6 +356,7 @@ export async function runInteractiveFix(
     }
   } finally {
     rl.close();
+    activeReadline = null;
   }
 
   // Apply actions (process in reverse order to maintain line numbers)

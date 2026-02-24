@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { CraftAuditIssue, CraftAuditFix } from './runner';
-import { mapSeverity, getConfig } from './config';
+import { mapSeverity, getConfig, meetsMinimumSeverity } from './config';
+
+const DOCS_BASE_URL = 'https://craft-audit.dev/rules';
 
 export interface DiagnosticFixData {
     fix: CraftAuditFix;
@@ -20,17 +22,18 @@ export class DiagnosticsManager implements vscode.Disposable {
 
     get totalCount(): number {
         let count = 0;
-        this.diagnosticCollection.forEach((uri, diagnostics) => {
-            count += diagnostics.length;
+        this.diagnosticCollection.forEach(() => {
+            count++;
         });
         return count;
     }
 
     set(uri: vscode.Uri, issues: CraftAuditIssue[]) {
         const config = getConfig();
-        const diagnostics = issues.map(issue => this.issueToDiagnostic(issue, config));
+        const filtered = issues.filter(i => meetsMinimumSeverity(i.severity, config.minimumSeverity));
+        const diagnostics = filtered.map(issue => this.issueToDiagnostic(issue, config));
         this.diagnosticCollection.set(uri, diagnostics);
-        this.issuesByUri.set(uri.toString(), issues);
+        this.issuesByUri.set(uri.toString(), filtered);
     }
 
     setAll(issuesByFile: Map<string, CraftAuditIssue[]>) {
@@ -39,9 +42,10 @@ export class DiagnosticsManager implements vscode.Disposable {
 
         for (const [filePath, issues] of issuesByFile) {
             const uri = vscode.Uri.file(filePath);
-            const diagnostics = issues.map(issue => this.issueToDiagnostic(issue, config));
+            const filtered = issues.filter(i => meetsMinimumSeverity(i.severity, config.minimumSeverity));
+            const diagnostics = filtered.map(issue => this.issueToDiagnostic(issue, config));
             this.diagnosticCollection.set(uri, diagnostics);
-            this.issuesByUri.set(uri.toString(), issues);
+            this.issuesByUri.set(uri.toString(), filtered);
         }
     }
 
@@ -68,10 +72,40 @@ export class DiagnosticsManager implements vscode.Disposable {
 
         const diagnostic = new vscode.Diagnostic(range, issue.message, severity);
         diagnostic.source = 'craft-audit';
-        diagnostic.code = issue.rule;
+        diagnostic.code = {
+            value: issue.rule,
+            target: vscode.Uri.parse(`${DOCS_BASE_URL}/${issue.rule}`),
+        };
+
+        // Tag deprecated-* rules with DiagnosticTag.Deprecated
+        if (issue.rule.startsWith('deprecated-') || issue.rule.startsWith('deprecated/')) {
+            diagnostic.tags = [vscode.DiagnosticTag.Deprecated];
+        }
 
         if (issue.suggestion) {
             diagnostic.message += `\n\nSuggestion: ${issue.suggestion}`;
+        }
+
+        // Add related information linking to docs
+        const docsUri = vscode.Uri.parse(`${DOCS_BASE_URL}/${issue.rule}`);
+        diagnostic.relatedInformation = [
+            new vscode.DiagnosticRelatedInformation(
+                new vscode.Location(docsUri, new vscode.Position(0, 0)),
+                `Documentation for rule '${issue.rule}'`
+            ),
+        ];
+
+        // Add source context as related info if we have it
+        if (issue.sourceContext) {
+            diagnostic.relatedInformation.push(
+                new vscode.DiagnosticRelatedInformation(
+                    new vscode.Location(
+                        vscode.Uri.file(issue.file),
+                        new vscode.Range(line, 0, line, 200)
+                    ),
+                    issue.sourceContext
+                )
+            );
         }
 
         // Store fix data for code actions
