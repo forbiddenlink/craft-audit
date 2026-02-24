@@ -178,6 +178,42 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'The site URL is configured with HTTP instead of HTTPS, risking data interception.',
     helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#aliases',
   },
+  'security/missing-hsts': {
+    title: 'Missing HSTS Header',
+    description: 'Strict-Transport-Security header is missing or has a weak max-age value.',
+  },
+  'security/missing-x-content-type-options': {
+    title: 'Missing X-Content-Type-Options',
+    description: 'X-Content-Type-Options header is missing or not set to nosniff.',
+  },
+  'security/missing-x-frame-options': {
+    title: 'Missing X-Frame-Options',
+    description: 'X-Frame-Options header is missing, site may be vulnerable to clickjacking.',
+  },
+  'security/missing-csp': {
+    title: 'Missing Content-Security-Policy',
+    description: 'Content-Security-Policy header is missing, reducing defense against XSS.',
+  },
+  'security/missing-referrer-policy': {
+    title: 'Missing Referrer-Policy',
+    description: 'Referrer-Policy header is missing, referrer information may leak.',
+  },
+  'security/missing-permissions-policy': {
+    title: 'Missing Permissions-Policy',
+    description: 'Permissions-Policy header is missing, browser features are not restricted.',
+  },
+  'security/server-header-exposed': {
+    title: 'Server Header Exposed',
+    description: 'Server header reveals web server software and version.',
+  },
+  'security/x-powered-by-exposed': {
+    title: 'X-Powered-By Exposed',
+    description: 'X-Powered-By header reveals technology stack information.',
+  },
+  'security/http-header-check-failed': {
+    title: 'HTTP Header Check Failed',
+    description: 'Could not connect to site URL to check security headers.',
+  },
   'visual/backstop-missing': {
     title: 'BackstopJS execution unavailable',
     description: 'BackstopJS could not be executed because Node/npm tooling was missing.',

@@ -57,7 +57,7 @@ export interface SystemIssue extends AuditIssue {
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'insecure-production-config' | 'insecure-url';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
 }
 
 export interface VisualIssue extends AuditIssue {
@@ -99,6 +99,7 @@ export interface AuditConfig {
   stagingUrl?: string;
   verbose?: boolean;
   quiet?: boolean;
+  siteUrl?: string;
 }
 
 export interface AuditResult {
@@ -171,6 +172,7 @@ export interface AuditCommandOptions {
   batchFix?: boolean;
   dryRun?: boolean;
   safeOnly?: boolean;
+  siteUrl?: string;
   preset?: string;
   ruleSettings?: import('./core/rule-tuning').RuleSettings;
   title?: string;

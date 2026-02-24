@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
+import { checkHttpHeaders } from './security/http-headers';
 
 const TEXT_FILE_EXTENSIONS = new Set([
   '.php',
@@ -619,7 +620,8 @@ async function scanKnownCves(projectPath: string): Promise<SecurityIssue[]> {
 export async function collectSecurityIssues(
   projectPath: string,
   verbose = false,
-  fileLimit = DEFAULT_FILE_LIMIT
+  fileLimit = DEFAULT_FILE_LIMIT,
+  siteUrl?: string
 ): Promise<SecurityIssue[]> {
   const [generalIssues, envIssues, debugScan, cveIssues] = await Promise.all([
     scanGeneralConfig(projectPath),
@@ -634,6 +636,12 @@ export async function collectSecurityIssues(
     ...debugScan.issues,
     ...cveIssues,
   ];
+
+  // HTTP security headers check (opt-in via --site-url)
+  if (siteUrl) {
+    const headerIssues = await checkHttpHeaders(siteUrl);
+    issues.push(...headerIssues);
+  }
 
   if (debugScan.truncated) {
     issues.push({

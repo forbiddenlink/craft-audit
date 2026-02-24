@@ -147,6 +147,7 @@ function mergeEffectiveOptions(
     'publishBitbucket', 'bitbucketWorkspace', 'bitbucketRepoSlug', 'bitbucketCommit',
     'bitbucketTokenEnv', 'bitbucketSendOn', 'bitbucketReportId', 'bitbucketReportLink',
     'fix', 'batchFix', 'dryRun', 'safeOnly',
+    'siteUrl',
     'preset',
   ] as const;
 
@@ -190,6 +191,7 @@ function buildAuditConfig(
     stagingUrl: effectiveOptions.staging,
     verbose: effectiveOptions.verbose,
     quiet: machineOutput,
+    siteUrl: effectiveOptions.siteUrl,
   };
 }
 
@@ -419,7 +421,7 @@ async function runAudit(config: AuditConfig): Promise<AuditResult> {
         ruleId: 'runtime/security-analyzer-failed',
         category: 'security',
         failureMessage: 'Security analyzer failed; security findings may be incomplete.',
-        run: () => collectSecurityIssues(config.projectPath, config.verbose, config.securityFileLimit),
+        run: () => collectSecurityIssues(config.projectPath, config.verbose, config.securityFileLimit, config.siteUrl),
       },
       config
     ));

@@ -98,6 +98,7 @@ function addSharedOptions(cmd: Command): Command {
     .option('--batch-fix', 'Non-interactive batch fix mode')
     .option('--dry-run', 'Preview fixes without writing changes')
     .option('--safe-only', 'Only apply safe fixes in batch mode')
+    .option('--site-url <url>', 'Site URL for HTTP security header checks (opt-in)')
     .option('--exit-threshold <level>', 'Fail on severity threshold: none|high|medium|low|info', 'high')
     .option('-v, --verbose', 'Verbose output');
 }
