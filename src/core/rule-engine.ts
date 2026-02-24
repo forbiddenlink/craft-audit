@@ -142,9 +142,18 @@ function parseSimpleYaml(text: string): Record<string, unknown> {
 
 function unquote(s: string): string {
   const trimmed = s.trim();
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-      (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    // Handle common YAML double-quote escape sequences
+    return trimmed.slice(1, -1)
+      .replace(/\\\\/g, '\0BACKSLASH\0')
+      .replace(/\\"/g, '"')
+      .replace(/\\n/g, '\n')
+      .replace(/\\t/g, '\t')
+      .replace(/\0BACKSLASH\0/g, '\\');
+  }
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    // YAML single-quoted strings have no escape processing (except '' → ')
+    return trimmed.slice(1, -1).replace(/''/g, "'");
   }
   return trimmed;
 }

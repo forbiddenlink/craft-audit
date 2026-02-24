@@ -684,7 +684,7 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
   if (effectiveOptions.rulesDir) {
     const rulesDir = path.isAbsolute(effectiveOptions.rulesDir)
       ? effectiveOptions.rulesDir
-      : path.resolve(absolutePath, effectiveOptions.rulesDir);
+      : path.resolve(effectiveOptions.rulesDir);
     const registry = new RuleRegistry();
     await registry.loadFromDirectory(rulesDir);
     if (registry.size > 0) {

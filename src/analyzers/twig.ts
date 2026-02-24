@@ -227,17 +227,19 @@ export async function analyzeTwigTemplates(
     // Store results per file in the cache
     if (cache) {
       const templateFiles = findTemplateFiles(templatesPath);
-      const issuesByFile = new Map<string, TemplateIssue[]>();
+      // Issues use relative paths from PHP; resolve them to absolute for cache key matching
+      const issuesByAbsPath = new Map<string, TemplateIssue[]>();
       for (const issue of issues) {
         if (issue.file) {
-          const existing = issuesByFile.get(issue.file) ?? [];
+          const absPath = path.resolve(templatesPath, issue.file);
+          const existing = issuesByAbsPath.get(absPath) ?? [];
           existing.push(issue);
-          issuesByFile.set(issue.file, existing);
+          issuesByAbsPath.set(absPath, existing);
         }
       }
       for (const filePath of templateFiles) {
         const content = fs.readFileSync(filePath, 'utf8');
-        cache.set(filePath, content, issuesByFile.get(filePath) ?? []);
+        cache.set(filePath, content, issuesByAbsPath.get(filePath) ?? []);
       }
     }
 
