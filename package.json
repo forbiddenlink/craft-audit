@@ -1,7 +1,7 @@
 {
   "name": "craft-audit",
   "version": "1.0.0",
-  "description": "Comprehensive audit tool for Craft CMS projects - template performance, updates, deprecations, and visual regression",
+  "description": "Comprehensive audit tool for Craft CMS projects — template analysis, security scanning, HTTP headers, CVE detection, system checks, and visual regression",
   "main": "dist/cli.js",
   "bin": {
     "craft-audit": "./dist/cli.js"
@@ -22,11 +22,16 @@
   "keywords": [
     "craft-cms",
     "audit",
+    "security",
     "twig",
     "performance",
     "visual-regression",
     "n+1",
-    "eager-loading"
+    "eager-loading",
+    "sarif",
+    "cve",
+    "http-headers",
+    "cli"
   ],
   "author": "forbiddenlink",
   "license": "MIT",

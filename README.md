@@ -5,12 +5,14 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 ## Features
 
 - **Template Analysis** — N+1 queries, missing eager loading, deprecated APIs, unbounded queries, mixed loading strategies, XSS risks, SSTI patterns, missing CSRF tokens
-- **Security Scanning** — devMode in production, hardcoded security keys, disabled CSRF, dangerous file extensions, debug output, known CVEs (CVE-2023/2024)
-- **System Checks** — Craft CMS version, PHP version, composer validate/audit/outdated, plugin inventory
+- **Security Scanning** — 14 known CVEs (2023–2026), production config hardening (5 checks), HTTPS enforcement, hardcoded security keys, disabled CSRF, devMode in production, dangerous file extensions, debug output patterns
+- **HTTP Security Headers** — Opt-in `--site-url` check for HSTS, X-Content-Type-Options, X-Frame-Options, CSP, Referrer-Policy, Permissions-Policy, plus Server/X-Powered-By leak detection
+- **System Checks** — Craft CMS version, PHP version, composer validate/audit/outdated with per-advisory severity, plugin inventory
 - **Visual Regression** — BackstopJS-powered screenshot comparison across desktop, tablet, and mobile viewports
 - **Interactive Fix** — Guided remediation with safe auto-fixes and suppression comments
 - **5 Output Formats** — Console, JSON, SARIF, HTML, Bitbucket Code Insights
 - **4 Integrations** — Slack, ClickUp, Linear, Bitbucket
+- **3 Presets** — strict, balanced, legacy-migration
 - **VS Code Extension** — Real-time diagnostics, quick fixes, workspace scanning
 
 ## Requirements
@@ -39,6 +41,9 @@ npm run build
 ```bash
 # Full audit
 craft-audit audit /path/to/craft-project
+
+# Full audit with HTTP security header checks
+craft-audit audit /path/to/craft-project --site-url https://example.com
 
 # CI mode (changed files only, SARIF output)
 craft-audit audit-ci /path/to/craft-project
@@ -149,7 +154,21 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/csrf-disabled` | CSRF protection disabled |
 | `security/dangerous-file-extensions` | Executable file types in allowed extensions |
 | `security/debug-output-pattern` | dump/dd/var_dump in code files |
-| `security/known-cve` | Craft version affected by known CVE |
+| `security/known-cve` | Craft version affected by known CVE (14 CVEs tracked) |
+| `security/allow-updates-enabled` | allowUpdates enabled in production |
+| `security/template-caching-disabled` | Template caching disabled in production |
+| `security/test-email-configured` | testToEmailAddress intercepting emails |
+| `security/powered-by-header` | sendPoweredByHeader leaking Craft CMS |
+| `security/default-cp-trigger` | Default control panel URL "admin" |
+| `security/insecure-site-url` | Site URL using HTTP instead of HTTPS |
+| `security/missing-hsts` | Missing or weak HSTS header |
+| `security/missing-x-content-type-options` | Missing X-Content-Type-Options header |
+| `security/missing-x-frame-options` | Missing X-Frame-Options (clickjacking risk) |
+| `security/missing-csp` | Missing Content-Security-Policy header |
+| `security/missing-referrer-policy` | Missing Referrer-Policy header |
+| `security/missing-permissions-policy` | Missing Permissions-Policy header |
+| `security/server-header-exposed` | Server header leaking software version |
+| `security/x-powered-by-exposed` | X-Powered-By header leaking tech stack |
 
 ### System Rules
 
@@ -163,6 +182,7 @@ See [docs/presets.md](docs/presets.md) for details.
 | `system/composer-validate-errors` | Composer schema errors |
 | `system/composer-validate-warnings` | Composer warnings |
 | `system/composer-audit-advisories` | Dependency security advisories |
+| `system/composer-audit-advisory` | Individual advisory with severity (high/medium/low) |
 | `system/composer-audit-abandoned` | Abandoned packages |
 | `system/composer-outdated-direct` | Outdated direct dependencies |
 
@@ -192,9 +212,9 @@ craft-audit audit . --no-baseline
 ## Interactive Fix
 
 ```bash
-craft-audit audit . --fix           # Interactive mode
-craft-audit audit . --fix-all       # Auto-fix all safe fixes
-craft-audit audit . --fix-all --dry-run  # Preview without changes
+craft-audit audit . --fix                        # Interactive guided fix
+craft-audit audit . --batch-fix --safe-only      # Auto-fix all safe fixes
+craft-audit audit . --batch-fix --dry-run        # Preview fixes without changes
 ```
 
 ## Integrations
