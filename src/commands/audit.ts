@@ -36,6 +36,7 @@ import { normalizeExitThreshold, shouldFailForThreshold } from '../core/exit-thr
 import { isPresetName, mergePresetAndCustomRuleSettings, PresetName } from '../core/presets';
 import { applyRuleSettings, RuleSettings } from '../core/rule-tuning';
 import { runIntegrations, validateSendOnMode } from './integrations';
+import { runInteractiveFix, runBatchFix } from '../core/interactive-fix';
 
 export { AuditCommandOptions } from '../types';
 
@@ -145,6 +146,7 @@ function mergeEffectiveOptions(
     'linearLabelIds', 'linearProjectId', 'linearFindingsUrl',
     'publishBitbucket', 'bitbucketWorkspace', 'bitbucketRepoSlug', 'bitbucketCommit',
     'bitbucketTokenEnv', 'bitbucketSendOn', 'bitbucketReportId', 'bitbucketReportLink',
+    'fix', 'batchFix', 'dryRun', 'safeOnly',
     'preset',
   ] as const;
 
@@ -525,6 +527,27 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
 
   const { filteredResult, suppressedCount } = applyBaselineFiltering(enrichedResult, effectiveOptions, absolutePath);
   renderAndWriteOutput(filteredResult, outputFormat, effectiveOptions, suppressedCount);
+
+  // Interactive/batch fix mode
+  if (effectiveOptions.fix || effectiveOptions.batchFix) {
+    const templateIssues = filteredResult.issues.filter(
+      (i) => i.file && i.line !== undefined
+    );
+    const templatesPath = config.templatesPath || path.join(absolutePath, 'templates');
+
+    if (effectiveOptions.batchFix) {
+      await runBatchFix(templateIssues, templatesPath, {
+        safeOnly: Boolean(effectiveOptions.safeOnly),
+        dryRun: Boolean(effectiveOptions.dryRun),
+        verbose: Boolean(effectiveOptions.verbose),
+      });
+    } else {
+      await runInteractiveFix(templateIssues, templatesPath, {
+        verbose: Boolean(effectiveOptions.verbose),
+      });
+    }
+  }
+
   await runIntegrations(filteredResult, effectiveOptions, absolutePath);
 
   const threshold = normalizeExitThreshold(effectiveOptions.exitThreshold);

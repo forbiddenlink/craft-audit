@@ -166,6 +166,10 @@ export interface AuditCommandOptions {
   bitbucketSendOn?: string;
   bitbucketReportId?: string;
   bitbucketReportLink?: string;
+  fix?: boolean;
+  batchFix?: boolean;
+  dryRun?: boolean;
+  safeOnly?: boolean;
   preset?: string;
   ruleSettings?: import('./core/rule-tuning').RuleSettings;
   title?: string;

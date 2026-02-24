@@ -94,6 +94,10 @@ function addSharedOptions(cmd: Command): Command {
     .option('--bitbucket-send-on <mode>', 'Bitbucket publish mode: always|issues|high')
     .option('--bitbucket-report-id <id>', 'Report ID for Bitbucket Code Insights payloads', 'craft-audit')
     .option('--bitbucket-report-link <url>', 'Link included in Bitbucket Code Insights report payload')
+    .option('--fix', 'Interactive guided fix mode')
+    .option('--batch-fix', 'Non-interactive batch fix mode')
+    .option('--dry-run', 'Preview fixes without writing changes')
+    .option('--safe-only', 'Only apply safe fixes in batch mode')
     .option('--exit-threshold <level>', 'Fail on severity threshold: none|high|medium|low|info', 'high')
     .option('-v, --verbose', 'Verbose output');
 }
