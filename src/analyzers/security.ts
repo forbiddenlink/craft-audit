@@ -17,27 +17,11 @@ const DEFAULT_FILE_LIMIT = 2000;
 const MAX_QUEUE_SIZE = 10000;
 const SKIP_DIR_NAMES = new Set(['vendor', 'node_modules', '.git', '.svn', '.hg']);
 
-function safeRead(filePath: string): string | undefined {
+async function safeRead(filePath: string): Promise<string | undefined> {
   try {
-    return fs.readFileSync(filePath, 'utf8');
+    return await fs.promises.readFile(filePath, 'utf8');
   } catch {
     return undefined;
-  }
-}
-
-function safeRealpath(filePath: string): string | undefined {
-  try {
-    return fs.realpathSync(filePath);
-  } catch {
-    return undefined;
-  }
-}
-
-function safeReadDir(dirPath: string): fs.Dirent[] {
-  try {
-    return fs.readdirSync(dirPath, { withFileTypes: true });
-  } catch {
-    return [];
   }
 }
 
@@ -49,75 +33,61 @@ function matchesExtension(filePath: string, extensions: Set<string>): boolean {
   return extensions.has(path.extname(filePath).toLowerCase());
 }
 
-function enqueueDirectory(
-  fullPath: string,
-  name: string,
-  queue: string[],
-  visitedDirs: Set<string>,
-  queueOverflow: boolean
-): boolean {
-  if (shouldSkipDir(name)) return queueOverflow;
-
-  const realPath = safeRealpath(fullPath);
-  if (!realPath || visitedDirs.has(realPath)) return queueOverflow;
-
-  visitedDirs.add(realPath);
-
-  if (queue.length >= MAX_QUEUE_SIZE) return true;
-
-  queue.push(fullPath);
-  return queueOverflow;
-}
-
-function processEntries(
-  entries: fs.Dirent[],
-  current: string,
-  files: string[],
-  maxFiles: number,
-  queue: string[],
-  visitedDirs: Set<string>,
-  queueOverflow: boolean
-): { truncated: boolean; queueOverflow: boolean } {
-  let truncated = false;
-
-  for (const entry of entries) {
-    if (files.length >= maxFiles) {
-      truncated = true;
-      break;
-    }
-
-    if (entry.isSymbolicLink()) continue;
-
-    const fullPath = path.join(current, entry.name);
-
-    if (entry.isDirectory()) {
-      queueOverflow = enqueueDirectory(fullPath, entry.name, queue, visitedDirs, queueOverflow);
-    } else if (entry.isFile()) {
-      files.push(fullPath);
-    }
-  }
-
-  return { truncated, queueOverflow };
-}
-
-function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): { files: string[]; truncated: boolean } {
+async function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): Promise<{ files: string[]; truncated: boolean }> {
   const files: string[] = [];
   const queue = [rootDir];
   const visitedDirs = new Set<string>();
   let truncated = false;
   let queueOverflow = false;
 
-  const rootReal = safeRealpath(rootDir);
-  if (rootReal) visitedDirs.add(rootReal);
+  try {
+    const rootReal = await fs.promises.realpath(rootDir);
+    visitedDirs.add(rootReal);
+  } catch {
+    // ignore unresolvable root
+  }
 
   while (queue.length > 0 && files.length < maxFiles) {
     const current = queue.shift();
     if (!current) continue;
 
-    const entries = safeReadDir(current);
-    const result = processEntries(entries, current, files, maxFiles, queue, visitedDirs, queueOverflow);
-    if (result.truncated) truncated = true;
-    queueOverflow = result.queueOverflow;
+    let entries: fs.Dirent[];
+    try {
+      entries = await fs.promises.readdir(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (files.length >= maxFiles) {
+        truncated = true;
+        break;
+      }
+
+      if (entry.isSymbolicLink()) continue;
+
+      const fullPath = path.join(current, entry.name);
+
+      if (entry.isDirectory()) {
+        if (!shouldSkipDir(entry.name)) {
+          try {
+            const realPath = await fs.promises.realpath(fullPath);
+            if (!visitedDirs.has(realPath)) {
+              visitedDirs.add(realPath);
+              if (queue.length >= MAX_QUEUE_SIZE) {
+                queueOverflow = true;
+              } else {
+                queue.push(fullPath);
+              }
+            }
+          } catch {
+            // skip unresolvable directories
+          }
+        }
+      } else if (entry.isFile()) {
+        files.push(fullPath);
+      }
+    }
   }
 
   if (!truncated && (queue.length > 0 || queueOverflow) && files.length >= maxFiles) {
@@ -131,10 +101,10 @@ function toRelative(projectPath: string, filePath: string): string {
   return path.relative(projectPath, filePath) || filePath;
 }
 
-function scanGeneralConfig(projectPath: string): SecurityIssue[] {
+async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
   const generalConfigPath = path.join(projectPath, 'config', 'general.php');
-  const content = safeRead(generalConfigPath);
+  const content = await safeRead(generalConfigPath);
   if (!content) return issues;
 
   if (/['"]devMode['"]\s*=>\s*true/i.test(content)) {
@@ -225,10 +195,10 @@ function scanGeneralConfig(projectPath: string): SecurityIssue[] {
   return issues;
 }
 
-function scanEnvFile(projectPath: string): SecurityIssue[] {
+async function scanEnvFile(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
   const envPath = path.join(projectPath, '.env');
-  const content = safeRead(envPath);
+  const content = await safeRead(envPath);
   if (!content) return issues;
 
   const isProduction = /^\s*CRAFT_ENVIRONMENT\s*=\s*production\s*$/im.test(content);
@@ -252,42 +222,54 @@ function scanEnvFile(projectPath: string): SecurityIssue[] {
   return issues;
 }
 
-function scanDebugPatterns(
+async function scanDebugPatterns(
   projectPath: string,
   fileLimit: number
-): { issues: SecurityIssue[]; truncated: boolean; scannedFiles: number } {
+): Promise<{ issues: SecurityIssue[]; truncated: boolean; scannedFiles: number }> {
   const issues: SecurityIssue[] = [];
-  const { files: allFiles, truncated } = walkFiles(projectPath, fileLimit);
+  const { files: allFiles, truncated } = await walkFiles(projectPath, fileLimit);
 
-  for (const filePath of allFiles) {
-    if (!matchesExtension(filePath, TEXT_FILE_EXTENSIONS)) continue;
-
+  const textFiles = allFiles.filter(filePath => {
+    if (!matchesExtension(filePath, TEXT_FILE_EXTENSIONS)) return false;
     const relativePath = toRelative(projectPath, filePath);
-    if (relativePath.startsWith('vendor/') || relativePath.startsWith('node_modules/')) continue;
+    return !relativePath.startsWith('vendor/') && !relativePath.startsWith('node_modules/');
+  });
 
-    const content = safeRead(filePath);
-    if (!content) continue;
+  const BATCH_SIZE = 50;
+  for (let b = 0; b < textFiles.length; b += BATCH_SIZE) {
+    const batch = textFiles.slice(b, b + BATCH_SIZE);
+    const results = await Promise.all(
+      batch.map(async (filePath) => {
+        const content = await safeRead(filePath);
+        return { filePath, content };
+      })
+    );
 
-    const lines = content.split('\n');
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      if (!/\b(dump|dd|var_dump)\s*\(/.test(line)) continue;
+    for (const { filePath, content } of results) {
+      if (!content) continue;
+      const relativePath = toRelative(projectPath, filePath);
 
-      issues.push({
-        severity: 'low',
-        category: 'security',
-        type: 'env-exposure',
-        ruleId: 'security/debug-output-pattern',
-        file: relativePath,
-        line: i + 1,
-        message: 'Debug output helper found in template/code path.',
-        suggestion: 'Remove debug dump calls before production deployment.',
-        code: line.trim(),
-        confidence: 0.75,
-        docsUrl: 'https://craftcms.com/docs/5.x/development/debugging',
-        evidence: { snippet: line.trim() },
-        fingerprint: `security/debug-output-pattern:${relativePath}:${i + 1}`,
-      });
+      const lines = content.split('\n');
+      for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        if (!/\b(dump|dd|var_dump)\s*\(/.test(line)) continue;
+
+        issues.push({
+          severity: 'low',
+          category: 'security',
+          type: 'env-exposure',
+          ruleId: 'security/debug-output-pattern',
+          file: relativePath,
+          line: i + 1,
+          message: 'Debug output helper found in template/code path.',
+          suggestion: 'Remove debug dump calls before production deployment.',
+          code: line.trim(),
+          confidence: 0.75,
+          docsUrl: 'https://craftcms.com/docs/5.x/development/debugging',
+          evidence: { snippet: line.trim() },
+          fingerprint: `security/debug-output-pattern:${relativePath}:${i + 1}`,
+        });
+      }
     }
   }
 
@@ -374,9 +356,9 @@ function isVersionAffected(
   return false;
 }
 
-function readCraftVersion(projectPath: string): string | undefined {
+async function readCraftVersion(projectPath: string): Promise<string | undefined> {
   // Try composer.lock first
-  const lockContent = safeRead(path.join(projectPath, 'composer.lock'));
+  const lockContent = await safeRead(path.join(projectPath, 'composer.lock'));
   if (lockContent) {
     try {
       const lock = JSON.parse(lockContent);
@@ -390,7 +372,7 @@ function readCraftVersion(projectPath: string): string | undefined {
   }
 
   // Fall back to composer.json
-  const jsonContent = safeRead(path.join(projectPath, 'composer.json'));
+  const jsonContent = await safeRead(path.join(projectPath, 'composer.json'));
   if (jsonContent) {
     try {
       const composerJson = JSON.parse(jsonContent);
@@ -403,9 +385,9 @@ function readCraftVersion(projectPath: string): string | undefined {
   return undefined;
 }
 
-function scanKnownCves(projectPath: string): SecurityIssue[] {
+async function scanKnownCves(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
-  const craftVersion = readCraftVersion(projectPath);
+  const craftVersion = await readCraftVersion(projectPath);
   if (!craftVersion) return issues;
 
   const version = parseVersion(craftVersion);
@@ -438,12 +420,18 @@ export async function collectSecurityIssues(
   verbose = false,
   fileLimit = DEFAULT_FILE_LIMIT
 ): Promise<SecurityIssue[]> {
-  const debugScan = scanDebugPatterns(projectPath, fileLimit);
+  const [generalIssues, envIssues, debugScan, cveIssues] = await Promise.all([
+    scanGeneralConfig(projectPath),
+    scanEnvFile(projectPath),
+    scanDebugPatterns(projectPath, fileLimit),
+    scanKnownCves(projectPath),
+  ]);
+
   const issues = [
-    ...scanGeneralConfig(projectPath),
-    ...scanEnvFile(projectPath),
+    ...generalIssues,
+    ...envIssues,
     ...debugScan.issues,
-    ...scanKnownCves(projectPath),
+    ...cveIssues,
   ];
 
   if (debugScan.truncated) {

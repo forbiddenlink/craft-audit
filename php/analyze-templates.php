@@ -125,7 +125,7 @@ $DEPRECATED_PATTERNS = [
     [
         'pattern' => '/\|date_modify\b/',
         'message' => '|date_modify filter is deprecated',
-        'suggestion' => 'Use |date_modify or native Twig date functions',
+        'suggestion' => 'Use |date("modify format") or native Twig date functions',
         'fix' => null, // No safe auto-fix available
     ],
     [

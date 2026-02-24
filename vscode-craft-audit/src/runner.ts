@@ -43,7 +43,10 @@ export class CraftAuditRunner {
     constructor(private outputChannel: vscode.OutputChannel) {}
 
     async analyzeFile(filePath: string, config: CraftAuditConfig): Promise<CraftAuditIssue[]> {
-        const args = ['templates', '--files', filePath, '--output', 'json'];
+        // The templates command takes a directory path, not individual files.
+        // Pass the file's directory and filter results to the target file.
+        const templateDir = path.dirname(filePath);
+        const args = ['templates', templateDir, '--output', 'json'];
 
         if (config.configPath) {
             const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -53,11 +56,19 @@ export class CraftAuditRunner {
         }
 
         const output = await this.runCommand(config.executablePath, args);
-        return this.parseOutput(output);
+        const allIssues = this.parseOutput(output);
+        // Filter to only issues for the target file
+        const normalizedTarget = path.resolve(filePath);
+        return allIssues.filter(issue => path.resolve(issue.file) === normalizedTarget);
     }
 
     async analyzeWorkspace(config: CraftAuditConfig): Promise<Map<string, CraftAuditIssue[]>> {
-        const args = ['audit', '--output', 'json'];
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+            return new Map();
+        }
+
+        const args = ['audit', workspaceFolder.uri.fsPath, '--output', 'json'];
 
         if (config.configPath) {
             const workspaceFolder = vscode.workspace.workspaceFolders?.[0];

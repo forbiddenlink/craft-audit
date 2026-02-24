@@ -6,12 +6,18 @@
   "bin": {
     "craft-audit": "./dist/cli.js"
   },
+  "files": [
+    "dist/",
+    "php/analyze-templates.php",
+    "craft-audit.config.schema.json"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/cli.ts",
     "start": "node dist/cli.js",
     "lint": "eslint src/**/*.ts",
-    "test": "npm run build && node --test tests/*.test.cjs"
+    "test": "npm run build && node --test tests/*.test.cjs",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "craft-cms",
@@ -22,14 +28,24 @@
     "n+1",
     "eager-loading"
   ],
-  "author": "",
+  "author": "forbiddenlink",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forbiddenlink/craft-audit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/forbiddenlink/craft-audit/issues"
+  },
+  "homepage": "https://github.com/forbiddenlink/craft-audit#readme",
   "dependencies": {
-    "backstopjs": "^6.3.2",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "glob": "^10.3.10",
     "ora": "^5.4.1"
+  },
+  "optionalDependencies": {
+    "backstopjs": "^6.3.2"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
