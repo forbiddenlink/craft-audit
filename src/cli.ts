@@ -19,8 +19,19 @@ import {
   SUPPORTED_RECOMMEND_OUTPUT_FORMATS,
 } from './core/config';
 import { TOOL_VERSION } from './core/version';
+import { AuditCommandOptions } from './types';
 import { executeAuditCommand } from './commands/audit';
 import { executeRecommendConfigCommand, RecommendConfigCommandOptions } from './commands/recommend-config';
+import { executeInitCommand } from './commands/init';
+
+interface TemplatesCommandOptions {
+  verbose?: boolean;
+}
+
+interface VisualCommandOptions {
+  pages: string;
+  output: string;
+}
 
 const program = new Command();
 
@@ -110,7 +121,7 @@ addSharedOptions(
     'console'
   )
   .option('--output-file <path>', 'Write final report payload to a file')
-  .action(async (projectPath: string, options: any, command: Command) => {
+  .action(async (projectPath: string, options: AuditCommandOptions, command: Command) => {
     await executeAuditCommand(projectPath, {
       ...options,
       title: 'Craft CMS Audit',
@@ -133,7 +144,7 @@ addSharedOptions(
     'sarif'
   )
   .option('--output-file <path>', 'Write final report payload to a file', 'craft-audit.sarif')
-  .action(async (projectPath: string, options: any, command: Command) => {
+  .action(async (projectPath: string, options: AuditCommandOptions & { includeSystem?: boolean }, command: Command) => {
     await executeAuditCommand(projectPath, {
       ...options,
       changedOnly: true,
@@ -150,7 +161,7 @@ program
   .description('Analyze Twig templates only')
   .argument('<path>', 'Path to templates directory')
   .option('-v, --verbose', 'Verbose output')
-  .action(async (templatesPath: string, options: any) => {
+  .action(async (templatesPath: string, options: TemplatesCommandOptions) => {
     const absolutePath = path.resolve(templatesPath);
     
     if (!fs.existsSync(absolutePath)) {
@@ -193,13 +204,21 @@ program
   });
 
 program
+  .command('init')
+  .description('Create a starter craft-audit.config.json in the project')
+  .argument('<path>', 'Path to the Craft CMS project root')
+  .action(async (projectPath: string) => {
+    await executeInitCommand(projectPath);
+  });
+
+program
   .command('visual')
   .description('Run visual regression tests')
   .argument('<production-url>', 'Production URL')
   .argument('<staging-url>', 'Staging URL to compare')
   .option('-p, --pages <paths>', 'Comma-separated list of page paths to test', '/')
   .option('-o, --output <dir>', 'Output directory for screenshots', './backstop_data')
-  .action(async (productionUrl: string, stagingUrl: string, options: any) => {
+  .action(async (productionUrl: string, stagingUrl: string, options: VisualCommandOptions) => {
     console.log(chalk.bold.cyan('\n📸 Visual Regression Test\n'));
     console.log(chalk.gray(`Production: ${productionUrl}`));
     console.log(chalk.gray(`Staging: ${stagingUrl}\n`));
@@ -214,6 +233,37 @@ program
     } catch (error) {
       console.error(chalk.red('Visual regression test failed:'), error);
       process.exit(1);
+    }
+  });
+
+program
+  .command('completion')
+  .description('Generate shell completion script')
+  .argument('[shell]', 'Shell type: bash or zsh', 'zsh')
+  .action((shell: string) => {
+    const commands = program.commands.map((c) => c.name()).filter((n) => n !== 'completion');
+    if (shell === 'bash') {
+      console.log([
+        '# craft-audit bash completion',
+        '# Add to ~/.bashrc: eval "$(craft-audit completion bash)"',
+        '_craft_audit_completions() {',
+        `  local commands="${commands.join(' ')}"`,
+        '  local cur="${COMP_WORDS[COMP_CWORD]}"',
+        '  COMPREPLY=( $(compgen -W "$commands" -- "$cur") )',
+        '}',
+        'complete -F _craft_audit_completions craft-audit',
+      ].join('\n'));
+    } else {
+      console.log([
+        '# craft-audit zsh completion',
+        '# Add to ~/.zshrc: eval "$(craft-audit completion zsh)"',
+        '_craft_audit() {',
+        '  local -a commands',
+        `  commands=(${commands.map((c) => `'${c}:Run ${c}'`).join(' ')})`,
+        '  _describe "command" commands',
+        '}',
+        'compdef _craft_audit craft-audit',
+      ].join('\n'));
     }
   });
 

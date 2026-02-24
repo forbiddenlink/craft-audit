@@ -228,19 +228,18 @@ function applyBaselineFiltering(
 
 async function runAnalyzerStep(
   step: AnalyzerStep,
-  issues: AuditIssue[],
   config: AuditConfig
-): Promise<void> {
+): Promise<AuditIssue[]> {
   const quiet = Boolean(config.quiet);
   try {
     if (!quiet) process.stdout.write(`- ${step.name}...\n`);
     const result = await step.run();
-    issues.push(...result);
     if (!quiet) process.stdout.write(`✔ ${step.name} complete (${result.length} issues)\n`);
+    return result;
   } catch (error) {
     if (!quiet) process.stdout.write(`✖ ${step.name} failed\n`);
     if (config.verbose) console.error(error);
-    issues.push({
+    return [{
       severity: 'high',
       category: step.category,
       ruleId: step.ruleId,
@@ -249,7 +248,7 @@ async function runAnalyzerStep(
       confidence: 1,
       evidence: { details: toAnalyzerErrorDetails(error) },
       fingerprint: `${step.ruleId}:${config.projectPath}`,
-    });
+    }];
   }
 }
 
@@ -283,24 +282,24 @@ function filterByChangedFiles(
   return templateIssues.filter((issue) => !issue.file || changed.paths.has(issue.file));
 }
 
-async function runTemplateAnalysis(config: AuditConfig, issues: AuditIssue[]): Promise<void> {
+async function runTemplateAnalysis(config: AuditConfig): Promise<AuditIssue[]> {
   const quiet = Boolean(config.quiet);
   try {
     if (!quiet) process.stdout.write('- Analyzing templates...\n');
     const templateIssues = await analyzeTwigTemplates(config.templatesPath!, config.verbose);
     const filteredTemplateIssues = filterByChangedFiles(templateIssues, config);
 
-    issues.push(...filteredTemplateIssues);
     if (!quiet) {
       const changeScopeLabel = getChangeScopeLabel(config);
       process.stdout.write(
         `✔ Template analysis complete (${filteredTemplateIssues.length} issues${changeScopeLabel})\n`
       );
     }
+    return filteredTemplateIssues;
   } catch (error) {
     if (!quiet) process.stdout.write('✖ Template analysis failed\n');
     if (config.verbose) console.error(error);
-    issues.push({
+    return [{
       severity: 'high',
       category: 'system',
       ruleId: 'runtime/template-analyzer-failed',
@@ -309,7 +308,7 @@ async function runTemplateAnalysis(config: AuditConfig, issues: AuditIssue[]): P
       confidence: 1,
       evidence: { details: toAnalyzerErrorDetails(error) },
       fingerprint: `runtime/template-analyzer-failed:${config.projectPath}`,
-    });
+    }];
   }
 }
 
@@ -382,19 +381,16 @@ function renderAndWriteOutput(
 }
 
 async function runAudit(config: AuditConfig): Promise<AuditResult> {
-  const issues: AuditIssue[] = [];
-  let craft;
-  let plugins;
+  const analyzerTasks: Promise<AuditIssue[]>[] = [];
+  const systemResult = { craft: undefined as any, plugins: undefined as any };
 
-  // Template Analysis (custom: has changed-only filtering)
+  // Queue all analyzers to run in parallel
   if (!config.skipTemplates && config.templatesPath) {
-    await runTemplateAnalysis(config, issues);
+    analyzerTasks.push(runTemplateAnalysis(config));
   }
 
-  // System Analysis
   if (!config.skipSystem) {
-    const systemResult = { craft: undefined as any, plugins: undefined as any };
-    await runAnalyzerStep(
+    analyzerTasks.push(runAnalyzerStep(
       {
         name: 'Collecting system info',
         ruleId: 'runtime/system-analyzer-failed',
@@ -407,16 +403,12 @@ async function runAudit(config: AuditConfig): Promise<AuditResult> {
           return result.issues;
         },
       },
-      issues,
       config
-    );
-    craft = systemResult.craft;
-    plugins = systemResult.plugins;
+    ));
   }
 
-  // Security Analysis
   if (!config.skipSecurity) {
-    await runAnalyzerStep(
+    analyzerTasks.push(runAnalyzerStep(
       {
         name: 'Running security checks',
         ruleId: 'runtime/security-analyzer-failed',
@@ -424,14 +416,12 @@ async function runAudit(config: AuditConfig): Promise<AuditResult> {
         failureMessage: 'Security analyzer failed; security findings may be incomplete.',
         run: () => collectSecurityIssues(config.projectPath, config.verbose, config.securityFileLimit),
       },
-      issues,
       config
-    );
+    ));
   }
 
-  // Visual Regression
   if (!config.skipVisual && config.productionUrl && config.stagingUrl) {
-    await runAnalyzerStep(
+    analyzerTasks.push(runAnalyzerStep(
       {
         name: 'Running visual regression',
         ruleId: 'runtime/visual-analyzer-failed',
@@ -444,16 +434,19 @@ async function runAudit(config: AuditConfig): Promise<AuditResult> {
           path.join(config.projectPath, 'backstop_data')
         ),
       },
-      issues,
       config
-    );
+    ));
   }
+
+  // Run all analyzers concurrently
+  const results = await Promise.all(analyzerTasks);
+  const issues = results.flat();
 
   return {
     projectPath: config.projectPath,
     timestamp: new Date().toISOString(),
-    craft,
-    plugins,
+    craft: systemResult.craft,
+    plugins: systemResult.plugins,
     issues,
     summary: summarizeIssues(issues),
   };
