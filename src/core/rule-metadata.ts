@@ -128,6 +128,11 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'composer audit reported dependency security advisories.',
     helpUri: 'https://getcomposer.org/doc/03-cli.md#audit',
   },
+  'system/composer-audit-advisory': {
+    title: 'Security advisory for dependency',
+    description: 'A specific security advisory was found for an installed dependency.',
+    helpUri: 'https://getcomposer.org/doc/03-cli.md#audit',
+  },
   'system/composer-audit-abandoned': {
     title: 'Composer audit abandoned packages',
     description: 'composer audit reported abandoned packages that should be replaced.',
@@ -142,6 +147,36 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'Known Craft CMS CVE detected',
     description: 'The installed Craft CMS version is affected by a known security vulnerability.',
     helpUri: 'https://github.com/advisories',
+  },
+  'security/allow-updates-enabled': {
+    title: 'Auto-updates enabled in config',
+    description: 'allowUpdates is enabled, permitting CMS and plugin updates from the control panel.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#allowupdates',
+  },
+  'security/template-caching-disabled': {
+    title: 'Template caching disabled',
+    description: 'Template caching is turned off, impacting performance and potentially indicating dev config in production.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#enabletemplatecaching',
+  },
+  'security/test-email-configured': {
+    title: 'Test email address configured',
+    description: 'testToEmailAddress is set, redirecting all system emails to a test address.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#testtoemailaddress',
+  },
+  'security/powered-by-header': {
+    title: 'Powered-by header enabled',
+    description: 'sendPoweredByHeader exposes Craft CMS in HTTP response headers.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#sendpoweredbyheader',
+  },
+  'security/default-cp-trigger': {
+    title: 'Default control panel URL',
+    description: 'The control panel URL uses the default "admin" trigger, making it easily discoverable.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#cptrigger',
+  },
+  'security/insecure-site-url': {
+    title: 'Site URL uses HTTP',
+    description: 'The site URL is configured with HTTP instead of HTTPS, risking data interception.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#aliases',
   },
   'visual/backstop-missing': {
     title: 'BackstopJS execution unavailable',

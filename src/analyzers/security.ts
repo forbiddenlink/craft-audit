@@ -192,6 +192,87 @@ async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> 
     }
   }
 
+  // Check for allowUpdates enabled (should be false in production)
+  if (/['"]allowUpdates['"]\s*=>\s*true/i.test(content)) {
+    issues.push({
+      severity: 'medium',
+      category: 'security',
+      type: 'insecure-production-config',
+      ruleId: 'security/allow-updates-enabled',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'allowUpdates is enabled, allowing Craft and plugin updates from the control panel.',
+      suggestion: 'Set allowUpdates to false in production to prevent unauthorized updates.',
+      confidence: 0.85,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#allowupdates',
+      fingerprint: 'security/allow-updates-enabled:config/general.php',
+    });
+  }
+
+  // Check for template caching disabled
+  if (/['"]enableTemplateCaching['"]\s*=>\s*false/i.test(content)) {
+    issues.push({
+      severity: 'low',
+      category: 'security',
+      type: 'insecure-production-config',
+      ruleId: 'security/template-caching-disabled',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'Template caching is disabled, which impacts performance and may indicate a development configuration.',
+      suggestion: 'Enable template caching in production for better performance and security.',
+      confidence: 0.8,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#enabletemplatecaching',
+      fingerprint: 'security/template-caching-disabled:config/general.php',
+    });
+  }
+
+  // Check for testToEmailAddress set (should be empty in production)
+  if (/['"]testToEmailAddress['"]\s*=>\s*['"][^'"]+['"]/i.test(content)) {
+    issues.push({
+      severity: 'medium',
+      category: 'security',
+      type: 'insecure-production-config',
+      ruleId: 'security/test-email-configured',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'testToEmailAddress is set, which redirects all system emails to a test address.',
+      suggestion: 'Remove testToEmailAddress in production so emails reach real recipients.',
+      confidence: 0.88,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#testtoemailaddress',
+      fingerprint: 'security/test-email-configured:config/general.php',
+    });
+  }
+
+  // Check for sendPoweredByHeader enabled (information disclosure)
+  if (/['"]sendPoweredByHeader['"]\s*=>\s*true/i.test(content)) {
+    issues.push({
+      severity: 'low',
+      category: 'security',
+      type: 'insecure-production-config',
+      ruleId: 'security/powered-by-header',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'sendPoweredByHeader is enabled, exposing Craft CMS in HTTP response headers.',
+      suggestion: 'Set sendPoweredByHeader to false to reduce information disclosure.',
+      confidence: 0.9,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#sendpoweredbyheader',
+      fingerprint: 'security/powered-by-header:config/general.php',
+    });
+  }
+
+  // Check for default cpTrigger (easily discoverable admin URL)
+  const cpTriggerMatch = /['"]cpTrigger['"]\s*=>\s*['"]admin['"]/i.exec(content);
+  if (cpTriggerMatch) {
+    issues.push({
+      severity: 'low',
+      category: 'security',
+      type: 'insecure-production-config',
+      ruleId: 'security/default-cp-trigger',
+      file: toRelative(projectPath, generalConfigPath),
+      message: 'Control panel URL uses the default "admin" trigger, making it easily discoverable.',
+      suggestion: 'Change cpTrigger to a custom, less predictable value.',
+      confidence: 0.75,
+      docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#cptrigger',
+      fingerprint: 'security/default-cp-trigger:config/general.php',
+    });
+  }
+
   return issues;
 }
 
@@ -217,6 +298,29 @@ async function scanEnvFile(projectPath: string): Promise<SecurityIssue[]> {
       docsUrl: 'https://craftcms.com/docs/5.x/development/configuration',
       fingerprint: 'security/dev-mode-enabled-in-production:.env',
     });
+  }
+
+  // Check for insecure site URL (HTTP instead of HTTPS)
+  const urlPatterns = [
+    /^\s*(PRIMARY_SITE_URL|SITE_URL|CRAFT_WEB_URL)\s*=\s*http:\/\//im,
+  ];
+  for (const urlPattern of urlPatterns) {
+    const urlMatch = urlPattern.exec(content);
+    if (urlMatch) {
+      issues.push({
+        severity: 'medium',
+        category: 'security',
+        type: 'insecure-url',
+        ruleId: 'security/insecure-site-url',
+        file: '.env',
+        message: `${urlMatch[1]} uses HTTP instead of HTTPS.`,
+        suggestion: 'Use HTTPS for all site URLs to protect data in transit.',
+        confidence: 0.92,
+        docsUrl: 'https://craftcms.com/docs/5.x/reference/config/general#aliases',
+        fingerprint: `security/insecure-site-url:.env:${urlMatch[1]}`,
+      });
+      break; // Only report once
+    }
   }
 
   return issues;
@@ -285,6 +389,103 @@ interface CveEntry {
 }
 
 const KNOWN_CVES: CveEntry[] = [
+  {
+    id: 'CVE-2026-25498',
+    title: 'Authenticated RCE via malicious attached Behavior',
+    severity: 'high',
+    affects: [
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.3' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2026-25498',
+  },
+  {
+    id: 'CVE-2026-25491',
+    title: 'Stored XSS via Entry Type labels',
+    severity: 'medium',
+    affects: [
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.3' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2026-25491',
+  },
+  {
+    id: 'GHSA-v2gc-rm6g-wrw9',
+    title: 'Cloud Metadata SSRF Protection Bypass via IPv6',
+    severity: 'high',
+    affects: [
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.13.8' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.8' },
+    ],
+    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-v2gc-rm6g-wrw9',
+  },
+  {
+    id: 'GHSA-gp2f-7wcm-5fhx',
+    title: 'Cloud Metadata SSRF via DNS Rebinding',
+    severity: 'high',
+    affects: [
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.13.8' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.8' },
+    ],
+    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-gp2f-7wcm-5fhx',
+  },
+  {
+    id: 'GHSA-fxp3-g6gw-4r4v',
+    title: 'GraphQL Asset Mutation Privilege Escalation',
+    severity: 'high',
+    affects: [
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.1' },
+    ],
+    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-fxp3-g6gw-4r4v',
+  },
+  {
+    id: 'GHSA-8jr8-7hr4-vhfx',
+    title: 'SSRF in GraphQL Asset Mutation via HTTP Redirect',
+    severity: 'high',
+    affects: [
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.1' },
+    ],
+    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-8jr8-7hr4-vhfx',
+  },
+  {
+    id: 'GHSA-2453-mppf-46cj',
+    title: 'SQL Injection in Element Indexes',
+    severity: 'high',
+    affects: [
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.1' },
+    ],
+    docsUrl: 'https://github.com/craftcms/cms/security/advisories/GHSA-2453-mppf-46cj',
+  },
+  {
+    id: 'CVE-2025-32432',
+    title: 'RCE via image transformation endpoint (CVSS 10.0, actively exploited)',
+    severity: 'high',
+    affects: [
+      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.15' },
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.14.15' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.17' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2025-32432',
+  },
+  {
+    id: 'CVE-2024-58136',
+    title: 'Yii framework vulnerability allows RCE (chained with CVE-2025-32432)',
+    severity: 'high',
+    affects: [
+      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.15' },
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.14.15' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.6.17' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-58136',
+  },
+  {
+    id: 'CVE-2025-23209',
+    title: 'Code injection via crafted request (CISA KEV listed)',
+    severity: 'high',
+    affects: [
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.13.8' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.8' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2025-23209',
+  },
   {
     id: 'CVE-2024-56145',
     title: 'RCE via Twig SSTI when register_argc_argv is On',

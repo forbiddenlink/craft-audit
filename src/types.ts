@@ -51,12 +51,13 @@ export interface SystemIssue extends AuditIssue {
     | 'composer-tooling-missing'
     | 'composer-validate'
     | 'composer-audit'
+    | 'composer-audit-advisory'
     | 'composer-outdated';
 }
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'insecure-production-config' | 'insecure-url';
 }
 
 export interface VisualIssue extends AuditIssue {

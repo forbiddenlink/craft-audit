@@ -161,3 +161,202 @@ test('security analyzer ignores safe security key with env var', async () => {
   assert.equal(hardcodedKey, undefined, 'should not flag env var security key');
 });
 
+test('security analyzer detects allowUpdates enabled', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-updates-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['allowUpdates' => true];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/allow-updates-enabled');
+  assert.ok(found, 'should detect allowUpdates enabled');
+  assert.equal(found.severity, 'medium');
+});
+
+test('security analyzer detects template caching disabled', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cache-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['enableTemplateCaching' => false];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/template-caching-disabled');
+  assert.ok(found, 'should detect template caching disabled');
+  assert.equal(found.severity, 'low');
+});
+
+test('security analyzer detects testToEmailAddress configured', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-testemail-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['testToEmailAddress' => 'dev@example.com'];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/test-email-configured');
+  assert.ok(found, 'should detect testToEmailAddress set');
+  assert.equal(found.severity, 'medium');
+});
+
+test('security analyzer detects sendPoweredByHeader enabled', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-powered-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['sendPoweredByHeader' => true];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/powered-by-header');
+  assert.ok(found, 'should detect powered-by header enabled');
+  assert.equal(found.severity, 'low');
+});
+
+test('security analyzer detects default cpTrigger', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cp-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['cpTrigger' => 'admin'];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/default-cp-trigger');
+  assert.ok(found, 'should detect default cpTrigger');
+  assert.equal(found.severity, 'low');
+});
+
+test('security analyzer does not flag custom cpTrigger', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cp-custom-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    "<?php return ['cpTrigger' => 'my-secret-panel'];",
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/default-cp-trigger');
+  assert.equal(found, undefined, 'should not flag custom cpTrigger');
+});
+
+test('security analyzer detects insecure HTTP site URL in .env', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-url-'));
+  
+  fs.writeFileSync(
+    path.join(tempRoot, '.env'),
+    'PRIMARY_SITE_URL=http://example.com\n',
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/insecure-site-url');
+  assert.ok(found, 'should detect insecure HTTP URL');
+  assert.equal(found.severity, 'medium');
+  assert.ok(found.message.includes('PRIMARY_SITE_URL'), 'should mention the variable name');
+});
+
+test('security analyzer does not flag HTTPS site URL', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-url-safe-'));
+  
+  fs.writeFileSync(
+    path.join(tempRoot, '.env'),
+    'PRIMARY_SITE_URL=https://example.com\n',
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const found = issues.find(i => i.ruleId === 'security/insecure-site-url');
+  assert.equal(found, undefined, 'should not flag HTTPS URL');
+});
+
+test('security analyzer detects CVE-2025-32432 for affected Craft 5.x version', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cve-'));
+
+  // Create composer.lock with an affected version
+  fs.writeFileSync(
+    path.join(tempRoot, 'composer.lock'),
+    JSON.stringify({
+      packages: [{ name: 'craftcms/cms', version: '5.5.0' }],
+    }),
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const cveIssues = issues.filter(i => i.ruleId === 'security/known-cve');
+  
+  // Should detect multiple CVEs for 5.5.0
+  assert.ok(cveIssues.length > 4, `should detect multiple CVEs, found ${cveIssues.length}`);
+  
+  // Should include the critical RCE
+  const rce = cveIssues.find(i => i.message.includes('CVE-2025-32432'));
+  assert.ok(rce, 'should detect CVE-2025-32432 (critical RCE)');
+  assert.equal(rce.severity, 'high');
+});
+
+test('security analyzer does not flag CVEs for fully patched version', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cve-fixed-'));
+
+  // Use a version that's newer than all fixedAt versions for Craft 5
+  fs.writeFileSync(
+    path.join(tempRoot, 'composer.lock'),
+    JSON.stringify({
+      packages: [{ name: 'craftcms/cms', version: '5.9.0' }],
+    }),
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const cveIssues = issues.filter(i => i.ruleId === 'security/known-cve');
+  assert.equal(cveIssues.length, 0, 'should not flag CVEs for fully patched version');
+});
+
+test('security analyzer detects all production config issues together', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-allprod-'));
+  const configDir = path.join(tempRoot, 'config');
+  fs.mkdirSync(configDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(configDir, 'general.php'),
+    `<?php return [
+      'allowUpdates' => true,
+      'enableTemplateCaching' => false,
+      'testToEmailAddress' => 'test@test.com',
+      'sendPoweredByHeader' => true,
+      'cpTrigger' => 'admin',
+    ];`,
+    'utf8'
+  );
+
+  const issues = await collectSecurityIssues(tempRoot);
+  const ruleIds = new Set(issues.map(i => i.ruleId));
+  
+  assert.ok(ruleIds.has('security/allow-updates-enabled'));
+  assert.ok(ruleIds.has('security/template-caching-disabled'));
+  assert.ok(ruleIds.has('security/test-email-configured'));
+  assert.ok(ruleIds.has('security/powered-by-header'));
+  assert.ok(ruleIds.has('security/default-cp-trigger'));
+});
+

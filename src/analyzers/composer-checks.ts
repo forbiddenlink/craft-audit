@@ -72,18 +72,29 @@ function parseComposerValidateOutput(stdout: string): {
   };
 }
 
+interface AdvisoryDetail {
+  packageName: string;
+  advisoryId: string;
+  title: string;
+  cve: string | null;
+  link: string | null;
+  severity: string;
+}
+
 function parseComposerAuditOutput(stdout: string): {
   advisoryCount: number;
   abandonedCount: number;
   details: string;
+  advisoryDetails: AdvisoryDetail[];
 } {
   const parsed = ensureObject(safeJsonParse(stdout));
   if (!parsed) {
-    return { advisoryCount: 0, abandonedCount: 0, details: '' };
+    return { advisoryCount: 0, abandonedCount: 0, details: '', advisoryDetails: [] };
   }
 
   let advisoryCount = 0;
   const advisoryNames: string[] = [];
+  const advisoryDetails: AdvisoryDetail[] = [];
 
   const advisories = ensureObject(parsed.advisories);
   if (advisories) {
@@ -91,6 +102,18 @@ function parseComposerAuditOutput(stdout: string): {
       if (!Array.isArray(entries)) continue;
       advisoryCount += entries.length;
       if (entries.length > 0) advisoryNames.push(pkg);
+      for (const entry of entries) {
+        const obj = ensureObject(entry as JsonValue);
+        if (!obj) continue;
+        advisoryDetails.push({
+          packageName: typeof obj.packageName === 'string' ? obj.packageName : pkg,
+          advisoryId: typeof obj.advisoryId === 'string' ? obj.advisoryId : 'unknown',
+          title: typeof obj.title === 'string' ? obj.title : 'Unknown advisory',
+          cve: typeof obj.cve === 'string' ? obj.cve : null,
+          link: typeof obj.link === 'string' ? obj.link : null,
+          severity: typeof obj.severity === 'string' ? obj.severity : 'unknown',
+        });
+      }
     }
   }
 
@@ -100,14 +123,21 @@ function parseComposerAuditOutput(stdout: string): {
     abandonedCount = Object.keys(abandoned).length;
   }
 
+  const advisorySummaries = advisoryDetails
+    .slice(0, 8)
+    .map((a) => {
+      const cveSuffix = a.cve ? ' (' + a.cve + ')' : '';
+      return `[${a.severity}] ${a.packageName}: ${a.title}${cveSuffix}`;
+    });
   const detail = [
     advisoryNames.length > 0 ? `Advisories in: ${advisoryNames.slice(0, 8).join(', ')}` : '',
+    ...advisorySummaries,
     abandonedCount > 0 ? `Abandoned packages: ${abandonedCount}` : '',
   ]
     .filter(Boolean)
     .join('\n');
 
-  return { advisoryCount, abandonedCount, details: detail };
+  return { advisoryCount, abandonedCount, details: detail, advisoryDetails };
 }
 
 function parseComposerOutdatedOutput(stdout: string): {
@@ -215,6 +245,31 @@ export async function collectComposerSystemIssues(
       evidence: { command: 'composer audit --format=json', details: auditParsed.details },
       fingerprint: `system/composer-audit-advisories:${projectPath}:${auditParsed.advisoryCount}`,
     });
+
+    for (const advisory of auditParsed.advisoryDetails) {
+      const severityMap: Record<string, SystemIssue['severity']> = {
+        critical: 'high',
+        high: 'high',
+        medium: 'medium',
+      };
+      const mappedSeverity: SystemIssue['severity'] = severityMap[advisory.severity] ?? 'low';
+      const cveLabel = advisory.cve ? ` (${advisory.cve})` : '';
+      issues.push({
+        severity: mappedSeverity,
+        category: 'system',
+        type: 'composer-audit-advisory',
+        ruleId: 'system/composer-audit-advisory',
+        message: `${advisory.packageName}: ${advisory.title}${cveLabel}`,
+        suggestion: `Upgrade ${advisory.packageName} to a patched version.`,
+        confidence: 0.97,
+        docsUrl: advisory.link ?? 'https://getcomposer.org/doc/03-cli.md#audit',
+        evidence: {
+          command: 'composer audit --format=json',
+          details: `Advisory: ${advisory.advisoryId}\nSeverity: ${advisory.severity}` + (advisory.link ? '\nLink: ' + advisory.link : ''),
+        },
+        fingerprint: `system/composer-audit-advisory:${projectPath}:${advisory.advisoryId}`,
+      });
+    }
   }
   if (auditParsed.abandonedCount > 0) {
     issues.push({
