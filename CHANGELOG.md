@@ -11,11 +11,23 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - `craft-audit completion` command — generates bash/zsh shell completion scripts
 - GitHub Actions CI with Node 18/20/22 test matrix and SARIF upload
 - `.vscodeignore` additions for cleaner VS Code extension packaging
+- 73 new tests: suppression (5), rule-metadata (7), visual-analyzer (16), system-analyzer (26), integrations-helpers (11), composer-checks edge cases (8) — total now 212
+- `title` property added to config JSON Schema
+- Documentation for `init` and `completion` commands in README
+- Shared `projectLabel()` utility in `src/integrations/utils.ts`
+- Configurable timeout for VS Code extension runner
+- VS Code extension process cleanup on deactivation
 
 ### Changed
 - **Parallel analyzers** — template, system, security, and visual analyzers now run concurrently via `Promise.all`, significantly reducing audit time on large projects
 - Removed unused `glob` dependency (eliminated 34 transitive packages)
-- Replaced all `any` types in CLI action handlers with proper TypeScript interfaces (`AuditCommandOptions`, `TemplatesCommandOptions`, `VisualCommandOptions`)
+- Eliminated all `as any` casts across codebase — replaced with proper type guards and interfaces
+- VS Code diagnostic data uses typed `WeakMap<Diagnostic, DiagnosticFixData>` instead of `(diagnostic as any).data`
+- Templates command error handling now consistent with audit command pattern
+- Renamed `docs/integrations-slack-clickup.md` → `docs/integrations.md`
+
+### Fixed
+- VS Code `analyzeWorkspace` variable shadowing bug in runner.ts
 
 ## [1.0.0] - 2025-06-20
 

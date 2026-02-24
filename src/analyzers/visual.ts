@@ -126,6 +126,13 @@ function issuesFromBackstopFailure(
   });
 }
 
+export const __testUtils = {
+  normalizeBaseUrl,
+  normalizePagePath,
+  createConfig,
+  issuesFromBackstopFailure,
+};
+
 export async function runVisualRegression(
   productionUrl: string,
   stagingUrl: string,

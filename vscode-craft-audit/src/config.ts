@@ -7,6 +7,7 @@ export interface CraftAuditConfig {
     runOnSave: boolean;
     runOnOpen: boolean;
     severity: Record<string, string>;
+    timeout: number;
 }
 
 export function getConfig(): CraftAuditConfig {
@@ -23,7 +24,8 @@ export function getConfig(): CraftAuditConfig {
             medium: 'Warning',
             low: 'Information',
             info: 'Information'
-        })
+        }),
+        timeout: config.get('timeout', 30000)
     };
 }
 

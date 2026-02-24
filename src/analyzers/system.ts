@@ -204,6 +204,15 @@ function buildIssues(
   return issues;
 }
 
+export const __testUtils = {
+  parseMajorVersion,
+  pluginHandleFromPackage,
+  findPlugins,
+  buildCraftInfo,
+  buildIssues,
+  tryReadJson,
+};
+
 export async function collectSystemInfo(
   projectPath: string,
   verbose = false

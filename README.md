@@ -51,6 +51,13 @@ craft-audit visual https://production.example.com https://staging.example.com
 
 # Generate config recommendations
 craft-audit recommend-config /path/to/craft-project
+
+# Create a starter config file
+craft-audit init /path/to/craft-project
+
+# Set up shell completions (add to ~/.zshrc or ~/.bashrc)
+eval "$(craft-audit completion zsh)"
+eval "$(craft-audit completion bash)"
 ```
 
 ## Commands
@@ -62,6 +69,8 @@ craft-audit recommend-config /path/to/craft-project
 | `templates <path>` | Template analysis only |
 | `visual <prod-url> <stage-url>` | Visual regression testing |
 | `recommend-config <path>` | Suggest a tuned config based on findings |
+| `init <path>` | Create a starter `craft-audit.config.json` |
+| `completion [bash\|zsh]` | Generate shell completion script |
 
 ## Output Formats
 
@@ -218,7 +227,7 @@ craft-audit audit-ci . --output bitbucket --publish-bitbucket
 # Set BITBUCKET_TOKEN in environment
 ```
 
-See [docs/integrations-slack-clickup.md](docs/integrations-slack-clickup.md) for detailed configuration.
+See [docs/integrations.md](docs/integrations.md) for detailed configuration.
 
 ## CI/CD
 
@@ -275,7 +284,7 @@ vscode-craft-audit/      # VS Code extension
 | [Config Recommendations](docs/recommend-config.md) | Auto-generated config from findings |
 | [GitHub Actions](docs/github-actions.md) | SARIF upload workflow examples |
 | [Bitbucket Pipelines](docs/bitbucket-pipelines.md) | Code Insights integration |
-| [Integrations](docs/integrations-slack-clickup.md) | Slack, ClickUp, Linear setup |
+| [Integrations](docs/integrations.md) | Slack, ClickUp, Linear, Bitbucket setup |
 
 ## License
 

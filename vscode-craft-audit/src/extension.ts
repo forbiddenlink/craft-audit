@@ -160,4 +160,5 @@ export function deactivate() {
     if (saveDebounceTimer) {
         clearTimeout(saveDebounceTimer);
     }
+    runner?.dispose();
 }

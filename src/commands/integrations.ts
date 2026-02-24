@@ -24,7 +24,7 @@ export function normalizeSendOn(value: string | undefined, fallback: Integration
 const VALID_SEND_ON_MODES = ['always', 'issues', 'high'] as const;
 
 export function validateSendOnMode(value: string | undefined, label: string): void {
-  if (value && !VALID_SEND_ON_MODES.includes(value as any)) {
+  if (value && !(VALID_SEND_ON_MODES as readonly string[]).includes(value)) {
     throw new AuditConfigError(`Error: Unsupported ${label} send mode "${value}".\nSupported values: ${VALID_SEND_ON_MODES.join(', ')}`);
   }
 }

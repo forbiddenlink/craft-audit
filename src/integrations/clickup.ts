@@ -1,5 +1,6 @@
 import { AuditResult } from '../types';
 import { IntegrationSendOn } from './slack';
+import { projectLabel } from './utils';
 
 export interface ClickUpIntegrationConfig {
   listId: string;
@@ -14,12 +15,6 @@ interface ClickUpTaskPayload {
   name: string;
   markdown_description: string;
   tags?: string[];
-}
-
-function projectLabel(projectPath: string): string {
-  const normalized = projectPath.replace(/\\/g, '/').replace(/\/+$/, '');
-  const parts = normalized.split('/').filter(Boolean);
-  return parts.length > 0 ? parts[parts.length - 1] : projectPath;
 }
 
 export function shouldCreateClickUpTask(result: AuditResult, mode: IntegrationSendOn): boolean {

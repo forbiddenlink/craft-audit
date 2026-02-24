@@ -78,6 +78,18 @@ export const SUPPORTED_AUDIT_CI_OUTPUT_FORMATS_SET = new Set<SupportedAuditCiOut
 export const SUPPORTED_RECOMMEND_OUTPUT_FORMATS_SET = new Set<SupportedRecommendOutputFormat>(
   SUPPORTED_RECOMMEND_OUTPUT_FORMATS
 );
+
+export function isSupportedOutputFormat(format: string): format is SupportedOutputFormat {
+  return (SUPPORTED_OUTPUT_FORMATS as readonly string[]).includes(format);
+}
+
+export function isSupportedAuditCiOutputFormat(format: string): format is SupportedAuditCiOutputFormat {
+  return (SUPPORTED_AUDIT_CI_OUTPUT_FORMATS as readonly string[]).includes(format);
+}
+
+export function isSupportedRecommendOutputFormat(format: string): format is SupportedRecommendOutputFormat {
+  return (SUPPORTED_RECOMMEND_OUTPUT_FORMATS as readonly string[]).includes(format);
+}
 const SUPPORTED_EXIT_THRESHOLDS = new Set<SupportedExitThreshold>([
   'none',
   'high',
@@ -266,7 +278,7 @@ function validateStandardFields(
     const validator = FIELD_VALIDATORS[spec.type];
     const result = validator(value, key, configDirectory);
     if (result.valid) {
-      (values as any)[key] = result.result;
+      (values as Record<string, unknown>)[key] = result.result;
     } else {
       errors.push(result.error!);
     }

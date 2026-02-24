@@ -1,4 +1,5 @@
 import { AuditResult } from '../types';
+import { projectLabel } from './utils';
 
 export type IntegrationSendOn = 'always' | 'issues' | 'high';
 
@@ -11,12 +12,6 @@ export interface SlackIntegrationConfig {
 interface SlackPayload {
   text: string;
   blocks: Array<Record<string, unknown>>;
-}
-
-function projectLabel(projectPath: string): string {
-  const normalized = projectPath.replace(/\\/g, '/').replace(/\/+$/, '');
-  const parts = normalized.split('/').filter(Boolean);
-  return parts.length > 0 ? parts[parts.length - 1] : projectPath;
 }
 
 export function shouldSendByMode(result: AuditResult, mode: IntegrationSendOn): boolean {

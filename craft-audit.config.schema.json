@@ -163,6 +163,10 @@
       "type": "string",
       "enum": ["strict", "balanced", "legacy-migration"]
     },
+    "title": {
+      "type": "string",
+      "description": "Custom title displayed in audit output headers."
+    },
     "ruleSettings": {
       "type": "object",
       "additionalProperties": {

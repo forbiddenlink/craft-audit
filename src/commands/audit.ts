@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
-import { AuditConfig, AuditResult, AuditIssue, AuditCommandOptions } from '../types';
+import { AuditConfig, AuditResult, AuditIssue, AuditCommandOptions, CraftInfo, PluginInfo } from '../types';
 import { analyzeTwigTemplates } from '../analyzers/twig';
 import { collectSystemInfo } from '../analyzers/system';
 import { collectSecurityIssues } from '../analyzers/security';
@@ -25,11 +25,10 @@ import {
 import {
   loadAuditFileConfig,
   LoadedAuditFileConfig,
-  SupportedOutputFormat,
   SUPPORTED_OUTPUT_FORMATS,
-  SUPPORTED_OUTPUT_FORMATS_SET,
   SUPPORTED_AUDIT_CI_OUTPUT_FORMATS,
-  SUPPORTED_AUDIT_CI_OUTPUT_FORMATS_SET,
+  isSupportedOutputFormat,
+  isSupportedAuditCiOutputFormat,
 } from '../core/config';
 import { applyDebugProfileCorrelation, loadDebugProfileEntries } from '../core/debug-correlation';
 import { getChangedTemplateIssuePathsWithStatus, resolveBaseRef } from '../core/git';
@@ -113,10 +112,10 @@ function validateOutputAndThreshold(
   outputFile: string | undefined,
   exitThreshold: string
 ): void {
-  if (!SUPPORTED_OUTPUT_FORMATS_SET.has(outputFormat as SupportedOutputFormat)) {
+  if (!isSupportedOutputFormat(outputFormat)) {
     throw new AuditConfigError(`Error: Unsupported output format "${outputFormat}".\nSupported values: ${SUPPORTED_OUTPUT_FORMATS.join(', ')}`);
   }
-  if (commandName === 'audit-ci' && !SUPPORTED_AUDIT_CI_OUTPUT_FORMATS_SET.has(outputFormat as any)) {
+  if (commandName === 'audit-ci' && !isSupportedAuditCiOutputFormat(outputFormat)) {
     throw new AuditConfigError(
       `Error: audit-ci supports only ${formatList(SUPPORTED_AUDIT_CI_OUTPUT_FORMATS)} output (received "${outputFormat}").`
     );
@@ -382,7 +381,10 @@ function renderAndWriteOutput(
 
 async function runAudit(config: AuditConfig): Promise<AuditResult> {
   const analyzerTasks: Promise<AuditIssue[]>[] = [];
-  const systemResult = { craft: undefined as any, plugins: undefined as any };
+  const systemResult: { craft: CraftInfo | undefined; plugins: PluginInfo[] | undefined } = {
+    craft: undefined,
+    plugins: undefined,
+  };
 
   // Queue all analyzers to run in parallel
   if (!config.skipTemplates && config.templatesPath) {

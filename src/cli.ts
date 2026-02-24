@@ -181,7 +181,7 @@ program
       reporter.reportTemplateIssues(issues);
     } catch (error) {
       spinner.fail('Template analysis failed');
-      console.error(chalk.red(error));
+      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
       process.exit(1);
     }
   });

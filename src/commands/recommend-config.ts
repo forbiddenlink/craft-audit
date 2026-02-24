@@ -12,9 +12,9 @@ import { analyzeTwigTemplates } from '../analyzers/twig';
 import {
   loadAuditFileConfig,
   SUPPORTED_RECOMMEND_OUTPUT_FORMATS,
-  SUPPORTED_RECOMMEND_OUTPUT_FORMATS_SET,
+  isSupportedRecommendOutputFormat,
 } from '../core/config';
-import { buildConfigRecommendation } from '../core/recommend-config';
+import { buildConfigRecommendation, ConfigRecommendation } from '../core/recommend-config';
 import { TOOL_VERSION } from '../core/version';
 
 export interface RecommendConfigCommandOptions {
@@ -50,7 +50,7 @@ function renderRecommendation(
   outputFormat: string,
   absolutePath: string,
   templatesPath: string,
-  recommendation: any
+  recommendation: ConfigRecommendation
 ): string {
   if (outputFormat === 'json') {
     return JSON.stringify(payload, null, 2);
@@ -89,7 +89,7 @@ export async function executeRecommendConfigCommand(
   }
 
   const outputFormat = options.output ?? 'console';
-  if (!SUPPORTED_RECOMMEND_OUTPUT_FORMATS_SET.has(outputFormat as any)) {
+  if (!isSupportedRecommendOutputFormat(outputFormat)) {
     console.error(chalk.red(`Error: Unsupported output format "${outputFormat}".`));
     console.error(chalk.gray(`Supported values: ${SUPPORTED_RECOMMEND_OUTPUT_FORMATS.join(', ')}`));
     process.exit(1);

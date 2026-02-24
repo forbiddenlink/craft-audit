@@ -1,5 +1,6 @@
 import { AuditResult, Severity } from '../types';
 import { IntegrationSendOn } from './slack';
+import { projectLabel } from './utils';
 
 export interface LinearIntegrationConfig {
   teamId: string;
@@ -32,12 +33,6 @@ interface LinearGraphQLResponse {
     };
   };
   errors?: Array<{ message: string }>;
-}
-
-function projectLabel(projectPath: string): string {
-  const normalized = projectPath.replace(/\\/g, '/').replace(/\/+$/, '');
-  const parts = normalized.split('/').filter(Boolean);
-  return parts.length > 0 ? parts[parts.length - 1] : projectPath;
 }
 
 function severityToPriority(severity: Severity): number {

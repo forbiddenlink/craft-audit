@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { DiagnosticsManager } from './diagnostics';
+import { DiagnosticsManager, diagnosticFixData } from './diagnostics';
 import { CraftAuditFix } from './runner';
 
 export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
@@ -23,7 +23,7 @@ export class SuppressCodeActionProvider implements vscode.CodeActionProvider {
 
         // Add fix actions first (they appear at top of menu)
         for (const diagnostic of craftAuditDiagnostics) {
-            const data = (diagnostic as any).data;
+            const data = diagnosticFixData.get(diagnostic);
             if (data?.fix) {
                 const fixAction = this.createFixAction(document, diagnostic, data.fix);
                 if (fixAction) {

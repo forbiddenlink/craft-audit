@@ -1,6 +1,14 @@
 import * as vscode from 'vscode';
-import { CraftAuditIssue } from './runner';
+import { CraftAuditIssue, CraftAuditFix } from './runner';
 import { mapSeverity, getConfig } from './config';
+
+export interface DiagnosticFixData {
+    fix: CraftAuditFix;
+    file: string;
+    line: number;
+}
+
+export const diagnosticFixData = new WeakMap<vscode.Diagnostic, DiagnosticFixData>();
 
 export class DiagnosticsManager implements vscode.Disposable {
     private diagnosticCollection: vscode.DiagnosticCollection;
@@ -68,11 +76,11 @@ export class DiagnosticsManager implements vscode.Disposable {
 
         // Store fix data for code actions
         if (issue.fix) {
-            (diagnostic as any).data = {
+            diagnosticFixData.set(diagnostic, {
                 fix: issue.fix,
                 file: issue.file,
-                line: issue.line
-            };
+                line: issue.line,
+            });
         }
 
         return diagnostic;

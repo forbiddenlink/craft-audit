@@ -50,3 +50,65 @@ test('parseComposerOutdatedOutput counts outdated direct packages', () => {
   assert.match(parsed.sample[0], /a\/one/);
 });
 
+// ── Edge cases ──────────────────────────────────────────────────────────
+
+test('parseComposerValidateOutput handles malformed JSON gracefully', () => {
+  const parsed = __testUtils.parseComposerValidateOutput('{not valid json');
+  assert.equal(parsed.errorCount, 0);
+  assert.equal(parsed.warningCount, 0);
+});
+
+test('parseComposerValidateOutput handles empty errors/warnings arrays', () => {
+  const parsed = __testUtils.parseComposerValidateOutput(
+    JSON.stringify({ errors: [], warnings: [] })
+  );
+  assert.equal(parsed.errorCount, 0);
+  assert.equal(parsed.warningCount, 0);
+});
+
+test('parseComposerAuditOutput handles malformed JSON gracefully', () => {
+  const parsed = __testUtils.parseComposerAuditOutput('totally broken');
+  assert.equal(parsed.advisoryCount, 0);
+  assert.equal(parsed.abandonedCount, 0);
+});
+
+test('parseComposerAuditOutput handles empty advisories and abandoned', () => {
+  const parsed = __testUtils.parseComposerAuditOutput(
+    JSON.stringify({ advisories: {}, abandoned: {} })
+  );
+  assert.equal(parsed.advisoryCount, 0);
+  assert.equal(parsed.abandonedCount, 0);
+});
+
+test('parseComposerOutdatedOutput handles malformed JSON gracefully', () => {
+  const parsed = __testUtils.parseComposerOutdatedOutput('not json');
+  assert.equal(parsed.outdatedCount, 0);
+  assert.equal(parsed.sample.length, 0);
+});
+
+test('parseComposerOutdatedOutput handles empty installed array', () => {
+  const parsed = __testUtils.parseComposerOutdatedOutput(
+    JSON.stringify({ installed: [] })
+  );
+  assert.equal(parsed.outdatedCount, 0);
+  assert.equal(parsed.sample.length, 0);
+});
+
+test('parseComposerOutdatedOutput handles all packages up-to-date', () => {
+  const parsed = __testUtils.parseComposerOutdatedOutput(
+    JSON.stringify({
+      installed: [
+        { name: 'a/one', version: '1.0.0', latest: '1.0.0' },
+        { name: 'b/two', version: '2.0.0', latest: '2.0.0' },
+      ],
+    })
+  );
+  assert.equal(parsed.outdatedCount, 0);
+});
+
+test('parseComposerValidateOutput handles missing keys', () => {
+  const parsed = __testUtils.parseComposerValidateOutput(JSON.stringify({}));
+  assert.equal(parsed.errorCount, 0);
+  assert.equal(parsed.warningCount, 0);
+});
+

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { spawn } from 'node:child_process';
+import { spawn, ChildProcess } from 'node:child_process';
 import * as path from 'node:path';
 import { CraftAuditConfig } from './config';
 
@@ -40,6 +40,8 @@ interface CraftAuditOutput {
 }
 
 export class CraftAuditRunner {
+    private runningProcesses = new Set<ChildProcess>();
+
     constructor(private outputChannel: vscode.OutputChannel) {}
 
     async analyzeFile(filePath: string, config: CraftAuditConfig): Promise<CraftAuditIssue[]> {
@@ -55,7 +57,7 @@ export class CraftAuditRunner {
             }
         }
 
-        const output = await this.runCommand(config.executablePath, args);
+        const output = await this.runCommand(config.executablePath, args, config.timeout);
         const allIssues = this.parseOutput(output);
         // Filter to only issues for the target file
         const normalizedTarget = path.resolve(filePath);
@@ -71,13 +73,10 @@ export class CraftAuditRunner {
         const args = ['audit', workspaceFolder.uri.fsPath, '--output', 'json'];
 
         if (config.configPath) {
-            const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-            if (workspaceFolder) {
-                args.push('--config', path.join(workspaceFolder.uri.fsPath, config.configPath));
-            }
+            args.push('--config', path.join(workspaceFolder.uri.fsPath, config.configPath));
         }
 
-        const output = await this.runCommand(config.executablePath, args);
+        const output = await this.runCommand(config.executablePath, args, config.timeout);
         const issues = this.parseOutput(output);
 
         // Group by file
@@ -91,7 +90,7 @@ export class CraftAuditRunner {
         return byFile;
     }
 
-    private runCommand(executable: string, args: string[]): Promise<string> {
+    private runCommand(executable: string, args: string[], timeoutMs: number): Promise<string> {
         return new Promise((resolve, reject) => {
             const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 
@@ -100,6 +99,8 @@ export class CraftAuditRunner {
             const proc = spawn(executable, args, {
                 cwd: workspaceFolder,
             });
+
+            this.runningProcesses.add(proc);
 
             let stdout = '';
             let stderr = '';
@@ -124,6 +125,8 @@ export class CraftAuditRunner {
             });
 
             proc.on('close', (code) => {
+                this.runningProcesses.delete(proc);
+
                 if (stderr) {
                     this.outputChannel.appendLine(`stderr: ${stderr}`);
                 }
@@ -137,11 +140,11 @@ export class CraftAuditRunner {
                 }
             });
 
-            // Timeout after 30 seconds
+            // Timeout after configured duration
             setTimeout(() => {
                 proc.kill();
-                reject(new Error('craft-audit timed out after 30 seconds'));
-            }, 30000);
+                reject(new Error(`craft-audit timed out after ${timeoutMs / 1000} seconds`));
+            }, timeoutMs);
         });
     }
 
@@ -168,5 +171,12 @@ export class CraftAuditRunner {
             this.outputChannel.appendLine(`Raw output: ${output}`);
             return [];
         }
+    }
+
+    dispose() {
+        for (const proc of this.runningProcesses) {
+            proc.kill();
+        }
+        this.runningProcesses.clear();
     }
 }
