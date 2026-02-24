@@ -360,6 +360,20 @@ test('audit-ci rejects non-machine output from config', () => {
   );
 });
 
+test('audit-ci rejects totally invalid format with audit-ci-specific message', () => {
+  const projectPath = makeMinimalCraftProject();
+
+  assert.throws(
+    () =>
+      execFileSync(
+        'node',
+        [CLI_PATH, 'audit-ci', projectPath, '--output', 'yaml'],
+        { encoding: 'utf8' }
+      ),
+    /audit-ci supports only json, sarif, or bitbucket output/
+  );
+});
+
 test('ruleSettings can disable specific rules from config', () => {
   const projectPath = makeMinimalCraftProject();
   fs.mkdirSync(path.join(projectPath, 'templates'), { recursive: true });

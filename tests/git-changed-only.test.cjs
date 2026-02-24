@@ -9,6 +9,7 @@ const {
   getChangedTemplateIssuePaths,
   getChangedTemplateIssuePathsWithStatus,
   resolveBaseRef,
+  __testUtils,
 } = require('../dist/core/git');
 
 function hasGit() {
@@ -157,4 +158,22 @@ test('resolveBaseRef maps auto from CI environment', () => {
   assert.equal(resolveBaseRef('auto', { BITBUCKET_PR_DESTINATION_BRANCH: 'master' }), 'master');
   assert.equal(resolveBaseRef('auto', {}), undefined);
   assert.equal(resolveBaseRef('origin/main', {}), 'origin/main');
+});
+
+test('isValidGitRef accepts relative refs with tilde and caret', () => {
+  const { isValidGitRef } = __testUtils;
+  // Valid refs
+  assert.equal(isValidGitRef('HEAD~1'), true);
+  assert.equal(isValidGitRef('HEAD~3'), true);
+  assert.equal(isValidGitRef('HEAD^1'), true);
+  assert.equal(isValidGitRef('HEAD^2'), true);
+  assert.equal(isValidGitRef('main~5'), true);
+  assert.equal(isValidGitRef('origin/main'), true);
+  assert.equal(isValidGitRef('feature/my-branch'), true);
+  assert.equal(isValidGitRef('v1.0.0'), true);
+  // Invalid refs
+  assert.equal(isValidGitRef(''), false);
+  assert.equal(isValidGitRef('--option'), false);
+  assert.equal(isValidGitRef('HEAD..main'), false);
+  assert.equal(isValidGitRef('ref\x00bad'), false);
 });

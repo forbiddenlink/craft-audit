@@ -20,7 +20,8 @@ test('init creates craft-audit.config.json', async () => {
     const content = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     assert.equal(content.output, 'console');
     assert.equal(content.exitThreshold, 'high');
-    assert.equal(content.security.fileLimit, 2000);
+    assert.equal(content.securityFileLimit, 2000);
+    assert.deepStrictEqual(content.ruleSettings, {});
     assert.ok(content.$schema.includes('craft-audit.config.schema.json'));
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });

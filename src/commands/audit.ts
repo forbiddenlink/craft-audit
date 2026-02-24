@@ -112,13 +112,14 @@ function validateOutputAndThreshold(
   outputFile: string | undefined,
   exitThreshold: string
 ): void {
-  if (!isSupportedOutputFormat(outputFormat)) {
+  if (commandName === 'audit-ci') {
+    if (!isSupportedAuditCiOutputFormat(outputFormat)) {
+      throw new AuditConfigError(
+        `Error: audit-ci supports only ${formatList(SUPPORTED_AUDIT_CI_OUTPUT_FORMATS)} output (received "${outputFormat}").`
+      );
+    }
+  } else if (!isSupportedOutputFormat(outputFormat)) {
     throw new AuditConfigError(`Error: Unsupported output format "${outputFormat}".\nSupported values: ${SUPPORTED_OUTPUT_FORMATS.join(', ')}`);
-  }
-  if (commandName === 'audit-ci' && !isSupportedAuditCiOutputFormat(outputFormat)) {
-    throw new AuditConfigError(
-      `Error: audit-ci supports only ${formatList(SUPPORTED_AUDIT_CI_OUTPUT_FORMATS)} output (received "${outputFormat}").`
-    );
   }
   if (outputFormat === 'html' && !outputFile) {
     throw new AuditConfigError('Error: HTML output requires --output-file to be set.');

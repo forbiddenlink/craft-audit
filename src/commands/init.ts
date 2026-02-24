@@ -11,10 +11,8 @@ const CONFIG_FILENAME = 'craft-audit.config.json';
 const STARTER_CONFIG = {
   $schema:
     'https://raw.githubusercontent.com/forbiddenlink/craft-audit/main/craft-audit.config.schema.json',
-  rules: {},
-  security: {
-    fileLimit: 2000,
-  },
+  ruleSettings: {},
+  securityFileLimit: 2000,
   output: 'console',
   exitThreshold: 'high',
 };

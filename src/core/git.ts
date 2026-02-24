@@ -2,10 +2,11 @@ import { execFileSync } from 'node:child_process';
 import * as path from 'node:path';
 
 /**
- * Valid git ref pattern: alphanumeric, underscores, hyphens, forward slashes, dots.
+ * Valid git ref pattern: alphanumeric, underscores, hyphens, forward slashes, dots,
+ * tildes and carets (for relative refs like HEAD~1, HEAD^2).
  * Rejects dangerous patterns like `--option`, refs with `..`, and control characters.
  */
-const VALID_GIT_REF_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/;
+const VALID_GIT_REF_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._/~^-]*$/;
 
 function normalizePath(value: string): string {
   return value.replace(/\\/g, '/');
