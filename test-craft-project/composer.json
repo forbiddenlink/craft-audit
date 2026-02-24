@@ -1,0 +1,18 @@
+{
+  "name": "test/craft-project",
+  "description": "Mock Craft CMS project for testing craft-audit",
+  "type": "project",
+  "require": {
+    "craftcms/cms": "^5.0",
+    "vlucas/phpdotenv": "^5.4"
+  },
+  "require-dev": {
+    "craftcms/generator": "^2.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "craftcms/plugin-installer": true,
+      "yiisoft/yii2-composer": true
+    }
+  }
+}

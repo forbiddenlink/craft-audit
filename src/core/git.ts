@@ -1,5 +1,5 @@
-import { execFileSync } from 'child_process';
-import * as path from 'path';
+import { execFileSync } from 'node:child_process';
+import * as path from 'node:path';
 
 /**
  * Valid git ref pattern: alphanumeric, underscores, hyphens, forward slashes, dots.
@@ -30,7 +30,7 @@ function isValidGitRef(ref: string): boolean {
 function isSafeRelativePath(filePath: string): boolean {
   const normalized = path.normalize(filePath);
   // Check for traversal attempts
-  if (normalized.startsWith('..') || normalized.includes('/..') || normalized.includes('\\..')) {
+  if (normalized.startsWith('..') || normalized.includes('/..') || normalized.includes(String.raw`\..`)) {
     return false;
   }
   // Reject absolute paths
@@ -143,6 +143,50 @@ function collectWorkingTreeCandidates(projectPath: string): string[] {
   ];
 }
 
+function gatherCandidates(projectPath: string, baseRef?: string): string[] {
+  if (!baseRef) {
+    return collectWorkingTreeCandidates(projectPath);
+  }
+
+  const resolvedRef = resolveGitDiffRef(projectPath, baseRef);
+  if (!resolvedRef) {
+    return collectWorkingTreeCandidates(projectPath);
+  }
+
+  const mergeBase = runGitValue(projectPath, ['merge-base', 'HEAD', resolvedRef]);
+  const rangeStart = mergeBase ?? resolvedRef;
+  return runGitDiff(projectPath, [
+    'diff',
+    '--name-only',
+    '--diff-filter=ACMRTUXB',
+    `${rangeStart}...HEAD`,
+  ]);
+}
+
+function filterTemplateChanges(candidates: string[], relTemplatesDir: string): Set<string> {
+  const changed = new Set<string>();
+
+  for (const filePath of candidates) {
+    if (!filePath.endsWith('.twig') && !filePath.endsWith('.html')) continue;
+    if (!isSafeRelativePath(filePath)) continue;
+
+    if (relTemplatesDir.length === 0 || relTemplatesDir === '.') {
+      changed.add(filePath);
+      continue;
+    }
+
+    if (filePath === relTemplatesDir) continue;
+    if (!filePath.startsWith(`${relTemplatesDir}/`)) continue;
+
+    const relativePath = filePath.slice(relTemplatesDir.length + 1);
+    if (!isSafeRelativePath(relativePath)) continue;
+
+    changed.add(relativePath);
+  }
+
+  return changed;
+}
+
 export function getChangedTemplateIssuePaths(
   projectPath: string,
   templatesPath: string,
@@ -162,58 +206,20 @@ export function getChangedTemplateIssuePathsWithStatus(
   reason?: 'git-unavailable' | 'not-a-git-repo';
 } {
   const gitAvailable = canRunGit(projectPath);
-  const inRepo = gitAvailable ? isInsideWorkTree(projectPath) : false;
   if (!gitAvailable) {
-    return { paths: new Set(), gitAvailable, inRepo, reason: 'git-unavailable' };
+    return { paths: new Set(), gitAvailable, inRepo: false, reason: 'git-unavailable' };
   }
+
+  const inRepo = isInsideWorkTree(projectPath);
   if (!inRepo) {
     return { paths: new Set(), gitAvailable, inRepo, reason: 'not-a-git-repo' };
   }
 
   const relTemplatesDir = normalizePath(path.relative(projectPath, templatesPath)).replace(/\/+$/, '');
-  const changed = new Set<string>();
+  const candidates = gatherCandidates(projectPath, baseRef);
+  const paths = filterTemplateChanges(candidates, relTemplatesDir);
 
-  const candidates = (() => {
-    if (baseRef) {
-      const resolvedRef = resolveGitDiffRef(projectPath, baseRef);
-      if (!resolvedRef) {
-        return collectWorkingTreeCandidates(projectPath);
-      }
-      const mergeBase = runGitValue(projectPath, ['merge-base', 'HEAD', resolvedRef]);
-      const rangeStart = mergeBase ?? resolvedRef;
-      return runGitDiff(projectPath, [
-        'diff',
-        '--name-only',
-        '--diff-filter=ACMRTUXB',
-        `${rangeStart}...HEAD`,
-      ]);
-    }
-
-    return collectWorkingTreeCandidates(projectPath);
-  })();
-
-  for (const filePath of candidates) {
-    if (!filePath.endsWith('.twig') && !filePath.endsWith('.html')) continue;
-
-    // Validate path doesn't contain traversal attempts
-    if (!isSafeRelativePath(filePath)) continue;
-
-    if (relTemplatesDir.length === 0 || relTemplatesDir === '.') {
-      changed.add(filePath);
-      continue;
-    }
-
-    if (filePath === relTemplatesDir) continue;
-    if (!filePath.startsWith(`${relTemplatesDir}/`)) continue;
-
-    const relativePath = filePath.slice(relTemplatesDir.length + 1);
-    // Double-check the sliced path is also safe
-    if (!isSafeRelativePath(relativePath)) continue;
-
-    changed.add(relativePath);
-  }
-
-  return { paths: changed, gitAvailable, inRepo };
+  return { paths, gitAvailable, inRepo };
 }
 
 export const __testUtils = {

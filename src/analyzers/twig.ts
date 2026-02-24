@@ -1,7 +1,7 @@
-import { execFile } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
+import { execFile } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { promisify } from 'node:util';
 
 import { TemplateIssue, Fix } from '../types';
 
@@ -37,6 +37,7 @@ const RULE_ID_BY_PATTERN: Record<string, string> = {
   'missing-status-filter': 'template/missing-status-filter',
   'dump-call': 'template/dump-call',
   'include-tag': 'template/include-tag',
+  'form-missing-csrf': 'template/form-missing-csrf',
 };
 
 const DOCS_URL_BY_PATTERN: Record<string, string> = {
@@ -51,34 +52,44 @@ const DOCS_URL_BY_PATTERN: Record<string, string> = {
   'missing-status-filter': 'https://craftcms.com/docs/5.x/development/element-queries#status',
   'dump-call': 'https://craftcms.com/docs/5.x/development/twig#debugging',
   'include-tag': 'https://twig.symfony.com/doc/3.x/functions/include.html',
+  'form-missing-csrf': 'https://craftcms.com/docs/5.x/development/forms#csrf',
 };
 
+const KNOWN_PATTERNS = new Set([
+  'n+1',
+  'missing-eager-load',
+  'deprecated',
+  'missing-limit',
+  'mixed-loading-strategy',
+  'xss-raw-output',
+  'ssti-dynamic-include',
+  'missing-status-filter',
+  'dump-call',
+  'include-tag',
+  'form-missing-csrf',
+]);
+
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
-  if (pattern === 'n+1') return 'n+1';
-  if (pattern === 'missing-eager-load') return 'missing-eager-load';
-  if (pattern === 'deprecated') return 'deprecated';
-  if (pattern === 'missing-limit') return 'missing-limit';
-  if (pattern === 'mixed-loading-strategy') return 'mixed-loading-strategy';
-  if (pattern === 'xss-raw-output') return 'xss-raw-output';
-  if (pattern === 'ssti-dynamic-include') return 'ssti-dynamic-include';
-  if (pattern === 'missing-status-filter') return 'missing-status-filter';
-  if (pattern === 'dump-call') return 'dump-call';
-  if (pattern === 'include-tag') return 'include-tag';
+  if (pattern && KNOWN_PATTERNS.has(pattern)) return pattern as TemplateIssue['pattern'];
   return 'inefficient-query';
 }
 
+const CONFIDENCE_BY_PATTERN: Record<string, number> = {
+  'n+1': 0.82,
+  'missing-eager-load': 0.78,
+  deprecated: 0.95,
+  'missing-limit': 0.74,
+  'mixed-loading-strategy': 0.90,
+  'xss-raw-output': 0.88,
+  'ssti-dynamic-include': 0.92,
+  'missing-status-filter': 0.70,
+  'dump-call': 0.98,
+  'include-tag': 0.95,
+  'form-missing-csrf': 0.90,
+};
+
 function confidenceForPattern(pattern: TemplateIssue['pattern']): number {
-  if (pattern === 'n+1') return 0.82;
-  if (pattern === 'missing-eager-load') return 0.78;
-  if (pattern === 'deprecated') return 0.95;
-  if (pattern === 'missing-limit') return 0.74;
-  if (pattern === 'mixed-loading-strategy') return 0.90;
-  if (pattern === 'xss-raw-output') return 0.88;
-  if (pattern === 'ssti-dynamic-include') return 0.92;
-  if (pattern === 'missing-status-filter') return 0.70;
-  if (pattern === 'dump-call') return 0.98;
-  if (pattern === 'include-tag') return 0.95;
-  return 0.65;
+  return CONFIDENCE_BY_PATTERN[pattern] ?? 0.65;
 }
 
 function toTemplateIssue(issue: PhpTemplateIssue): TemplateIssue {
@@ -145,6 +156,7 @@ export async function analyzeTwigTemplates(
   try {
     const { stdout, stderr } = await execFileAsync('php', [phpScriptPath, templatesPath], {
       maxBuffer: 10 * 1024 * 1024,
+      timeout: 30_000,
     });
 
     if (verbose && stderr.trim().length > 0) {

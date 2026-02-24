@@ -23,7 +23,7 @@ pipelines:
           script:
             - npm ci
             - npm run build
-            - node dist/cli.js audit-ci . --output bitbucket --publish-bitbucket --bitbucket-token-env BITBUCKET_TOKEN --debug-profile ./runtime/debug-profile.json
+            - npx craft-audit audit-ci . --output bitbucket --publish-bitbucket --bitbucket-token-env BITBUCKET_TOKEN --debug-profile ./runtime/debug-profile.json
 ```
 
 Required env vars in Bitbucket:
@@ -46,7 +46,7 @@ Optional overrides:
 If you prefer not to use direct publish, emit payload JSON and post it yourself:
 
 ```bash
-node dist/cli.js audit-ci . --output bitbucket --output-file craft-audit-bitbucket.json
+npx craft-audit audit-ci . --output bitbucket --output-file craft-audit-bitbucket.json
 ```
 
 The JSON contains:

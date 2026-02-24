@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
 
@@ -33,6 +33,73 @@ function safeRealpath(filePath: string): string | undefined {
   }
 }
 
+function safeReadDir(dirPath: string): fs.Dirent[] {
+  try {
+    return fs.readdirSync(dirPath, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+}
+
+function shouldSkipDir(name: string): boolean {
+  return SKIP_DIR_NAMES.has(name);
+}
+
+function matchesExtension(filePath: string, extensions: Set<string>): boolean {
+  return extensions.has(path.extname(filePath).toLowerCase());
+}
+
+function enqueueDirectory(
+  fullPath: string,
+  name: string,
+  queue: string[],
+  visitedDirs: Set<string>,
+  queueOverflow: boolean
+): boolean {
+  if (shouldSkipDir(name)) return queueOverflow;
+
+  const realPath = safeRealpath(fullPath);
+  if (!realPath || visitedDirs.has(realPath)) return queueOverflow;
+
+  visitedDirs.add(realPath);
+
+  if (queue.length >= MAX_QUEUE_SIZE) return true;
+
+  queue.push(fullPath);
+  return queueOverflow;
+}
+
+function processEntries(
+  entries: fs.Dirent[],
+  current: string,
+  files: string[],
+  maxFiles: number,
+  queue: string[],
+  visitedDirs: Set<string>,
+  queueOverflow: boolean
+): { truncated: boolean; queueOverflow: boolean } {
+  let truncated = false;
+
+  for (const entry of entries) {
+    if (files.length >= maxFiles) {
+      truncated = true;
+      break;
+    }
+
+    if (entry.isSymbolicLink()) continue;
+
+    const fullPath = path.join(current, entry.name);
+
+    if (entry.isDirectory()) {
+      queueOverflow = enqueueDirectory(fullPath, entry.name, queue, visitedDirs, queueOverflow);
+    } else if (entry.isFile()) {
+      files.push(fullPath);
+    }
+  }
+
+  return { truncated, queueOverflow };
+}
+
 function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): { files: string[]; truncated: boolean } {
   const files: string[] = [];
   const queue = [rootDir];
@@ -40,7 +107,6 @@ function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): { files: str
   let truncated = false;
   let queueOverflow = false;
 
-  // Track root directory to detect cycles
   const rootReal = safeRealpath(rootDir);
   if (rootReal) visitedDirs.add(rootReal);
 
@@ -48,53 +114,10 @@ function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): { files: str
     const current = queue.shift();
     if (!current) continue;
 
-    let entries: fs.Dirent[] = [];
-    try {
-      entries = fs.readdirSync(current, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-
-    for (const entry of entries) {
-      if (files.length >= maxFiles) {
-        truncated = true;
-        break;
-      }
-
-      // Skip symlinks to prevent cycles and unexpected behavior
-      if (entry.isSymbolicLink()) {
-        continue;
-      }
-
-      const fullPath = path.join(current, entry.name);
-
-      if (entry.isDirectory()) {
-        // Skip common non-source directories
-        if (SKIP_DIR_NAMES.has(entry.name)) {
-          continue;
-        }
-
-        // Resolve realpath to detect cycles
-        const realPath = safeRealpath(fullPath);
-        if (!realPath) continue;
-
-        // Skip if already visited (cycle detection)
-        if (visitedDirs.has(realPath)) {
-          continue;
-        }
-        visitedDirs.add(realPath);
-
-        // Guard against queue overflow
-        if (queue.length >= MAX_QUEUE_SIZE) {
-          queueOverflow = true;
-          continue;
-        }
-
-        queue.push(fullPath);
-      } else if (entry.isFile()) {
-        files.push(fullPath);
-      }
-    }
+    const entries = safeReadDir(current);
+    const result = processEntries(entries, current, files, maxFiles, queue, visitedDirs, queueOverflow);
+    if (result.truncated) truncated = true;
+    queueOverflow = result.queueOverflow;
   }
 
   if (!truncated && (queue.length > 0 || queueOverflow) && files.length >= maxFiles) {
@@ -179,7 +202,7 @@ function scanGeneralConfig(projectPath: string): SecurityIssue[] {
 
   // Check for dangerous file extensions
   const dangerousExtensions = ['php', 'phar', 'sh', 'bash', 'exe', 'bat', 'cmd'];
-  const extMatch = content.match(/['"]extraAllowedFileExtensions['"]\s*=>\s*\[([^\]]+)\]/i);
+  const extMatch = /['"]extraAllowedFileExtensions['"]\s*=>\s*\[([^\]]+)\]/i.exec(content);
   if (extMatch) {
     const extensions = extMatch[1].toLowerCase();
     const found = dangerousExtensions.filter(ext => extensions.includes(`'${ext}'`) || extensions.includes(`"${ext}"`));
@@ -237,8 +260,7 @@ function scanDebugPatterns(
   const { files: allFiles, truncated } = walkFiles(projectPath, fileLimit);
 
   for (const filePath of allFiles) {
-    const extension = path.extname(filePath).toLowerCase();
-    if (!TEXT_FILE_EXTENSIONS.has(extension)) continue;
+    if (!matchesExtension(filePath, TEXT_FILE_EXTENSIONS)) continue;
 
     const relativePath = toRelative(projectPath, filePath);
     if (relativePath.startsWith('vendor/') || relativePath.startsWith('node_modules/')) continue;
@@ -272,6 +294,145 @@ function scanDebugPatterns(
   return { issues, truncated, scannedFiles: allFiles.length };
 }
 
+interface CveEntry {
+  id: string;
+  title: string;
+  severity: 'high' | 'medium';
+  affects: Array<{ minMajor: number; maxMajor: number; fixedAt: string }>;
+  docsUrl: string;
+}
+
+const KNOWN_CVES: CveEntry[] = [
+  {
+    id: 'CVE-2024-56145',
+    title: 'RCE via Twig SSTI when register_argc_argv is On',
+    severity: 'high',
+    affects: [
+      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.14' },
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.12.8' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.5.3' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-56145',
+  },
+  {
+    id: 'CVE-2024-52293',
+    title: 'Path traversal in dashboard widget template path',
+    severity: 'high',
+    affects: [
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.4.3' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-52293',
+  },
+  {
+    id: 'CVE-2024-41800',
+    title: 'TOTP token MFA bypass via timing attack',
+    severity: 'medium',
+    affects: [
+      { minMajor: 3, maxMajor: 3, fixedAt: '3.9.9' },
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.12.1' },
+      { minMajor: 5, maxMajor: 5, fixedAt: '5.2.3' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2024-41800',
+  },
+  {
+    id: 'CVE-2023-41892',
+    title: 'Unauthenticated RCE in Craft CMS 4.x',
+    severity: 'high',
+    affects: [
+      { minMajor: 4, maxMajor: 4, fixedAt: '4.4.15' },
+    ],
+    docsUrl: 'https://nvd.nist.gov/vuln/detail/CVE-2023-41892',
+  },
+];
+
+function parseVersion(versionStr: string): { major: number; minor: number; patch: number } | undefined {
+  const match = /(\d+)\.(\d+)\.(\d+)/.exec(versionStr);
+  if (!match) return undefined;
+  return {
+    major: Number.parseInt(match[1], 10),
+    minor: Number.parseInt(match[2], 10),
+    patch: Number.parseInt(match[3], 10),
+  };
+}
+
+function isVersionAffected(
+  version: { major: number; minor: number; patch: number },
+  affects: CveEntry['affects']
+): boolean {
+  for (const range of affects) {
+    if (version.major < range.minMajor || version.major > range.maxMajor) continue;
+    const fixed = parseVersion(range.fixedAt);
+    if (!fixed) continue;
+    if (
+      version.major < fixed.major ||
+      (version.major === fixed.major && version.minor < fixed.minor) ||
+      (version.major === fixed.major && version.minor === fixed.minor && version.patch < fixed.patch)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function readCraftVersion(projectPath: string): string | undefined {
+  // Try composer.lock first
+  const lockContent = safeRead(path.join(projectPath, 'composer.lock'));
+  if (lockContent) {
+    try {
+      const lock = JSON.parse(lockContent);
+      const pkg = (lock.packages || []).find(
+        (p: { name: string }) => p.name === 'craftcms/cms'
+      );
+      if (pkg?.version) return pkg.version as string;
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  // Fall back to composer.json
+  const jsonContent = safeRead(path.join(projectPath, 'composer.json'));
+  if (jsonContent) {
+    try {
+      const composerJson = JSON.parse(jsonContent);
+      return composerJson.require?.['craftcms/cms'] as string | undefined;
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  return undefined;
+}
+
+function scanKnownCves(projectPath: string): SecurityIssue[] {
+  const issues: SecurityIssue[] = [];
+  const craftVersion = readCraftVersion(projectPath);
+  if (!craftVersion) return issues;
+
+  const version = parseVersion(craftVersion);
+  if (!version) return issues;
+
+  for (const cve of KNOWN_CVES) {
+    if (isVersionAffected(version, cve.affects)) {
+      issues.push({
+        severity: cve.severity,
+        category: 'security',
+        type: 'known-cve',
+        ruleId: 'security/known-cve',
+        message: `${cve.id}: ${cve.title}. Installed version ${craftVersion} is affected.`,
+        suggestion: `Update Craft CMS to the fixed version to resolve ${cve.id}.`,
+        docsUrl: cve.docsUrl,
+        confidence: 0.95,
+        evidence: {
+          details: `craftcms/cms@${craftVersion} major=${version.major}.${version.minor}.${version.patch}`,
+        },
+        fingerprint: `security/known-cve:${cve.id}:${craftVersion}`,
+      });
+    }
+  }
+
+  return issues;
+}
+
 export async function collectSecurityIssues(
   projectPath: string,
   verbose = false,
@@ -282,6 +443,7 @@ export async function collectSecurityIssues(
     ...scanGeneralConfig(projectPath),
     ...scanEnvFile(projectPath),
     ...debugScan.issues,
+    ...scanKnownCves(projectPath),
   ];
 
   if (debugScan.truncated) {

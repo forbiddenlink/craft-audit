@@ -1,7 +1,7 @@
-import { execFile } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
+import { execFile } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { promisify } from 'node:util';
 
 import { VisualIssue } from '../types';
 
@@ -142,6 +142,7 @@ export async function runVisualRegression(
     await execFileAsync('npx', ['backstop', 'test', '--config', configPath], {
       cwd: outputDir,
       maxBuffer: 25 * 1024 * 1024,
+      timeout: 120_000,
     });
     return [];
   } catch (error) {

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { spawn } from 'child_process';
-import * as path from 'path';
+import { spawn } from 'node:child_process';
+import * as path from 'node:path';
 import { CraftAuditConfig } from './config';
 
 export interface CraftAuditFix {
@@ -88,7 +88,6 @@ export class CraftAuditRunner {
 
             const proc = spawn(executable, args, {
                 cwd: workspaceFolder,
-                shell: true
             });
 
             let stdout = '';

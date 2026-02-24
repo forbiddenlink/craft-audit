@@ -104,6 +104,36 @@
     "clickupFindingsUrl": {
       "type": "string"
     },
+    "createLinearIssue": {
+      "type": "boolean",
+      "description": "Enable Linear issue creation."
+    },
+    "linearTeamId": {
+      "type": "string",
+      "description": "Linear team ID for issue creation."
+    },
+    "linearSendOn": {
+      "type": "string",
+      "enum": ["always", "issues", "high"],
+      "description": "When to create Linear issues."
+    },
+    "linearTokenEnv": {
+      "type": "string",
+      "description": "Env var name for Linear API token.",
+      "default": "LINEAR_API_KEY"
+    },
+    "linearLabelIds": {
+      "type": "string",
+      "description": "Comma-separated Linear label IDs."
+    },
+    "linearProjectId": {
+      "type": "string",
+      "description": "Linear project ID."
+    },
+    "linearFindingsUrl": {
+      "type": "string",
+      "description": "URL included in Linear issue body for findings artifact."
+    },
     "publishBitbucket": {
       "type": "boolean"
     },

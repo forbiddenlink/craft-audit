@@ -3,11 +3,12 @@
  * Provides guided remediation of template issues
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as readline from 'readline';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as readline from 'node:readline';
 import chalk from 'chalk';
 import { AuditIssue, Fix } from '../types';
+import { getSuppressionTag } from './suppression';
 
 export interface FixResult {
   fixed: number;
@@ -108,20 +109,7 @@ function insertSuppressionComment(
     const targetLine = lines[lineIndex];
     const indent = targetLine.match(/^\s*/)?.[0] || '';
 
-    // Extract the pattern from ruleId (e.g., "template/n-plus-one-loop" -> "n+1" or use full ruleId)
-    const patternMap: Record<string, string> = {
-      'template/n-plus-one-loop': 'n+1',
-      'template/missing-limit': 'missing-limit',
-      'template/deprecated-api': 'deprecated',
-      'template/mixed-loading-strategy': 'mixed-loading-strategy',
-      'template/xss-raw-output': 'xss-raw-output',
-      'template/ssti-dynamic-include': 'ssti-dynamic-include',
-      'template/missing-status-filter': 'missing-status-filter',
-      'template/dump-call': 'dump-call',
-      'template/include-tag': 'include-tag',
-    };
-
-    const suppressionRule = patternMap[ruleId] || ruleId;
+    const suppressionRule = getSuppressionTag(ruleId);
     const suppressionComment = `${indent}{# craft-audit-disable-next-line ${suppressionRule} #}`;
 
     // Insert the comment before the issue line
@@ -270,8 +258,8 @@ export async function runBatchFix(
     }
   }
 
-  // Count skipped (non-fixable or filtered out)
-  result.skipped = issues.length - fixableIssues.length;
+  // Count skipped (non-fixable or filtered out + failed fixes)
+  result.skipped += issues.length - fixableIssues.length;
 
   console.log(chalk.bold('\n📊 Summary\n'));
   if (options.dryRun) {

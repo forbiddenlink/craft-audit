@@ -8,6 +8,7 @@ let runner: CraftAuditRunner;
 let diagnosticsManager: DiagnosticsManager;
 let outputChannel: vscode.OutputChannel;
 let statusBarItem: vscode.StatusBarItem;
+let saveDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
     outputChannel = vscode.window.createOutputChannel('Craft Audit');
@@ -16,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Status bar item
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    statusBarItem.command = 'workbench.action.problems.focus';
+    statusBarItem.command = 'craftAudit.scanFile';
     updateStatusBar(0);
     statusBarItem.show();
 
@@ -46,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
         }),
         vscode.workspace.onDidSaveTextDocument(doc => {
             if (shouldAnalyze(doc, 'save')) {
-                analyzeDocument(doc);
+                debouncedAnalyze(doc);
             }
         }),
         vscode.workspace.onDidCloseTextDocument(doc => {
@@ -74,6 +75,15 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     outputChannel.appendLine('Craft Audit extension activated');
+}
+
+function debouncedAnalyze(doc: vscode.TextDocument) {
+    if (saveDebounceTimer) {
+        clearTimeout(saveDebounceTimer);
+    }
+    saveDebounceTimer = setTimeout(() => {
+        analyzeDocument(doc);
+    }, 500);
 }
 
 function shouldAnalyze(doc: vscode.TextDocument, trigger: 'open' | 'save'): boolean {
@@ -141,9 +151,13 @@ function updateStatusBar(count: number) {
         statusBarItem.text = '$(check) Craft Audit';
         statusBarItem.tooltip = 'No issues found';
     } else {
-        statusBarItem.text = `$(warning) Craft Audit (${count})`;
-        statusBarItem.tooltip = `${count} issue${count === 1 ? '' : 's'} found`;
+        statusBarItem.text = `$(warning) Craft Audit: ${count} issue${count === 1 ? '' : 's'}`;
+        statusBarItem.tooltip = `${count} issue${count === 1 ? '' : 's'} found – click to re-scan`;
     }
 }
 
-export function deactivate() {}
+export function deactivate() {
+    if (saveDebounceTimer) {
+        clearTimeout(saveDebounceTimer);
+    }
+}

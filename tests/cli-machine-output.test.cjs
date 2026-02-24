@@ -407,7 +407,6 @@ test('ruleSettings can override severity from config', () => {
       ruleSettings: {
         'template/n-plus-one-loop': { severity: 'low' },
         'template/missing-status-filter': { enabled: false },
-        'template/missing-limit': { enabled: false },
       },
     }),
     'utf8'

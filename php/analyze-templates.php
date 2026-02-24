@@ -79,8 +79,9 @@ $XSS_SAFE_PREFIXES = ['|purify', '|striptags', '|escape'];
 
 // Debug patterns to remove
 $DEBUG_PATTERNS = [
-    '/\{\{\s*dump\s*\(/',  // {{ dump(...) }}
-    '/\{\{\s*dd\s*\(/',     // {{ dd(...) }} - dump and die
+    '/\{\{\s*dump\s*\(/',   // {{ dump(...) }}
+    '/\{\{\s*dd\s*\(/',      // {{ dd(...) }} - dump and die
+    '/\{%-?\s+dump\b/',       // {% dump expr %} - Twig dump tag
 ];
 
 // Include tag pattern (should use include() function instead)
@@ -150,16 +151,28 @@ $DEPRECATED_PATTERNS = [
         ],
     ],
     [
-        'pattern' => '/{% includeJsFile/',
+        'pattern' => '/\{%-?\s+includeJsFile\b/',
         'message' => 'includeJsFile tag is deprecated',
         'suggestion' => 'Use craft.app.view.registerJsFile() instead',
         'fix' => null, // Complex replacement, not safe to auto-fix
     ],
     [
-        'pattern' => '/{% includeCssFile/',
+        'pattern' => '/\{%-?\s+includeCssFile\b/',
         'message' => 'includeCssFile tag is deprecated',
         'suggestion' => 'Use craft.app.view.registerCssFile() instead',
         'fix' => null, // Complex replacement, not safe to auto-fix
+    ],
+    [
+        'pattern' => '/\{%-?\s+includeCss\b(?!File)/',
+        'message' => '{% includeCss %} tag is deprecated since Craft 3.x',
+        'suggestion' => 'Use {% css %}...{% endcss %} instead',
+        'fix' => null, // Block tag replacement, not safe to auto-fix
+    ],
+    [
+        'pattern' => '/\{%-?\s+includeJs\b(?!File)/',
+        'message' => '{% includeJs %} tag is deprecated since Craft 3.x',
+        'suggestion' => 'Use {% js %}...{% endjs %} instead',
+        'fix' => null, // Block tag replacement, not safe to auto-fix
     ],
 ];
 
@@ -223,6 +236,13 @@ function analyzeFile(string $filePath, string $basePath): array {
     $usesEagerlyInFile = false;
     $withLines = [];
     $eagerlyLines = [];
+
+    // Form CSRF tracking state
+    $inFormTag = false;
+    $formStartLine = 0;
+    $formStartCode = '';
+    $hasCsrfInput = false;
+    $isGetForm = false;
 
     foreach ($lines as $lineNum => $line) {
         $lineNumber = $lineNum + 1;
@@ -550,6 +570,35 @@ function analyzeFile(string $filePath, string $basePath): array {
                     // Skip this check as it produces too many false positives
                 }
             }
+        }
+
+        // Track <form> tags for missing CSRF token detection
+        if (preg_match('/<form\b/i', $line)) {
+            $inFormTag = true;
+            $formStartLine = $lineNumber;
+            $formStartCode = trim($line);
+            $hasCsrfInput = false;
+            $isGetForm = (bool) preg_match('/method\s*=\s*["\']?\s*get\b/i', $line);
+        }
+
+        if ($inFormTag && strpos($line, 'csrfInput()') !== false) {
+            $hasCsrfInput = true;
+        }
+
+        if ($inFormTag && preg_match('/<\/form\s*>/i', $line)) {
+            if (!$hasCsrfInput && !$isGetForm && !$isSuppressed($formStartLine, 'form-missing-csrf')) {
+                $issues[] = [
+                    'severity' => 'high',
+                    'category' => 'template',
+                    'pattern' => 'form-missing-csrf',
+                    'file' => $relativePath,
+                    'line' => $formStartLine,
+                    'message' => 'Form is missing CSRF token protection',
+                    'suggestion' => 'Add {{ csrfInput() }} inside the form to prevent cross-site request forgery attacks',
+                    'code' => $formStartCode,
+                ];
+            }
+            $inFormTag = false;
         }
     }
 

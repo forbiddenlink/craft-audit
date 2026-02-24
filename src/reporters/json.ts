@@ -1,4 +1,5 @@
 import { AuditResult } from '../types';
+import { TOOL_VERSION } from '../core/version';
 
 interface JsonAuditEnvelope {
   schemaVersion: string;
@@ -9,7 +10,7 @@ interface JsonAuditEnvelope {
 export class JsonReporter {
   toJson(result: AuditResult): string {
     const envelope: JsonAuditEnvelope = {
-      schemaVersion: '1.0.0',
+      schemaVersion: TOOL_VERSION,
       generatedAt: new Date().toISOString(),
       result,
     };

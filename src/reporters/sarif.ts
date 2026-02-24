@@ -1,5 +1,6 @@
 import { AuditIssue, AuditResult } from '../types';
 import { getRuleMetadata } from '../core/rule-metadata';
+import { TOOL_VERSION } from '../core/version';
 
 interface SarifLocation {
   physicalLocation: {
@@ -129,8 +130,8 @@ export class SarifReporter {
           tool: {
             driver: {
               name: 'craft-audit',
-              informationUri: 'https://github.com',
-              version: '1.0.0',
+              informationUri: 'https://github.com/craft-audit/craft-audit',
+              version: TOOL_VERSION,
               rules: Array.from(rulesById.values()),
             },
           },

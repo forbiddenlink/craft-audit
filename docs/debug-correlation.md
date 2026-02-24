@@ -5,13 +5,13 @@ Use runtime profile data to prioritize findings by real query/time cost.
 ## Usage
 
 ```bash
-node dist/cli.js audit . --output json --debug-profile ./runtime/debug-profile.json
+craft-audit audit . --output json --debug-profile ./runtime/debug-profile.json
 ```
 
 `audit-ci` also supports this option:
 
 ```bash
-node dist/cli.js audit-ci . --output bitbucket --debug-profile ./runtime/debug-profile.json
+craft-audit audit-ci . --output bitbucket --debug-profile ./runtime/debug-profile.json
 ```
 
 ## Expected JSON shape

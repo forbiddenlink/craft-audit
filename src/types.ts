@@ -36,7 +36,7 @@ export interface AuditIssue {
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf';
 }
 
 export interface SystemIssue extends AuditIssue {
@@ -56,7 +56,7 @@ export interface SystemIssue extends AuditIssue {
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve';
 }
 
 export interface VisualIssue extends AuditIssue {
@@ -120,4 +120,55 @@ export interface TwigAnalysisResult {
   issues: TemplateIssue[];
   queriesFound: number;
   loopsFound: number;
+}
+
+export interface AuditCommandOptions {
+  templates?: string;
+  skipTemplates?: boolean;
+  changedOnly?: boolean;
+  baseRef?: string;
+  skipSystem?: boolean;
+  skipSecurity?: boolean;
+  securityFileLimit?: number;
+  skipVisual?: boolean;
+  production?: string;
+  staging?: string;
+  baseline?: string | boolean;
+  writeBaseline?: string | boolean;
+  output?: string;
+  outputFile?: string;
+  exitThreshold?: string;
+  debugProfile?: string;
+  config?: string;
+  verbose?: boolean;
+  notifySlack?: boolean;
+  slackWebhookUrl?: string;
+  slackSendOn?: string;
+  createClickupTask?: boolean;
+  clickupListId?: string;
+  clickupSendOn?: string;
+  clickupTokenEnv?: string;
+  clickupOnlyNew?: boolean;
+  clickupStateFile?: string;
+  clickupFindingsUrl?: string;
+  createLinearIssue?: boolean;
+  linearTeamId?: string;
+  linearSendOn?: string;
+  linearTokenEnv?: string;
+  linearLabelIds?: string;
+  linearProjectId?: string;
+  linearFindingsUrl?: string;
+  publishBitbucket?: boolean;
+  bitbucketWorkspace?: string;
+  bitbucketRepoSlug?: string;
+  bitbucketCommit?: string;
+  bitbucketTokenEnv?: string;
+  bitbucketSendOn?: string;
+  bitbucketReportId?: string;
+  bitbucketReportLink?: string;
+  preset?: string;
+  ruleSettings?: import('./core/rule-tuning').RuleSettings;
+  title?: string;
+  commandName?: 'audit' | 'audit-ci';
+  optionSources?: Record<string, string | undefined>;
 }

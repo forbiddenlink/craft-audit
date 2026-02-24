@@ -1,7 +1,7 @@
-import { execFile } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
+import { execFile } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { promisify } from 'node:util';
 
 import { CraftInfo, PluginInfo, SystemIssue } from '../types';
 import { collectComposerSystemIssues } from './composer-checks';

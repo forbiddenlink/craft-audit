@@ -1,0 +1,23 @@
+{% extends "_layout" %}
+
+{% block content %}
+<h1>Latest News</h1>
+
+{# This has N+1 issue - no eager loading #}
+{% for entry in craft.entries.section('news').limit(10) %}
+  <article>
+    <h2>{{ entry.title }}</h2>
+    <p>Author: {{ entry.author.one().fullName }}</p>
+    <img src="{{ entry.featuredImage.one().url }}" alt="">
+  </article>
+{% endfor %}
+
+{# This is fine - uses .with() for eager loading #}
+{% set articles = craft.entries.section('blog').with(['author', 'heroImage']).limit(5) %}
+{% for article in articles %}
+  <div>
+    <h3>{{ article.title }}</h3>
+    <span>{{ article.author.one().name }}</span>
+  </div>
+{% endfor %}
+{% endblock %}

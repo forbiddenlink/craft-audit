@@ -1,12 +1,42 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+
+# Visual regression data
 backstop_data/
+
+# Logs
 *.log
+
+# Test coverage
 coverage/
+
+# OS files
 .DS_Store
+Thumbs.db
 
+# IDE / editor
+.idea/
+*.swp
+*.swo
+*~
 
+# Local History (VS Code extension)
+.history/
 
-#Ignore vscode AI rules
-.github/instructions/codacy.instructions.md
-test-craft-project/
+# Claude Code agent files
+.claude/
+
+# Codacy local config
+.codacy/
+
+# Craft Audit state files (generated at runtime)
+.craft-audit-clickup-state.json
+.craft-audit-baseline.json
+
+# Env files
+.env
+.env.local
+.env.*.local

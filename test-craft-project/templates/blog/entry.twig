@@ -1,0 +1,27 @@
+{% extends "_layout" %}
+
+{% block title %}{{ entry.title }} | Blog{% endblock %}
+
+{% block content %}
+<article>
+    <h1>{{ entry.title }}</h1>
+
+    {# Deprecated API usage #}
+    <p>Current URL: {{ craft.request.url }}</p>
+    <p>Site name: {{ craft.config.siteName }}</p>
+
+    {# N+1 suppressed - we know this is intentional #}
+    {# craft-audit-disable-next-line n+1 #}
+    <p>Category: {{ entry.category.one().title }}</p>
+
+    <div class="content">
+        {{ entry.body }}
+    </div>
+
+    {# Related entries without limit - potential issue #}
+    <h2>Related Posts</h2>
+    {% for related in craft.entries.section('blog').relatedTo(entry) %}
+        <a href="{{ related.url }}">{{ related.title }}</a>
+    {% endfor %}
+</article>
+{% endblock %}

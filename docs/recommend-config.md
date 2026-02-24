@@ -5,19 +5,19 @@ Use `recommend-config` to analyze template findings and generate a tuned startin
 ## Usage
 
 ```bash
-node dist/cli.js recommend-config /path/to/craft-project
+craft-audit recommend-config /path/to/craft-project
 ```
 
 JSON output:
 
 ```bash
-node dist/cli.js recommend-config /path/to/craft-project --output json
+craft-audit recommend-config /path/to/craft-project --output json
 ```
 
 Write to file:
 
 ```bash
-node dist/cli.js recommend-config /path/to/craft-project --output json --output-file recommendation.json
+craft-audit recommend-config /path/to/craft-project --output json --output-file recommendation.json
 ```
 
 ## What it does

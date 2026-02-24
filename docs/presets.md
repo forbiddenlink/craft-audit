@@ -27,7 +27,7 @@ Presets provide fast starting profiles for teams with multiple sites.
 CLI:
 
 ```bash
-node dist/cli.js audit . --preset legacy-migration --output json
+craft-audit audit . --preset legacy-migration --output json
 ```
 
 Config:
@@ -40,4 +40,4 @@ Config:
 
 Custom `ruleSettings` still override preset defaults.
 
-Tip: see `/Volumes/LizsDisk/craft-audit/docs/recommend-config.md` to pick a preset from real findings.
+Tip: see [Config Recommendations](recommend-config.md) to pick a preset from real findings.

@@ -1,0 +1,28 @@
+{% extends "_layout" %}
+
+{% block title %}Clean Page{% endblock %}
+
+{% block content %}
+{# This template follows all best practices #}
+
+{# Proper eager loading with .with() #}
+{% set entries = craft.entries
+    .section('news')
+    .with(['author', 'featuredImage', 'categories'])
+    .limit(10)
+    .all() %}
+
+{% for entry in entries %}
+    <article>
+        <h2>{{ entry.title }}</h2>
+        <span>By {{ entry.author.one().fullName }}</span>
+
+        {% if entry.featuredImage.one() %}
+            <img src="{{ entry.featuredImage.one().url }}" alt="{{ entry.title }}">
+        {% endif %}
+
+        <p>{{ entry.summary }}</p>
+        <a href="{{ entry.url }}">Read more</a>
+    </article>
+{% endfor %}
+{% endblock %}

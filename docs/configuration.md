@@ -27,6 +27,9 @@ Note: `html` output requires `outputFile` to be set.
   "createClickupTask": true,
   "clickupListId": "123456789",
   "clickupSendOn": "high",
+  "createLinearIssue": true,
+  "linearTeamId": "TEAM_ID",
+  "linearSendOn": "high",
   "publishBitbucket": true,
   "bitbucketWorkspace": "acme",
   "bitbucketRepoSlug": "craft-site",
@@ -81,19 +84,29 @@ Note: `html` output requires `outputFile` to be set.
 - `bitbucketReportId`
 - `bitbucketReportLink`
 - `preset`
+- `createLinearIssue`
+- `linearTeamId`
+- `linearSendOn`
+- `linearTokenEnv`
+- `linearLabelIds`
+- `linearProjectId`
+- `linearFindingsUrl`
+- `title`
 - `ruleSettings`
 
 ## Integration env vars
 
 - `SLACK_WEBHOOK_URL`
 - `CLICKUP_API_TOKEN` (or custom name via `clickupTokenEnv`)
-- `CRAFT_AUDIT_FINDINGS_URL` (used when `clickupFindingsUrl` is not set)
+- `LINEAR_API_KEY` (or custom name via `linearTokenEnv`)
+- `CRAFT_AUDIT_FINDINGS_URL` (used when `clickupFindingsUrl` or `linearFindingsUrl` is not set)
 - `BITBUCKET_TOKEN` (or custom name via `bitbucketTokenEnv`)
 
 Integrations are optional and disabled by default. They run only when enabled:
 
 - Slack: `notifySlack: true`
 - ClickUp: `createClickupTask: true`
+- Linear: `createLinearIssue: true`
 - Bitbucket publish: `publishBitbucket: true`
 
 ## Rule tuning
@@ -115,9 +128,9 @@ Integrations are optional and disabled by default. They run only when enabled:
 }
 ```
 
-More examples: `/Volumes/LizsDisk/craft-audit/docs/rule-tuning.md`.
+More examples: [Rule Tuning](rule-tuning.md).
 
-Runtime correlation examples: `/Volumes/LizsDisk/craft-audit/docs/debug-correlation.md`.
+Runtime correlation examples: [Debug Correlation](debug-correlation.md).
 
 ## Presets
 
@@ -128,7 +141,7 @@ Use `preset` for baseline behavior:
 - `legacy-migration`: downgrades high-volume legacy template rules for phased rollout
 
 Generate a starting preset and scoped overrides from real findings:
-`/Volumes/LizsDisk/craft-audit/docs/recommend-config.md`.
+[Config Recommendations](recommend-config.md).
 
 ## Security scan limits
 

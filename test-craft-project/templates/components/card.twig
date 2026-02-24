@@ -1,0 +1,15 @@
+{# Component: Entry Card #}
+{# @param entry - The entry to display #}
+
+<div class="card">
+    <h3>{{ entry.title }}</h3>
+
+    {# This uses .eagerly() - Craft 5 lazy eager loading #}
+    {% if entry.heroImage.eagerly().one() %}
+        <img src="{{ entry.heroImage.eagerly().one().url }}" alt="{{ entry.title }}">
+    {% endif %}
+
+    <p>{{ entry.summary | default(entry.body | striptags | slice(0, 150) ~ '...') }}</p>
+
+    <a href="{{ entry.url }}">Read more</a>
+</div>

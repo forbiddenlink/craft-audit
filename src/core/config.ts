@@ -1,5 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import type { Severity } from '../types';
 
 export const SUPPORTED_OUTPUT_FORMATS = ['console', 'json', 'sarif', 'bitbucket', 'html'] as const;
 export type SupportedOutputFormat = (typeof SUPPORTED_OUTPUT_FORMATS)[number];
@@ -8,6 +9,7 @@ export type SupportedAuditCiOutputFormat = (typeof SUPPORTED_AUDIT_CI_OUTPUT_FOR
 export const SUPPORTED_RECOMMEND_OUTPUT_FORMATS = ['console', 'json'] as const;
 export type SupportedRecommendOutputFormat = (typeof SUPPORTED_RECOMMEND_OUTPUT_FORMATS)[number];
 export type SupportedExitThreshold = 'none' | 'high' | 'medium' | 'low' | 'info';
+export type SendOnMode = 'always' | 'issues' | 'high';
 
 export interface AuditFileConfig {
   templates?: string;
@@ -29,17 +31,17 @@ export interface AuditFileConfig {
   verbose?: boolean;
   notifySlack?: boolean;
   slackWebhookUrl?: string;
-  slackSendOn?: 'always' | 'issues' | 'high';
+  slackSendOn?: SendOnMode;
   createClickupTask?: boolean;
   clickupListId?: string;
-  clickupSendOn?: 'always' | 'issues' | 'high';
+  clickupSendOn?: SendOnMode;
   clickupTokenEnv?: string;
   clickupOnlyNew?: boolean;
   clickupStateFile?: string;
   clickupFindingsUrl?: string;
   createLinearIssue?: boolean;
   linearTeamId?: string;
-  linearSendOn?: 'always' | 'issues' | 'high';
+  linearSendOn?: SendOnMode;
   linearTokenEnv?: string;
   linearLabelIds?: string;
   linearProjectId?: string;
@@ -49,7 +51,7 @@ export interface AuditFileConfig {
   bitbucketRepoSlug?: string;
   bitbucketCommit?: string;
   bitbucketTokenEnv?: string;
-  bitbucketSendOn?: 'always' | 'issues' | 'high';
+  bitbucketSendOn?: SendOnMode;
   bitbucketReportId?: string;
   bitbucketReportLink?: string;
   preset?: 'strict' | 'balanced' | 'legacy-migration';
@@ -57,7 +59,7 @@ export interface AuditFileConfig {
     string,
     {
       enabled?: boolean;
-      severity?: 'high' | 'medium' | 'low' | 'info';
+      severity?: Severity;
       ignorePaths?: string[];
     }
   >;
@@ -92,6 +94,241 @@ function resolvePathValue(value: string, configDirectory: string): string {
   return path.isAbsolute(value) ? value : path.resolve(configDirectory, value);
 }
 
+type ConfigFieldSpec =
+  | { type: 'string' }
+  | { type: 'path' }
+  | { type: 'boolean' }
+  | { type: 'sendOn' };
+
+const CONFIG_FIELD_SPECS: Record<string, ConfigFieldSpec> = {
+  templates: { type: 'path' },
+  skipTemplates: { type: 'boolean' },
+  changedOnly: { type: 'boolean' },
+  baseRef: { type: 'string' },
+  skipSystem: { type: 'boolean' },
+  skipSecurity: { type: 'boolean' },
+  skipVisual: { type: 'boolean' },
+  production: { type: 'string' },
+  staging: { type: 'string' },
+  outputFile: { type: 'path' },
+  debugProfile: { type: 'path' },
+  verbose: { type: 'boolean' },
+  notifySlack: { type: 'boolean' },
+  slackWebhookUrl: { type: 'string' },
+  slackSendOn: { type: 'sendOn' },
+  createClickupTask: { type: 'boolean' },
+  clickupListId: { type: 'string' },
+  clickupSendOn: { type: 'sendOn' },
+  clickupTokenEnv: { type: 'string' },
+  clickupOnlyNew: { type: 'boolean' },
+  clickupStateFile: { type: 'path' },
+  clickupFindingsUrl: { type: 'string' },
+  createLinearIssue: { type: 'boolean' },
+  linearTeamId: { type: 'string' },
+  linearSendOn: { type: 'sendOn' },
+  linearTokenEnv: { type: 'string' },
+  linearLabelIds: { type: 'string' },
+  linearProjectId: { type: 'string' },
+  linearFindingsUrl: { type: 'string' },
+  publishBitbucket: { type: 'boolean' },
+  bitbucketWorkspace: { type: 'string' },
+  bitbucketRepoSlug: { type: 'string' },
+  bitbucketCommit: { type: 'string' },
+  bitbucketTokenEnv: { type: 'string' },
+  bitbucketSendOn: { type: 'sendOn' },
+  bitbucketReportId: { type: 'string' },
+  bitbucketReportLink: { type: 'string' },
+};
+
+const VALID_SEND_ON_VALUES = new Set<string>(['always', 'issues', 'high']);
+
+type FieldValidator = (value: unknown, key: string, configDirectory: string) => { valid: boolean; result?: unknown; error?: string };
+
+const FIELD_VALIDATORS: Record<string, FieldValidator> = {
+  string: (value, key) =>
+    typeof value === 'string' ? { valid: true, result: value } : { valid: false, error: `Config key "${key}" must be a string.` },
+  path: (value, key, configDirectory) =>
+    typeof value === 'string' ? { valid: true, result: resolvePathValue(value, configDirectory) } : { valid: false, error: `Config key "${key}" must be a string.` },
+  boolean: (value, key) =>
+    typeof value === 'boolean' ? { valid: true, result: value } : { valid: false, error: `Config key "${key}" must be a boolean.` },
+  sendOn: (value, key) =>
+    typeof value === 'string' && VALID_SEND_ON_VALUES.has(value) ? { valid: true, result: value as SendOnMode } : { valid: false, error: `Config key "${key}" must be one of: always, issues, high.` },
+};
+
+const SPECIAL_CASE_KEYS = new Set(['$schema', 'securityFileLimit', 'baseline', 'writeBaseline', 'output', 'exitThreshold', 'preset', 'ruleSettings']);
+const VALID_PRESETS = new Set(['strict', 'balanced', 'legacy-migration']);
+
+function validateBooleanOrPath(
+  raw: Record<string, unknown>,
+  key: string,
+  configDirectory: string,
+  errors: string[]
+): boolean | string | undefined {
+  const value = raw[key];
+  if (value === undefined) return undefined;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') return resolvePathValue(value, configDirectory);
+  errors.push(`Config key "${key}" must be a boolean or string path.`);
+  return undefined;
+}
+
+function validateEnumField<T extends string>(
+  raw: Record<string, unknown>,
+  key: string,
+  allowedValues: ReadonlySet<string>,
+  label: string,
+  errors: string[]
+): T | undefined {
+  const value = raw[key];
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || !allowedValues.has(value)) {
+    errors.push(`Config key "${key}" must be one of: ${label}.`);
+    return undefined;
+  }
+  return value as T;
+}
+
+function validateSingleRuleSetting(
+  ruleId: string,
+  ruleValue: Record<string, unknown>,
+  errors: string[]
+): { enabled?: boolean; severity?: Severity; ignorePaths?: string[] } {
+  const setting: { enabled?: boolean; severity?: Severity; ignorePaths?: string[] } = {};
+
+  if (ruleValue.enabled !== undefined) {
+    if (typeof ruleValue.enabled === 'boolean') {
+      setting.enabled = ruleValue.enabled;
+    } else {
+      errors.push(`ruleSettings["${ruleId}"].enabled must be a boolean.`);
+    }
+  }
+
+  if (ruleValue.severity !== undefined) {
+    if (
+      typeof ruleValue.severity === 'string' &&
+      ['high', 'medium', 'low', 'info'].includes(ruleValue.severity)
+    ) {
+      setting.severity = ruleValue.severity as Severity;
+    } else {
+      errors.push(`ruleSettings["${ruleId}"].severity must be one of: high, medium, low, info.`);
+    }
+  }
+
+  if (ruleValue.ignorePaths !== undefined) {
+    const paths = ruleValue.ignorePaths;
+    if (
+      Array.isArray(paths) &&
+      paths.every((item): item is string => typeof item === 'string')
+    ) {
+      setting.ignorePaths = paths;
+    } else {
+      errors.push(`ruleSettings["${ruleId}"].ignorePaths must be an array of strings.`);
+    }
+  }
+
+  return setting;
+}
+
+function validateRuleSettings(
+  raw: Record<string, unknown>,
+  errors: string[]
+): Record<string, { enabled?: boolean; severity?: Severity; ignorePaths?: string[] }> | undefined {
+  if (raw.ruleSettings === undefined) return undefined;
+
+  if (!isObjectLike(raw.ruleSettings)) {
+    errors.push('Config key "ruleSettings" must be an object.');
+    return undefined;
+  }
+
+  const normalized: Record<string, { enabled?: boolean; severity?: Severity; ignorePaths?: string[] }> = {};
+
+  for (const [ruleId, ruleValue] of Object.entries(raw.ruleSettings)) {
+    if (!isObjectLike(ruleValue)) {
+      errors.push(`ruleSettings["${ruleId}"] must be an object.`);
+      continue;
+    }
+    normalized[ruleId] = validateSingleRuleSetting(ruleId, ruleValue, errors);
+  }
+
+  return normalized;
+}
+
+function validateStandardFields(
+  raw: Record<string, unknown>,
+  configDirectory: string,
+  values: Partial<AuditFileConfig>,
+  errors: string[]
+): void {
+  for (const [key, spec] of Object.entries(CONFIG_FIELD_SPECS)) {
+    const value = raw[key];
+    if (value === undefined) continue;
+
+    const validator = FIELD_VALIDATORS[spec.type];
+    const result = validator(value, key, configDirectory);
+    if (result.valid) {
+      (values as any)[key] = result.result;
+    } else {
+      errors.push(result.error!);
+    }
+  }
+}
+
+function validateSecurityFileLimit(
+  raw: Record<string, unknown>,
+  errors: string[]
+): number | undefined {
+  if (raw.securityFileLimit === undefined) return undefined;
+  const value = raw.securityFileLimit;
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    errors.push('Config key "securityFileLimit" must be a number.');
+    return undefined;
+  }
+  if (value <= 0) {
+    errors.push('Config key "securityFileLimit" must be greater than 0.');
+    return undefined;
+  }
+  return Math.floor(value);
+}
+
+function validateSpecialCaseFields(
+  raw: Record<string, unknown>,
+  configDirectory: string,
+  values: Partial<AuditFileConfig>,
+  errors: string[]
+): void {
+  // $schema
+  if (raw.$schema !== undefined && typeof raw.$schema !== 'string') {
+    errors.push('Config key "$schema" must be a string.');
+  }
+
+  // securityFileLimit
+  const securityFileLimit = validateSecurityFileLimit(raw, errors);
+  if (securityFileLimit !== undefined) values.securityFileLimit = securityFileLimit;
+
+  // baseline & writeBaseline (boolean or string path)
+  const baselineValue = validateBooleanOrPath(raw, 'baseline', configDirectory, errors);
+  if (baselineValue !== undefined) values.baseline = baselineValue;
+
+  const writeBaselineValue = validateBooleanOrPath(raw, 'writeBaseline', configDirectory, errors);
+  if (writeBaselineValue !== undefined) values.writeBaseline = writeBaselineValue;
+
+  // output, exitThreshold, preset (enum fields)
+  const outputValue = validateEnumField<SupportedOutputFormat>(raw, 'output', SUPPORTED_OUTPUT_FORMATS_SET, SUPPORTED_OUTPUT_FORMATS.join(', '), errors);
+  if (outputValue !== undefined) values.output = outputValue;
+
+  const exitThresholdValue = validateEnumField<SupportedExitThreshold>(raw, 'exitThreshold', SUPPORTED_EXIT_THRESHOLDS, 'none, high, medium, low, info', errors);
+  if (exitThresholdValue !== undefined) values.exitThreshold = exitThresholdValue;
+
+  const presetValue = validateEnumField<'strict' | 'balanced' | 'legacy-migration'>(raw, 'preset', VALID_PRESETS, 'strict, balanced, legacy-migration', errors);
+  if (presetValue !== undefined) values.preset = presetValue;
+
+  // ruleSettings
+  const ruleSettingsResult = validateRuleSettings(raw, errors);
+  if (ruleSettingsResult !== undefined) {
+    values.ruleSettings = ruleSettingsResult;
+  }
+}
+
 function validateAndNormalizeConfig(
   raw: unknown,
   configDirectory: string
@@ -104,46 +341,8 @@ function validateAndNormalizeConfig(
     };
   }
 
-  const knownKeys = new Set([
-    '$schema',
-    'templates',
-    'skipTemplates',
-    'changedOnly',
-    'baseRef',
-    'skipSystem',
-    'skipSecurity',
-    'securityFileLimit',
-    'skipVisual',
-    'production',
-    'staging',
-    'baseline',
-    'writeBaseline',
-    'output',
-    'outputFile',
-    'exitThreshold',
-    'debugProfile',
-    'verbose',
-    'notifySlack',
-    'slackWebhookUrl',
-    'slackSendOn',
-    'createClickupTask',
-    'clickupListId',
-    'clickupSendOn',
-    'clickupTokenEnv',
-    'clickupOnlyNew',
-    'clickupStateFile',
-    'clickupFindingsUrl',
-    'publishBitbucket',
-    'bitbucketWorkspace',
-    'bitbucketRepoSlug',
-    'bitbucketCommit',
-    'bitbucketTokenEnv',
-    'bitbucketSendOn',
-    'bitbucketReportId',
-    'bitbucketReportLink',
-    'preset',
-    'ruleSettings',
-  ]);
+  const knownKeys = new Set(Object.keys(CONFIG_FIELD_SPECS));
+  SPECIAL_CASE_KEYS.forEach((k) => knownKeys.add(k));
 
   for (const key of Object.keys(raw)) {
     if (!knownKeys.has(key)) {
@@ -152,296 +351,8 @@ function validateAndNormalizeConfig(
   }
 
   const values: Partial<AuditFileConfig> = {};
-
-  if (raw.$schema !== undefined && typeof raw.$schema !== 'string') {
-    errors.push('Config key "$schema" must be a string.');
-  }
-
-  if (raw.templates !== undefined) {
-    if (typeof raw.templates !== 'string') errors.push('Config key "templates" must be a string.');
-    else values.templates = resolvePathValue(raw.templates, configDirectory);
-  }
-
-  if (raw.skipTemplates !== undefined) {
-    if (typeof raw.skipTemplates !== 'boolean') errors.push('Config key "skipTemplates" must be a boolean.');
-    else values.skipTemplates = raw.skipTemplates;
-  }
-
-  if (raw.changedOnly !== undefined) {
-    if (typeof raw.changedOnly !== 'boolean') errors.push('Config key "changedOnly" must be a boolean.');
-    else values.changedOnly = raw.changedOnly;
-  }
-
-  if (raw.baseRef !== undefined) {
-    if (typeof raw.baseRef !== 'string') errors.push('Config key "baseRef" must be a string.');
-    else values.baseRef = raw.baseRef;
-  }
-
-  if (raw.skipSystem !== undefined) {
-    if (typeof raw.skipSystem !== 'boolean') errors.push('Config key "skipSystem" must be a boolean.');
-    else values.skipSystem = raw.skipSystem;
-  }
-
-  if (raw.skipSecurity !== undefined) {
-    if (typeof raw.skipSecurity !== 'boolean') errors.push('Config key "skipSecurity" must be a boolean.');
-    else values.skipSecurity = raw.skipSecurity;
-  }
-
-  if (raw.securityFileLimit !== undefined) {
-    if (typeof raw.securityFileLimit !== 'number' || !Number.isFinite(raw.securityFileLimit)) {
-      errors.push('Config key "securityFileLimit" must be a number.');
-    } else if (raw.securityFileLimit <= 0) {
-      errors.push('Config key "securityFileLimit" must be greater than 0.');
-    } else {
-      values.securityFileLimit = Math.floor(raw.securityFileLimit);
-    }
-  }
-
-  if (raw.skipVisual !== undefined) {
-    if (typeof raw.skipVisual !== 'boolean') errors.push('Config key "skipVisual" must be a boolean.');
-    else values.skipVisual = raw.skipVisual;
-  }
-
-  if (raw.production !== undefined) {
-    if (typeof raw.production !== 'string') errors.push('Config key "production" must be a string.');
-    else values.production = raw.production;
-  }
-
-  if (raw.staging !== undefined) {
-    if (typeof raw.staging !== 'string') errors.push('Config key "staging" must be a string.');
-    else values.staging = raw.staging;
-  }
-
-  if (raw.baseline !== undefined) {
-    if (typeof raw.baseline === 'boolean') {
-      values.baseline = raw.baseline;
-    } else if (typeof raw.baseline === 'string') {
-      values.baseline = resolvePathValue(raw.baseline, configDirectory);
-    } else {
-      errors.push('Config key "baseline" must be a boolean or string path.');
-    }
-  }
-
-  if (raw.writeBaseline !== undefined) {
-    if (typeof raw.writeBaseline === 'boolean') {
-      values.writeBaseline = raw.writeBaseline;
-    } else if (typeof raw.writeBaseline === 'string') {
-      values.writeBaseline = resolvePathValue(raw.writeBaseline, configDirectory);
-    } else {
-      errors.push('Config key "writeBaseline" must be a boolean or string path.');
-    }
-  }
-
-  if (raw.output !== undefined) {
-    if (
-      typeof raw.output !== 'string' ||
-      !SUPPORTED_OUTPUT_FORMATS_SET.has(raw.output as SupportedOutputFormat)
-    ) {
-      errors.push(`Config key "output" must be one of: ${SUPPORTED_OUTPUT_FORMATS.join(', ')}.`);
-    } else {
-      values.output = raw.output as SupportedOutputFormat;
-    }
-  }
-
-  if (raw.outputFile !== undefined) {
-    if (typeof raw.outputFile !== 'string') errors.push('Config key "outputFile" must be a string.');
-    else values.outputFile = resolvePathValue(raw.outputFile, configDirectory);
-  }
-
-  if (raw.exitThreshold !== undefined) {
-    if (
-      typeof raw.exitThreshold !== 'string' ||
-      !SUPPORTED_EXIT_THRESHOLDS.has(raw.exitThreshold as SupportedExitThreshold)
-    ) {
-      errors.push('Config key "exitThreshold" must be one of: none, high, medium, low, info.');
-    } else {
-      values.exitThreshold = raw.exitThreshold as SupportedExitThreshold;
-    }
-  }
-
-  if (raw.debugProfile !== undefined) {
-    if (typeof raw.debugProfile !== 'string') errors.push('Config key "debugProfile" must be a string.');
-    else values.debugProfile = resolvePathValue(raw.debugProfile, configDirectory);
-  }
-
-  if (raw.verbose !== undefined) {
-    if (typeof raw.verbose !== 'boolean') errors.push('Config key "verbose" must be a boolean.');
-    else values.verbose = raw.verbose;
-  }
-
-  if (raw.notifySlack !== undefined) {
-    if (typeof raw.notifySlack !== 'boolean') errors.push('Config key "notifySlack" must be a boolean.');
-    else values.notifySlack = raw.notifySlack;
-  }
-
-  if (raw.slackWebhookUrl !== undefined) {
-    if (typeof raw.slackWebhookUrl !== 'string') errors.push('Config key "slackWebhookUrl" must be a string.');
-    else values.slackWebhookUrl = raw.slackWebhookUrl;
-  }
-
-  if (raw.slackSendOn !== undefined) {
-    if (
-      typeof raw.slackSendOn !== 'string' ||
-      !['always', 'issues', 'high'].includes(raw.slackSendOn)
-    ) {
-      errors.push('Config key "slackSendOn" must be one of: always, issues, high.');
-    } else {
-      values.slackSendOn = raw.slackSendOn as 'always' | 'issues' | 'high';
-    }
-  }
-
-  if (raw.createClickupTask !== undefined) {
-    if (typeof raw.createClickupTask !== 'boolean') errors.push('Config key "createClickupTask" must be a boolean.');
-    else values.createClickupTask = raw.createClickupTask;
-  }
-
-  if (raw.clickupListId !== undefined) {
-    if (typeof raw.clickupListId !== 'string') errors.push('Config key "clickupListId" must be a string.');
-    else values.clickupListId = raw.clickupListId;
-  }
-
-  if (raw.clickupSendOn !== undefined) {
-    if (
-      typeof raw.clickupSendOn !== 'string' ||
-      !['always', 'issues', 'high'].includes(raw.clickupSendOn)
-    ) {
-      errors.push('Config key "clickupSendOn" must be one of: always, issues, high.');
-    } else {
-      values.clickupSendOn = raw.clickupSendOn as 'always' | 'issues' | 'high';
-    }
-  }
-
-  if (raw.clickupTokenEnv !== undefined) {
-    if (typeof raw.clickupTokenEnv !== 'string') errors.push('Config key "clickupTokenEnv" must be a string.');
-    else values.clickupTokenEnv = raw.clickupTokenEnv;
-  }
-
-  if (raw.clickupOnlyNew !== undefined) {
-    if (typeof raw.clickupOnlyNew !== 'boolean') errors.push('Config key "clickupOnlyNew" must be a boolean.');
-    else values.clickupOnlyNew = raw.clickupOnlyNew;
-  }
-
-  if (raw.clickupStateFile !== undefined) {
-    if (typeof raw.clickupStateFile !== 'string') errors.push('Config key "clickupStateFile" must be a string.');
-    else values.clickupStateFile = resolvePathValue(raw.clickupStateFile, configDirectory);
-  }
-
-  if (raw.clickupFindingsUrl !== undefined) {
-    if (typeof raw.clickupFindingsUrl !== 'string') errors.push('Config key "clickupFindingsUrl" must be a string.');
-    else values.clickupFindingsUrl = raw.clickupFindingsUrl;
-  }
-
-  if (raw.publishBitbucket !== undefined) {
-    if (typeof raw.publishBitbucket !== 'boolean') errors.push('Config key "publishBitbucket" must be a boolean.');
-    else values.publishBitbucket = raw.publishBitbucket;
-  }
-
-  if (raw.bitbucketWorkspace !== undefined) {
-    if (typeof raw.bitbucketWorkspace !== 'string') errors.push('Config key "bitbucketWorkspace" must be a string.');
-    else values.bitbucketWorkspace = raw.bitbucketWorkspace;
-  }
-
-  if (raw.bitbucketRepoSlug !== undefined) {
-    if (typeof raw.bitbucketRepoSlug !== 'string') errors.push('Config key "bitbucketRepoSlug" must be a string.');
-    else values.bitbucketRepoSlug = raw.bitbucketRepoSlug;
-  }
-
-  if (raw.bitbucketCommit !== undefined) {
-    if (typeof raw.bitbucketCommit !== 'string') errors.push('Config key "bitbucketCommit" must be a string.');
-    else values.bitbucketCommit = raw.bitbucketCommit;
-  }
-
-  if (raw.bitbucketTokenEnv !== undefined) {
-    if (typeof raw.bitbucketTokenEnv !== 'string') errors.push('Config key "bitbucketTokenEnv" must be a string.');
-    else values.bitbucketTokenEnv = raw.bitbucketTokenEnv;
-  }
-
-  if (raw.bitbucketSendOn !== undefined) {
-    if (
-      typeof raw.bitbucketSendOn !== 'string' ||
-      !['always', 'issues', 'high'].includes(raw.bitbucketSendOn)
-    ) {
-      errors.push('Config key "bitbucketSendOn" must be one of: always, issues, high.');
-    } else {
-      values.bitbucketSendOn = raw.bitbucketSendOn as 'always' | 'issues' | 'high';
-    }
-  }
-
-  if (raw.bitbucketReportId !== undefined) {
-    if (typeof raw.bitbucketReportId !== 'string') errors.push('Config key "bitbucketReportId" must be a string.');
-    else values.bitbucketReportId = raw.bitbucketReportId;
-  }
-
-  if (raw.bitbucketReportLink !== undefined) {
-    if (typeof raw.bitbucketReportLink !== 'string') errors.push('Config key "bitbucketReportLink" must be a string.');
-    else values.bitbucketReportLink = raw.bitbucketReportLink;
-  }
-
-  if (raw.preset !== undefined) {
-    if (
-      typeof raw.preset !== 'string' ||
-      !['strict', 'balanced', 'legacy-migration'].includes(raw.preset)
-    ) {
-      errors.push('Config key "preset" must be one of: strict, balanced, legacy-migration.');
-    } else {
-      values.preset = raw.preset as 'strict' | 'balanced' | 'legacy-migration';
-    }
-  }
-
-  if (raw.ruleSettings !== undefined) {
-    if (!isObjectLike(raw.ruleSettings)) {
-      errors.push('Config key "ruleSettings" must be an object.');
-    } else {
-      const normalized: Record<
-        string,
-        { enabled?: boolean; severity?: 'high' | 'medium' | 'low' | 'info'; ignorePaths?: string[] }
-      > = {};
-
-      for (const [ruleId, ruleValue] of Object.entries(raw.ruleSettings)) {
-        if (!isObjectLike(ruleValue)) {
-          errors.push(`ruleSettings["${ruleId}"] must be an object.`);
-          continue;
-        }
-
-        const setting: { enabled?: boolean; severity?: 'high' | 'medium' | 'low' | 'info'; ignorePaths?: string[] } =
-          {};
-
-        if (ruleValue.enabled !== undefined) {
-          if (typeof ruleValue.enabled !== 'boolean') {
-            errors.push(`ruleSettings["${ruleId}"].enabled must be a boolean.`);
-          } else {
-            setting.enabled = ruleValue.enabled;
-          }
-        }
-
-        if (ruleValue.severity !== undefined) {
-          if (
-            typeof ruleValue.severity !== 'string' ||
-            !['high', 'medium', 'low', 'info'].includes(ruleValue.severity)
-          ) {
-            errors.push(`ruleSettings["${ruleId}"].severity must be one of: high, medium, low, info.`);
-          } else {
-            setting.severity = ruleValue.severity as 'high' | 'medium' | 'low' | 'info';
-          }
-        }
-
-        if (ruleValue.ignorePaths !== undefined) {
-          if (
-            !Array.isArray(ruleValue.ignorePaths) ||
-            ruleValue.ignorePaths.some((item) => typeof item !== 'string')
-          ) {
-            errors.push(`ruleSettings["${ruleId}"].ignorePaths must be an array of strings.`);
-          } else {
-            setting.ignorePaths = ruleValue.ignorePaths as string[];
-          }
-        }
-
-        normalized[ruleId] = setting;
-      }
-
-      values.ruleSettings = normalized;
-    }
-  }
+  validateStandardFields(raw, configDirectory, values, errors);
+  validateSpecialCaseFields(raw, configDirectory, values, errors);
 
   return { values, errors };
 }

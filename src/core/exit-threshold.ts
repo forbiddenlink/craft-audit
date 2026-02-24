@@ -2,14 +2,7 @@ import { AuditResult } from '../types';
 
 export type ExitThreshold = 'none' | 'high' | 'medium' | 'low' | 'info';
 
-const THRESHOLD_ORDER: Record<Exclude<ExitThreshold, 'none'>, number> = {
-  info: 0,
-  low: 1,
-  medium: 2,
-  high: 3,
-};
-
-const SEVERITY_ORDER: Record<'info' | 'low' | 'medium' | 'high', number> = {
+const SEVERITY_ORDER: Record<Exclude<ExitThreshold, 'none'>, number> = {
   info: 0,
   low: 1,
   medium: 2,
@@ -29,7 +22,7 @@ export function normalizeExitThreshold(raw?: string): ExitThreshold {
 
 export function shouldFailForThreshold(result: AuditResult, threshold: ExitThreshold): boolean {
   if (threshold === 'none') return false;
-  const minLevel = THRESHOLD_ORDER[threshold];
+  const minLevel = SEVERITY_ORDER[threshold];
 
   if (result.summary.high > 0 && SEVERITY_ORDER.high >= minLevel) return true;
   if (result.summary.medium > 0 && SEVERITY_ORDER.medium >= minLevel) return true;

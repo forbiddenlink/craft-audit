@@ -1,0 +1,23 @@
+{% extends "_layout" %}
+
+{% block content %}
+{# This template uses BOTH .with() and .eagerly() - mixed strategy warning #}
+
+{# Using .with() for upfront eager loading #}
+{% set entries = craft.entries.section('products').with(['productImage', 'category']).limit(10) %}
+
+{% for entry in entries %}
+    <div class="product">
+        <h2>{{ entry.title }}</h2>
+        <img src="{{ entry.productImage.one().url }}">
+
+        {# But then also using .eagerly() in the same template #}
+        {% if entry.relatedProducts.eagerly().all() | length %}
+            <h3>Related Products</h3>
+            {% for related in entry.relatedProducts.eagerly().all() %}
+                <span>{{ related.title }}</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endfor %}
+{% endblock %}

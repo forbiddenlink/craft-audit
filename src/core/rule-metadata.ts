@@ -59,6 +59,26 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'dump/dd/var_dump calls were found in template or code files.',
     helpUri: 'https://craftcms.com/docs/5.x/development/debugging',
   },
+  'template/form-missing-csrf': {
+    title: 'Form missing CSRF token',
+    description: 'A <form> tag was found without a {{ csrfInput() }} call, leaving it vulnerable to cross-site request forgery.',
+    helpUri: 'https://craftcms.com/docs/5.x/development/forms#csrf',
+  },
+  'security/hardcoded-security-key': {
+    title: 'Hardcoded security key in config',
+    description: 'The security key appears to be hardcoded rather than loaded from an environment variable.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securityKey',
+  },
+  'security/csrf-disabled': {
+    title: 'CSRF protection disabled',
+    description: 'CSRF protection is disabled in config/general.php, exposing the site to cross-site request forgery attacks.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#enableCsrfProtection',
+  },
+  'security/dangerous-file-extensions': {
+    title: 'Dangerous file extensions allowed',
+    description: 'extraAllowedFileExtensions includes potentially dangerous file types that could enable code execution.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#extraAllowedFileExtensions',
+  },
   'security/file-scan-truncated': {
     title: 'Security scan truncated by file limit',
     description: 'Security scan hit the configured file limit and may not have inspected all files.',
@@ -117,6 +137,11 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'Outdated direct dependencies',
     description: 'Direct Composer packages have newer versions available.',
     helpUri: 'https://getcomposer.org/doc/03-cli.md#outdated',
+  },
+  'security/known-cve': {
+    title: 'Known Craft CMS CVE detected',
+    description: 'The installed Craft CMS version is affected by a known security vulnerability.',
+    helpUri: 'https://github.com/advisories',
   },
   'visual/backstop-missing': {
     title: 'BackstopJS execution unavailable',

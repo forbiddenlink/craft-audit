@@ -2,15 +2,15 @@ import { AuditIssue, AuditResult, CraftInfo, PluginInfo } from '../types';
 
 function escapeHtml(value: string): string {
   return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function safeJson(value: unknown): string {
-  return JSON.stringify(value).replace(/<\//g, '<\\/');
+  return JSON.stringify(value).replaceAll('</', String.raw`<\/`);
 }
 
 function renderCraftInfo(craft?: CraftInfo): string {
@@ -43,7 +43,14 @@ function renderPlugins(plugins?: PluginInfo[]): string {
   if (!plugins || plugins.length === 0) return '';
   const rows = plugins
     .map(
-      (plugin) => `
+      (plugin) => {
+        let compatText: string;
+        if (plugin.craft5Compatible === undefined) {
+          compatText = 'unknown';
+        } else {
+          compatText = plugin.craft5Compatible ? 'yes' : 'no';
+        }
+        return `
       <tr>
         <td>${escapeHtml(plugin.name)}</td>
         <td>${escapeHtml(plugin.handle)}</td>
@@ -51,9 +58,10 @@ function renderPlugins(plugins?: PluginInfo[]): string {
         <td>${plugin.enabled ? 'yes' : 'no'}</td>
         <td>${plugin.installed ? 'yes' : 'no'}</td>
         <td>${escapeHtml(plugin.updateAvailable ?? 'none')}</td>
-        <td>${plugin.craft5Compatible === undefined ? 'unknown' : plugin.craft5Compatible ? 'yes' : 'no'}</td>
+        <td>${compatText}</td>
       </tr>
-    `
+    `;
+      }
     )
     .join('');
 
