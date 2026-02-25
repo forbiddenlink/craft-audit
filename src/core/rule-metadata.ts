@@ -234,6 +234,21 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'CORS Credentials with Wildcard',
     description: 'CORS allows credentials with wildcard origin, indicating a security misconfiguration.',
   },
+  'security/deprecated-x-xss-protection': {
+    title: 'Deprecated X-XSS-Protection Header',
+    description: 'X-XSS-Protection header is deprecated per OWASP 2025 guidelines and should be removed.',
+    helpUri: 'https://owasp.org/www-project-secure-headers/',
+  },
+  'security/hsts-preload-not-eligible': {
+    title: 'HSTS Preload Not Eligible',
+    description: 'HSTS header does not meet browser preload list requirements.',
+    helpUri: 'https://hstspreload.org/',
+  },
+  'security/csp-report-only-mode': {
+    title: 'CSP in Report-Only Mode',
+    description: 'Content-Security-Policy is only in Report-Only mode without an enforcing policy.',
+    helpUri: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only',
+  },
   'template/img-missing-alt': {
     title: 'Image missing alt attribute',
     description: 'An <img> tag is missing the alt attribute required for accessibility.',

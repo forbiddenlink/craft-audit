@@ -7,7 +7,7 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 - **Template Analysis** — N+1 queries, missing eager loading, deprecated APIs, unbounded queries, mixed loading strategies, XSS risks, SSTI patterns, missing CSRF tokens, accessibility checks (missing alt, labels, lang)
 - **Security Scanning** — 19 known CVEs (2023–2026), 10 plugin CVEs, production config hardening (5 checks), HTTPS enforcement, file permission checks, web-exposed sensitive files, hardcoded security keys, disabled CSRF, devMode in production, dangerous file extensions, debug output patterns
 - **Plugin Vulnerability Scanner** — Checks installed Craft plugins against a curated database of 10 known plugin CVEs
-- **HTTP Security Headers** — Opt-in `--site-url` check for HSTS, X-Content-Type-Options, X-Frame-Options, CSP, Referrer-Policy, Permissions-Policy, CORS misconfiguration, plus Server/X-Powered-By leak detection
+- **HTTP Security Headers** — Opt-in `--site-url` check for HSTS (with preload eligibility), X-Content-Type-Options, X-Frame-Options, CSP (including Report-Only mode detection), Referrer-Policy, Permissions-Policy, CORS misconfiguration, deprecated X-XSS-Protection warning, plus Server/X-Powered-By leak detection
 - **CSP Header Generator** — `--generate-csp` scans templates and generates Content-Security-Policy recommendations
 - **Craft 5 Migration Checker** — `--craft5-migration` detects Craft 4→5 breaking changes
 - **CVE Auto-Update** — `update-cves` command fetches latest advisories from GitHub
@@ -24,6 +24,8 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 - **4 Integrations** — Slack, ClickUp, Linear, Bitbucket
 - **3 Presets** — strict, balanced, legacy-migration
 - **VS Code Extension** — Real-time diagnostics, quick fixes, workspace scanning, quality gate settings
+- **CI/CD Integration** — `--fail-on-regression` fails only on new issues vs baseline, `--sarif-category` for matrix builds
+- **Accessibility** — Respects `NO_COLOR` environment variable and `--no-color` flag for screen readers
 
 ## Requirements
 
@@ -81,6 +83,15 @@ craft-audit audit /path/to/craft-project --log-level debug
 
 # CI mode (changed files only, SARIF output)
 craft-audit audit-ci /path/to/craft-project
+
+# CI mode with regression-only failure (fail only on new issues)
+craft-audit audit-ci /path/to/craft-project --baseline --fail-on-regression
+
+# SARIF with category for matrix builds
+craft-audit audit /path/to/craft-project --output sarif --sarif-category security
+
+# Disable colored output (also respects NO_COLOR env var)
+craft-audit audit /path/to/craft-project --no-color
 
 # Templates only
 craft-audit templates /path/to/templates
@@ -227,6 +238,9 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/world-readable-config` | Sensitive file with world-readable permissions |
 | `security/sensitive-file-in-webroot` | Sensitive file accessible in web root |
 | `security/world-readable-storage` | Storage directory with world-readable permissions |
+| `security/deprecated-x-xss-protection` | Deprecated X-XSS-Protection header should be removed |
+| `security/hsts-preload-not-eligible` | HSTS header not eligible for browser preload list |
+| `security/csp-report-only-mode` | CSP in Report-Only mode without enforcing policy |
 
 ### System Rules
 

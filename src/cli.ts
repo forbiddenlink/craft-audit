@@ -7,6 +7,12 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
+
+// Respect NO_COLOR environment variable (https://no-color.org/)
+// Also check for TERM=dumb and CI environments without color support
+if (process.env.NO_COLOR !== undefined || process.env.TERM === 'dumb') {
+  chalk.level = 0;
+}
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
@@ -121,13 +127,22 @@ function addSharedOptions(cmd: Command): Command {
     .option('--generate-csp', 'Generate a recommended Content-Security-Policy header based on template analysis')
     .option('--craft5-migration', 'Check for Craft 4→5 migration issues')
     .option('--log-level <level>', 'Set log level (debug, info, warn, error, silent)', 'info')
+    .option('--sarif-category <category>', 'Category for SARIF output (e.g., "security", "templates") for matrix builds')
+    .option('--fail-on-regression', 'Fail only on new issues compared to baseline (requires --baseline)')
     .option('-v, --verbose', 'Verbose output');
 }
 
 program
   .name('craft-audit')
   .description('Comprehensive audit tool for Craft CMS projects')
-  .version(TOOL_VERSION);
+  .version(TOOL_VERSION)
+  .option('--no-color', 'Disable colored output (also respects NO_COLOR env variable)')
+  .hook('preAction', () => {
+    // Check --no-color flag (Commander sets this as program.opts().color === false)
+    if (program.opts().color === false) {
+      chalk.level = 0;
+    }
+  });
 
 addSharedOptions(
   program

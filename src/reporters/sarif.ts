@@ -41,25 +41,44 @@ interface SarifRule {
   helpUri?: string;
 }
 
+interface RunAutomationDetails {
+  id?: string;
+  guid?: string;
+  correlationGuid?: string;
+  description?: {
+    text: string;
+  };
+}
+
+interface SarifRun {
+  tool: {
+    driver: {
+      name: string;
+      informationUri: string;
+      version: string;
+      rules: SarifRule[];
+    };
+  };
+  artifacts: Array<{
+    location: {
+      uri: string;
+    };
+  }>;
+  results: SarifResult[];
+  automationDetails?: RunAutomationDetails;
+}
+
 interface SarifDocument {
   $schema: string;
   version: '2.1.0';
-  runs: Array<{
-    tool: {
-      driver: {
-        name: string;
-        informationUri: string;
-        version: string;
-        rules: SarifRule[];
-      };
-    };
-    artifacts: Array<{
-      location: {
-        uri: string;
-      };
-    }>;
-    results: SarifResult[];
-  }>;
+  runs: SarifRun[];
+}
+
+export interface SarifOptions {
+  /** Category for distinguishing matrix builds (e.g., "security", "templates") */
+  category?: string;
+  /** Correlation GUID for linking related analyses */
+  correlationGuid?: string;
 }
 
 function sarifLevelForSeverity(severity: AuditIssue['severity']): 'error' | 'warning' | 'note' {
@@ -83,7 +102,7 @@ function toLocation(issue: AuditIssue): SarifLocation | undefined {
 }
 
 export class SarifReporter {
-  toSarif(result: AuditResult): string {
+  toSarif(result: AuditResult, options: SarifOptions = {}): string {
     const rulesById = new Map<string, SarifRule>();
     const artifacts = new Set<string>();
 
@@ -122,23 +141,39 @@ export class SarifReporter {
       };
     });
 
+    // Build automationDetails for proper deduplication in GitHub Code Scanning
+    // The id should follow the pattern: "category/run-id" for matrix builds
+    // See: https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning
+    const automationDetails: RunAutomationDetails | undefined = options.category
+      ? {
+          id: `${options.category}/`,
+          description: { text: `Craft Audit analysis: ${options.category}` },
+          correlationGuid: options.correlationGuid,
+        }
+      : undefined;
+
+    const run: SarifRun = {
+      tool: {
+        driver: {
+          name: 'craft-audit',
+          informationUri: 'https://github.com/forbiddenlink/craft-audit',
+          version: TOOL_VERSION,
+          rules: Array.from(rulesById.values()),
+        },
+      },
+      artifacts: Array.from(artifacts).map((uri) => ({ location: { uri } })),
+      results: sarifResults,
+    };
+
+    // Only add automationDetails if category is specified
+    if (automationDetails) {
+      run.automationDetails = automationDetails;
+    }
+
     const sarif: SarifDocument = {
       $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
       version: '2.1.0',
-      runs: [
-        {
-          tool: {
-            driver: {
-              name: 'craft-audit',
-              informationUri: 'https://github.com/craft-audit/craft-audit',
-              version: TOOL_VERSION,
-              rules: Array.from(rulesById.values()),
-            },
-          },
-          artifacts: Array.from(artifacts).map((uri) => ({ location: { uri } })),
-          results: sarifResults,
-        },
-      ],
+      runs: [run],
     };
 
     return JSON.stringify(sarif, null, 2);

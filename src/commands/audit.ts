@@ -389,7 +389,9 @@ function renderAndWriteOutput(
   if (outputFormat === 'json') {
     renderedOutput = new JsonReporter().toJson(result);
   } else if (outputFormat === 'sarif') {
-    renderedOutput = new SarifReporter().toSarif(result);
+    renderedOutput = new SarifReporter().toSarif(result, {
+      category: options.sarifCategory,
+    });
   } else if (outputFormat === 'bitbucket') {
     renderedOutput = new BitbucketInsightsReporter().toJson(result, {
       reportId: options.bitbucketReportId,
@@ -796,11 +798,27 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
       return;
     }
   } else {
-    const threshold = normalizeExitThreshold(effectiveOptions.exitThreshold);
-    if (shouldFailForThreshold(filteredResult, threshold)) {
-      if (!effectiveOptions.watch) {
-        process.exitCode = 1;
-        return;
+    // --fail-on-regression: fail only if there are NEW issues (not suppressed by baseline)
+    // This mode ignores --exit-threshold since it's specifically about regressions
+    if (effectiveOptions.failOnRegression) {
+      if (filteredResult.summary.total > 0) {
+        if (!machineOutput) {
+          console.log(chalk.red(`\n✖ Regression detected: ${filteredResult.summary.total} new issue(s) not in baseline.`));
+        }
+        if (!effectiveOptions.watch) {
+          process.exitCode = 1;
+          return;
+        }
+      } else if (!machineOutput) {
+        console.log(chalk.green('\n✔ No regressions: all issues match baseline.'));
+      }
+    } else {
+      const threshold = normalizeExitThreshold(effectiveOptions.exitThreshold);
+      if (shouldFailForThreshold(filteredResult, threshold)) {
+        if (!effectiveOptions.watch) {
+          process.exitCode = 1;
+          return;
+        }
       }
     }
   }

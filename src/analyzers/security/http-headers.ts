@@ -74,7 +74,7 @@ const HEADER_CHECKS: HeaderCheck[] = [
 ];
 
 /** Dangerous headers that SHOULD NOT be present */
-const DANGEROUS_HEADERS: { header: string; ruleId: string; severity: 'high' | 'medium' | 'low'; message: string; suggestion: string }[] = [
+const DANGEROUS_HEADERS: { header: string; ruleId: string; severity: 'high' | 'medium' | 'low' | 'info'; message: string; suggestion: string }[] = [
   {
     header: 'server',
     ruleId: 'security/server-header-exposed',
@@ -89,7 +89,43 @@ const DANGEROUS_HEADERS: { header: string; ruleId: string; severity: 'high' | 'm
     message: 'X-Powered-By header exposes technology stack.',
     suggestion: 'Remove the X-Powered-By header. In Craft CMS, set sendPoweredByHeader to false in config/general.php.',
   },
+  {
+    header: 'x-xss-protection',
+    ruleId: 'security/deprecated-x-xss-protection',
+    severity: 'info',
+    message: 'X-XSS-Protection header is deprecated and should be removed per OWASP 2025 guidelines.',
+    suggestion: 'Remove the X-XSS-Protection header. Modern browsers ignore it, and it can introduce vulnerabilities in older browsers. Use Content-Security-Policy instead.',
+  },
 ];
+
+/** Check if HSTS header indicates preload eligibility */
+function checkHstsPreloadEligible(value: string): { eligible: boolean; issues: string[] } {
+  const issues: string[] = [];
+  const lower = value.toLowerCase();
+
+  // Must have includeSubDomains
+  if (!lower.includes('includesubdomains')) {
+    issues.push('missing includeSubDomains directive');
+  }
+
+  // Must have preload directive
+  if (!lower.includes('preload')) {
+    issues.push('missing preload directive');
+  }
+
+  // Must have max-age >= 1 year (31536000)
+  const maxAgeMatch = value.match(/max-age=(\d+)/i);
+  if (maxAgeMatch) {
+    const maxAge = parseInt(maxAgeMatch[1], 10);
+    if (maxAge < 31536000) {
+      issues.push(`max-age ${maxAge} is below 31536000 (1 year)`);
+    }
+  } else {
+    issues.push('missing max-age directive');
+  }
+
+  return { eligible: issues.length === 0, issues };
+}
 
 const REQUEST_TIMEOUT_MS = 10000;
 
@@ -164,6 +200,40 @@ export async function checkHttpHeaders(siteUrl: string): Promise<SecurityIssue[]
         fingerprint: `${check.ruleId}:${siteUrl}`,
       });
     }
+  }
+
+  // HSTS preload eligibility check
+  const hstsValue = response.headers.get('strict-transport-security');
+  if (hstsValue) {
+    const preloadCheck = checkHstsPreloadEligible(hstsValue);
+    if (!preloadCheck.eligible) {
+      issues.push({
+        severity: 'info',
+        category: 'security',
+        type: 'http-header-check',
+        ruleId: 'security/hsts-preload-not-eligible',
+        message: `HSTS header is not eligible for browser preload list: ${preloadCheck.issues.join(', ')}.`,
+        suggestion: 'To qualify for HSTS preload (hstspreload.org), include: max-age=31536000; includeSubDomains; preload',
+        evidence: { details: `strict-transport-security: ${hstsValue}` },
+        fingerprint: `security/hsts-preload-not-eligible:${siteUrl}`,
+      });
+    }
+  }
+
+  // CSP Report-Only mode detection (not a problem, but informational)
+  const cspReportOnly = response.headers.get('content-security-policy-report-only');
+  const cspEnforce = response.headers.get('content-security-policy');
+  if (cspReportOnly && !cspEnforce) {
+    issues.push({
+      severity: 'info',
+      category: 'security',
+      type: 'http-header-check',
+      ruleId: 'security/csp-report-only-mode',
+      message: 'Content-Security-Policy is in Report-Only mode without an enforcing policy.',
+      suggestion: 'CSP Report-Only is useful for testing. Once you have reviewed violation reports, deploy an enforcing Content-Security-Policy header.',
+      evidence: { details: `content-security-policy-report-only: ${cspReportOnly.substring(0, 100)}...` },
+      fingerprint: `security/csp-report-only-mode:${siteUrl}`,
+    });
   }
 
   // CORS misconfiguration checks

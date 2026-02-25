@@ -163,6 +163,54 @@
       "type": "string",
       "enum": ["strict", "balanced", "legacy-migration"]
     },
+    "siteUrl": {
+      "type": "string",
+      "description": "Site URL for HTTP security header checks (e.g., https://example.com)."
+    },
+    "cache": {
+      "type": "boolean",
+      "description": "Enable incremental analysis cache."
+    },
+    "cacheLocation": {
+      "type": "string",
+      "description": "Cache file location.",
+      "default": ".craft-audit-cache.json"
+    },
+    "watch": {
+      "type": "boolean",
+      "description": "Watch for file changes and re-run analysis."
+    },
+    "rulesDir": {
+      "type": "string",
+      "description": "Load custom rules from directory."
+    },
+    "qualityGate": {
+      "type": "string",
+      "enum": ["strict", "recommended", "security-only", "relaxed", "ci"],
+      "description": "Use a named quality gate profile."
+    },
+    "generateCsp": {
+      "type": "boolean",
+      "description": "Generate a recommended Content-Security-Policy header."
+    },
+    "craft5Migration": {
+      "type": "boolean",
+      "description": "Check for Craft 4→5 migration issues."
+    },
+    "logLevel": {
+      "type": "string",
+      "enum": ["debug", "info", "warn", "error", "silent"],
+      "description": "Set log level.",
+      "default": "info"
+    },
+    "sarifCategory": {
+      "type": "string",
+      "description": "Category for SARIF output (e.g., 'security', 'templates') for matrix builds."
+    },
+    "failOnRegression": {
+      "type": "boolean",
+      "description": "Fail only on new issues compared to baseline (requires baseline)."
+    },
     "title": {
       "type": "string",
       "description": "Custom title displayed in audit output headers."

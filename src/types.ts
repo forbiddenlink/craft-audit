@@ -185,6 +185,8 @@ export interface AuditCommandOptions {
   generateCsp?: boolean;
   craft5Migration?: boolean;
   ruleSettings?: import('./core/rule-tuning').RuleSettings;
+  sarifCategory?: string;
+  failOnRegression?: boolean;
   title?: string;
   commandName?: 'audit' | 'audit-ci';
   optionSources?: Record<string, string | undefined>;

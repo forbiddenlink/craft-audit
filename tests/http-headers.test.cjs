@@ -55,7 +55,8 @@ test('detects all missing security headers on bare server', async () => {
 
 test('no missing-header issues when all headers are present and correct', async () => {
   const srv = await startServer({
-    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    // Include 'preload' directive to satisfy HSTS preload eligibility check
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
     'Content-Security-Policy': "default-src 'self'",
