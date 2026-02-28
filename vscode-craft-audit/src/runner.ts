@@ -187,7 +187,7 @@ export class CraftAuditRunner {
                 }
             });
 
-            proc.on('close', (code) => {
+            proc.on('close', (_code) => {
                 this.runningProcesses.delete(proc);
                 cancelListener?.dispose();
 
