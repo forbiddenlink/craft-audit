@@ -1,191 +1,182 @@
 [
   {
-    "id": "CVE-2026-25498",
-    "title": "Authenticated RCE via malicious Yii2 Behavior injection in Fields service",
+    "id": "CVE-2026-27129",
+    "title": "Craft CMS: Cloud Metadata SSRF Protection Bypass via IPv6 Resolution",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.23"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.19"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-v2gc-rm6g-wrw9"
+  },
+  {
+    "id": "CVE-2026-27128",
+    "title": "Craft CMS Race condition in Token Service potentially allows for token usage greater than the token limit",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.19"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.23"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-6fx5-5cw5-4897"
+  },
+  {
+    "id": "CVE-2026-27127",
+    "title": "Craft CMS has Cloud Metadata SSRF Protection Bypass via DNS Rebinding",
     "severity": "high",
     "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.18" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.22" }
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.23"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.19"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-25498"
+    "docsUrl": "https://github.com/advisories/GHSA-gp2f-7wcm-5fhx"
   },
   {
-    "id": "CVE-2026-25491",
-    "title": "Stored XSS via Entry Type labels",
+    "id": "CVE-2026-27126",
+    "title": "Craft CMS has Stored XSS in Table Field via \"HTML\" Column Type",
     "severity": "medium",
     "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.18" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.22" }
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.19"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.23"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-25491"
+    "docsUrl": "https://github.com/advisories/GHSA-3jh3-prx3-w6wc"
   },
   {
-    "id": "CVE-2026-25493",
-    "title": "SSRF bypass via HTTP redirects in GraphQL saveAsset mutation",
-    "severity": "medium",
+    "id": "CVE-2026-25498",
+    "title": "Craft CMS Vulnerable to potential authenticated Remote Code Execution via malicious attached Behavior",
+    "severity": "high",
     "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.18" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.22" }
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.22"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.18"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-25493"
+    "docsUrl": "https://github.com/advisories/GHSA-7jx7-3846-m7w7"
   },
   {
-    "id": "CVE-2026-25494",
-    "title": "SSRF blocklist bypass via alternative IP notations in GraphQL saveAsset",
+    "id": "CVE-2026-25497",
+    "title": "Craft CMS: GraphQL Asset Mutation Privilege Escalation",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-fxp3-g6gw-4r4v"
+  },
+  {
+    "id": "CVE-2026-25496",
+    "title": "Craft CMS Vulnerable to Stored XSS in Number Prefix & Suffix Fields",
     "severity": "medium",
     "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.18" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.22" }
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.22"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.18"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-25494"
+    "docsUrl": "https://github.com/advisories/GHSA-9f5h-mmq6-2x78"
   },
   {
     "id": "CVE-2026-25495",
-    "title": "SQL Injection in Control Panel element-indexes via unsanitized orderBy parameter",
+    "title": "Craft CMS Vulnerable to SQL Injection in Element Indexes via `criteria[orderBy]`",
     "severity": "high",
     "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.18" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.22" }
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.22"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.18"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-25495"
+    "docsUrl": "https://github.com/advisories/GHSA-2453-mppf-46cj"
   },
   {
-    "id": "CVE-2025-57811",
-    "title": "Twig Server-Side Template Injection (SSTI) allowing remote code execution",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.6" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.7" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2025-57811"
-  },
-  {
-    "id": "CVE-2025-68455",
-    "title": "RCE via Behavior injection in Craft object instantiation (predecessor to CVE-2026-25498)",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.16.18" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.8.22" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2025-68455"
-  },
-  {
-    "id": "GHSA-v2gc-rm6g-wrw9",
-    "title": "Cloud Metadata SSRF Protection Bypass via IPv6",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.13.8" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.5.8" }
-    ],
-    "docsUrl": "https://github.com/craftcms/cms/security/advisories/GHSA-v2gc-rm6g-wrw9"
-  },
-  {
-    "id": "GHSA-gp2f-7wcm-5fhx",
-    "title": "Cloud Metadata SSRF via DNS Rebinding",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.13.8" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.5.8" }
-    ],
-    "docsUrl": "https://github.com/craftcms/cms/security/advisories/GHSA-gp2f-7wcm-5fhx"
-  },
-  {
-    "id": "GHSA-fxp3-g6gw-4r4v",
-    "title": "GraphQL Asset Mutation Privilege Escalation",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.6.1" }
-    ],
-    "docsUrl": "https://github.com/craftcms/cms/security/advisories/GHSA-fxp3-g6gw-4r4v"
-  },
-  {
-    "id": "GHSA-8jr8-7hr4-vhfx",
-    "title": "SSRF in GraphQL Asset Mutation via HTTP Redirect",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.6.1" }
-    ],
-    "docsUrl": "https://github.com/craftcms/cms/security/advisories/GHSA-8jr8-7hr4-vhfx"
-  },
-  {
-    "id": "GHSA-2453-mppf-46cj",
-    "title": "SQL Injection in Element Indexes",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.6.1" }
-    ],
-    "docsUrl": "https://github.com/craftcms/cms/security/advisories/GHSA-2453-mppf-46cj"
-  },
-  {
-    "id": "CVE-2025-32432",
-    "title": "RCE via image transformation endpoint (CVSS 10.0, actively exploited)",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 3, "maxMajor": 3, "fixedAt": "3.9.15" },
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.14.15" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.6.17" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2025-32432"
-  },
-  {
-    "id": "CVE-2024-58136",
-    "title": "Yii framework vulnerability allows RCE (chained with CVE-2025-32432)",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 3, "maxMajor": 3, "fixedAt": "3.9.15" },
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.14.15" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.6.17" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2024-58136"
-  },
-  {
-    "id": "CVE-2025-23209",
-    "title": "Code injection via crafted request (CISA KEV listed)",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.13.8" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.5.8" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2025-23209"
-  },
-  {
-    "id": "CVE-2024-56145",
-    "title": "RCE via Twig SSTI when register_argc_argv is On",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 3, "maxMajor": 3, "fixedAt": "3.9.14" },
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.12.8" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.5.3" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2024-56145"
-  },
-  {
-    "id": "CVE-2024-52293",
-    "title": "Path traversal in dashboard widget template path",
-    "severity": "high",
-    "affects": [
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.4.3" }
-    ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2024-52293"
-  },
-  {
-    "id": "CVE-2024-41800",
-    "title": "TOTP token MFA bypass via timing attack",
+    "id": "CVE-2026-25494",
+    "title": "Craft CMS Vulnerable to SSRF in GraphQL Asset Mutation via Alternative IP Notation",
     "severity": "medium",
     "affects": [
-      { "minMajor": 3, "maxMajor": 3, "fixedAt": "3.9.9" },
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.12.1" },
-      { "minMajor": 5, "maxMajor": 5, "fixedAt": "5.2.3" }
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.22"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.18"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2024-41800"
+    "docsUrl": "https://github.com/advisories/GHSA-m5r2-8p9x-hp5m"
   },
   {
-    "id": "CVE-2023-41892",
-    "title": "Unauthenticated RCE in Craft CMS 4.x",
-    "severity": "high",
+    "id": "CVE-2026-25493",
+    "title": "Craft CMS Vulnerable to SSRF in GraphQL Asset Mutation via HTTP Redirect",
+    "severity": "medium",
     "affects": [
-      { "minMajor": 4, "maxMajor": 4, "fixedAt": "4.4.15" }
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.22"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.18"
+      }
     ],
-    "docsUrl": "https://nvd.nist.gov/vuln/detail/CVE-2023-41892"
+    "docsUrl": "https://github.com/advisories/GHSA-8jr8-7hr4-vhfx"
   }
 ]
