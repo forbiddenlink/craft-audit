@@ -69,7 +69,12 @@ jobs:
       - name: Run full audit (no visual)
         if: steps.cfg.outputs.visual == 'false'
         run: |
-          node dist/cli.js audit "${{ steps.cfg.outputs.project_path }}" \
+          # Default to test-craft-project for scheduled runs (no inputs)
+          path="${{ steps.cfg.outputs.project_path }}"
+          if [ "$path" = "." ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            path="test-craft-project"
+          fi
+          node dist/cli.js audit "$path" \
             --output sarif \
             --output-file craft-audit-nightly.sarif \
             --exit-threshold high
@@ -77,7 +82,12 @@ jobs:
       - name: Run full audit (with visual)
         if: steps.cfg.outputs.visual == 'true'
         run: |
-          node dist/cli.js audit "${{ steps.cfg.outputs.project_path }}" \
+          # Default to test-craft-project for scheduled runs (no inputs)
+          path="${{ steps.cfg.outputs.project_path }}"
+          if [ "$path" = "." ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            path="test-craft-project"
+          fi
+          node dist/cli.js audit "$path" \
             --production "${{ steps.cfg.outputs.production_url }}" \
             --staging "${{ steps.cfg.outputs.staging_url }}" \
             --output sarif \
