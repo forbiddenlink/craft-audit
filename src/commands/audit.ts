@@ -35,7 +35,7 @@ import { applyDebugProfileCorrelation, loadDebugProfileEntries } from '../core/d
 import { getChangedTemplateIssuePathsWithStatus, resolveBaseRef } from '../core/git';
 import { normalizeExitThreshold, shouldFailForThreshold } from '../core/exit-threshold';
 import { isPresetName, mergePresetAndCustomRuleSettings, PresetName } from '../core/presets';
-import { getQualityGate, getQualityGateNames, applyQualityGate, filterIssuesForGate } from '../core/quality-gates';
+import { getQualityGate, getQualityGateNames, applyQualityGate } from '../core/quality-gates';
 import { applyRuleSettings, RuleSettings } from '../core/rule-tuning';
 import { runIntegrations, validateSendOnMode } from './integrations';
 import { runInteractiveFix, runBatchFix } from '../core/interactive-fix';
@@ -354,7 +354,7 @@ function applyDebugProfileEnrichment(
   result: AuditResult,
   debugProfile: string | undefined,
   absolutePath: string,
-  verbose?: boolean
+  _verbose?: boolean
 ): AuditResult {
   if (!debugProfile) return result;
 

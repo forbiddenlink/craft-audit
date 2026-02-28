@@ -238,7 +238,7 @@ export async function runBatchFix(
     issuesByFile.set(filePath, existing);
   }
 
-  for (const [filePath, fileIssues] of issuesByFile) {
+  for (const [_filePath, fileIssues] of issuesByFile) {
     // Sort by line descending so we don't shift line numbers
     fileIssues.sort((a, b) => (b.line || 0) - (a.line || 0));
 

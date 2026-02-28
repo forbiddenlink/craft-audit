@@ -1,4 +1,4 @@
-import { AuditIssue, AuditResult, Severity } from '../types';
+import { AuditIssue, Severity } from '../types';
 
 export interface QualityGate {
   name: string;

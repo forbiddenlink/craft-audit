@@ -126,7 +126,7 @@ export function loadDebugProfileEntries(filePath: string): DebugProfileEntry[] {
     parsed = JSON.parse(raw) as unknown;
   } catch (error) {
     const details = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to parse debug profile JSON: ${details}`);
+    throw new Error(`Failed to parse debug profile JSON: ${details}`, { cause: error });
   }
 
   return parseDebugProfile(parsed);

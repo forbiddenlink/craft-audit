@@ -248,7 +248,7 @@ export async function analyzeTwigTemplates(
     const err = error as Error & { code?: string; stderr?: string; stdout?: string };
 
     if (err.code === 'ENOENT') {
-      throw new Error('PHP runtime not found. Install PHP to run template analysis.');
+      throw new Error('PHP runtime not found. Install PHP to run template analysis.', { cause: error });
     }
 
     if (err.stdout) {
@@ -263,6 +263,6 @@ export async function analyzeTwigTemplates(
       process.stderr.write(`${rawDetails}\n`);
     }
 
-    throw new Error(`Template analysis failed: ${summary}`);
+    throw new Error(`Template analysis failed: ${summary}`, { cause: error });
   }
 }

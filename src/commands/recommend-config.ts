@@ -101,7 +101,7 @@ export async function executeRecommendConfigCommand(
   }
 
   const spinner = outputFormat === 'console' ? ora('Analyzing templates for recommendations...').start() : null;
-  let issues: AuditIssue[] = [];
+  let issues: AuditIssue[];
   try {
     issues = await analyzeTwigTemplates(templatesPath, options.verbose);
     spinner?.stop();
