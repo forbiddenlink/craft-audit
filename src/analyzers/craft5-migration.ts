@@ -307,7 +307,7 @@ function scanComposerJson(projectPath: string): AuditIssue[] {
   if (craftVersion && /\^4\.|~4\./.test(craftVersion)) {
     issues.push({
       severity: 'high',
-      category: 'system' as 'security',
+      category: 'system',
       ruleId: 'migration/craft4-version-constraint',
       file: 'composer.json',
       message: `Craft CMS version constraint \`${craftVersion}\` targets Craft 4. Migration to Craft 5 required.`,
@@ -328,7 +328,7 @@ function scanComposerJson(projectPath: string): AuditIssue[] {
       if (major !== null && major < 4) {
         issues.push({
           severity: 'medium',
-          category: 'system' as 'security',
+          category: 'system',
           ruleId: 'migration/plugin-craft5-compat',
           file: 'composer.json',
           message: `Plugin \`${packageName}\` (${version}) may not be compatible with Craft 5.`,
