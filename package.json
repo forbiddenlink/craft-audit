@@ -1,7 +1,7 @@
 {
   "name": "craft-audit",
   "version": "1.0.0",
-  "description": "Comprehensive audit tool for Craft CMS projects — template analysis, security scanning, HTTP headers, CVE detection, system checks, and visual regression",
+  "description": "Comprehensive audit tool for Craft CMS projects \u2014 template analysis, security scanning, HTTP headers, CVE detection, system checks, and visual regression",
   "main": "dist/cli.js",
   "bin": {
     "craft-audit": "./dist/cli.js"
@@ -71,5 +71,6 @@
   },
   "overrides": {
     "minimatch": "$minimatch"
-  }
+  },
+  "private": false
 }
