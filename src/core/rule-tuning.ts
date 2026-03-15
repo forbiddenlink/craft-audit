@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import { minimatch } from 'minimatch';
 import { AuditIssue, Severity } from '../types';
 
 export interface RuleSetting {
@@ -9,9 +10,22 @@ export interface RuleSetting {
 
 export type RuleSettings = Record<string, RuleSetting>;
 
+/**
+ * Match a path against a glob pattern.
+ * Uses path.matchesGlob (Node 20.13+) when available, falls back to minimatch.
+ */
+function matchesGlob(filePath: string, pattern: string): boolean {
+  // path.matchesGlob was added in Node 20.13.0 / 21.9.0
+  if (typeof path.matchesGlob === 'function') {
+    return path.matchesGlob(filePath, pattern);
+  }
+  // Fallback for Node 18
+  return minimatch(filePath, pattern, { matchBase: true });
+}
+
 function matchesAnyPattern(filePath: string | undefined, patterns: string[] | undefined): boolean {
   if (!filePath || !patterns || patterns.length === 0) return false;
-  return patterns.some((pattern) => path.matchesGlob(filePath, pattern));
+  return patterns.some((pattern) => matchesGlob(filePath, pattern));
 }
 
 export function applyRuleSettings(
