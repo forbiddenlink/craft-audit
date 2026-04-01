@@ -8,15 +8,21 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - `craft-audit init` command — scaffolds a starter `craft-audit.config.json`
-- `craft-audit completion` command — generates bash/zsh shell completion scripts
+- `craft-audit completion` command — generates bash/zsh/fish shell completion scripts
 - GitHub Actions CI with Node 18/20/22 test matrix and SARIF upload
 - `.vscodeignore` additions for cleaner VS Code extension packaging
-- 73 new tests: suppression (5), rule-metadata (7), visual-analyzer (16), system-analyzer (26), integrations-helpers (11), composer-checks edge cases (8) — total now 212
+- 73 new tests: suppression (5), rule-metadata (7), visual-analyzer (16), system-analyzer (26), integrations-helpers (11), composer-checks edge cases (8) — total now 251
 - `title` property added to config JSON Schema
+- JSON output schema file (`craft-audit.output.schema.json`) for the `--output json` envelope
 - Documentation for `init` and `completion` commands in README
 - Shared `projectLabel()` utility in `src/integrations/utils.ts`
 - Configurable timeout for VS Code extension runner
 - VS Code extension process cleanup on deactivation
+- CLI `--help` examples for `audit` and `audit-ci` commands
+- Fish shell support in `completion` command
+- Security analyzer file walk now has a 30 s timeout to prevent hangs on slow mounts
+- Cache now tracks a config hash (preset, ruleSettings, qualityGate) — cache auto-invalidates when config changes
+- `--fail-on-regression` now warns when no baseline file exists
 
 ### Changed
 - **Parallel analyzers** — template, system, security, and visual analyzers now run concurrently via `Promise.all`, significantly reducing audit time on large projects
@@ -25,9 +31,18 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - VS Code diagnostic data uses typed `WeakMap<Diagnostic, DiagnosticFixData>` instead of `(diagnostic as any).data`
 - Templates command error handling now consistent with audit command pattern
 - Renamed `docs/integrations-slack-clickup.md` → `docs/integrations.md`
+- Integration error messages now use structured `logger.warn()` instead of `console.error()` — respects `--log-level` and is suppressed in `silent` mode
+- JSON reporter output envelope now uses separate `schemaVersion` (data contract) and `toolVersion` (tool release) fields
+- Console reporter code context no longer shows empty placeholder gutter lines for before/after context
+- VS Code extension removed duplicate `craftAudit.executablePath` setting (use `craftAudit.cliPath` instead)
+- README now clarifies Node.js 18+ required, 22+ recommended
 
 ### Fixed
 - VS Code `analyzeWorkspace` variable shadowing bug in runner.ts
+- Batch/interactive fix mode now detects same-line conflicts and skips instead of silently corrupting
+- HTML reporter inline `escapeHtml` now uses consistent escape approach; `safeJson` also escapes HTML comment sequences
+- Watch mode `console.clear()` now guarded by `process.stdout.isTTY` to avoid wiping CI/pipe output
+- Unknown PHP analyzer patterns now logged as warnings instead of silently falling back to `inefficient-query`
 
 ## [1.0.0] - 2025-06-20
 

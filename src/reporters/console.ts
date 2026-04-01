@@ -178,13 +178,9 @@ export class ConsoleReporter {
     if (issue.code) {
       const codeLine = issue.code.trim();
       if (issue.line) {
-        const before = issue.line - 1;
-        const after = issue.line + 1;
         console.log('');
-        console.log(chalk.dim(`    ${String(before).padStart(4)} │`));
         console.log(`    ${chalk.dim(String(issue.line).padStart(4) + ' │')} ${codeLine}`);
         console.log(chalk.dim(`         │ ${'~'.repeat(codeLine.length)}`));
-        console.log(chalk.dim(`    ${String(after).padStart(4)} │`));
       } else {
         console.log(chalk.dim(`       ${codeLine}`));
       }

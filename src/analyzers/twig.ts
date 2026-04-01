@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 
 import { TemplateIssue, Fix } from '../types';
 import { AnalysisCache } from '../core/cache.js';
+import { logger } from '../core/logger.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -84,6 +85,9 @@ const KNOWN_PATTERNS = new Set([
 
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
   if (pattern && KNOWN_PATTERNS.has(pattern)) return pattern as TemplateIssue['pattern'];
+  if (pattern) {
+    logger.warn(`Unknown template pattern "${pattern}" from PHP analyzer; mapping to "inefficient-query".`);
+  }
   return 'inefficient-query';
 }
 

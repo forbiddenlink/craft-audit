@@ -10,7 +10,9 @@ function escapeHtml(value: string): string {
 }
 
 function safeJson(value: unknown): string {
-  return JSON.stringify(value).replaceAll('</', String.raw`<\/`);
+  return JSON.stringify(value)
+    .replaceAll('</', String.raw`<\/`)
+    .replaceAll('<!--', String.raw`<\!--`);
 }
 
 function renderCraftInfo(craft?: CraftInfo): string {
@@ -371,12 +373,13 @@ export class HtmlReporter {
         }
 
         function escapeHtml(value) {
-          return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+          var s = String(value);
+          s = s.replace(/&/g, '&amp;');
+          s = s.replace(/</g, '&lt;');
+          s = s.replace(/>/g, '&gt;');
+          s = s.replace(/"/g, '&quot;');
+          s = s.replace(/'/g, '&#39;');
+          return s;
         }
 
         function renderIssues() {

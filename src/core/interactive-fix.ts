@@ -242,21 +242,33 @@ export async function runBatchFix(
     // Sort by line descending so we don't shift line numbers
     fileIssues.sort((a, b) => (b.line || 0) - (a.line || 0));
 
+    // Detect and skip same-line conflicts: when multiple fixes target the
+    // same line, only the first (highest line number first due to sort) is
+    // applied; subsequent ones are skipped to avoid corruption.
+    const appliedLines = new Set<number>();
+
     for (const issue of fileIssues) {
       const fix = issue.fix!;
       const safetyLabel = fix.safe ? chalk.green('[SAFE]') : chalk.yellow('[UNSAFE]');
 
-      if (options.dryRun) {
+      if (issue.line !== undefined && appliedLines.has(issue.line)) {
+        result.skipped++;
+        if (options.verbose) {
+          console.log(chalk.yellow(`  ⚠ Skipped (same-line conflict): ${issue.file}:${issue.line}`));
+        }
+      } else if (options.dryRun) {
         console.log(`${safetyLabel} ${issue.file}:${issue.line}`);
         console.log(chalk.gray(`  ${fix.description}`));
         console.log(chalk.red(`    - ${fix.search}`));
         console.log(chalk.green(`    + ${fix.replacement || '(remove line)'}`));
         console.log('');
         result.fixed++;
+        if (issue.line !== undefined) appliedLines.add(issue.line);
       } else {
         const success = applyAutoFix(issue, templatesPath);
         if (success) {
           result.fixed++;
+          if (issue.line !== undefined) appliedLines.add(issue.line);
           if (options.verbose) {
             console.log(chalk.green(`  ✓ ${safetyLabel} ${issue.file}:${issue.line} - ${fix.description}`));
           }

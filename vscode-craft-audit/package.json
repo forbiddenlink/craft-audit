@@ -59,11 +59,6 @@
           "default": true,
           "description": "Enable/disable craft-audit diagnostics"
         },
-        "craftAudit.executablePath": {
-          "type": "string",
-          "default": "craft-audit",
-          "description": "Path to craft-audit executable"
-        },
         "craftAudit.configPath": {
           "type": "string",
           "default": "",

@@ -29,7 +29,7 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 
 ## Requirements
 
-- Node.js >= 22
+- Node.js >= 18 (22+ recommended for full feature set including `--watch` on Linux and `--rules-dir` glob matching)
 - PHP >= 8.0 (for template analysis)
 - Composer (for system checks)
 

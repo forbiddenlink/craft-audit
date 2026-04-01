@@ -18,6 +18,7 @@ interface CacheEntry {
 
 interface CacheData {
   version: string;
+  configHash?: string;
   entries: Record<string, CacheEntry>;
 }
 
@@ -25,27 +26,45 @@ export class AnalysisCache {
   private data: CacheData = { version: '1', entries: {} };
   private hits = 0;
   private misses = 0;
+  private currentConfigHash: string | undefined;
 
   constructor(private cacheFile: string) {}
 
-  /** Load the cache from disk. Starts fresh on missing/corrupt files. */
+  /**
+   * Set a hash of the current config (preset, ruleSettings, etc.).
+   * If this differs from the stored configHash the cache is invalidated.
+   */
+  setConfigHash(hash: string): void {
+    this.currentConfigHash = hash;
+  }
+
+  /** Load the cache from disk. Starts fresh on missing/corrupt files or config change. */
   load(): void {
     try {
       if (fs.existsSync(this.cacheFile)) {
         const raw = fs.readFileSync(this.cacheFile, 'utf8');
         const parsed = JSON.parse(raw);
         if (parsed && parsed.version === '1' && typeof parsed.entries === 'object') {
-          this.data = parsed;
+          // Invalidate cache if config has changed
+          if (this.currentConfigHash && parsed.configHash !== this.currentConfigHash) {
+            this.data = { version: '1', configHash: this.currentConfigHash, entries: {} };
+          } else {
+            this.data = parsed;
+          }
+          return;
         }
       }
     } catch {
       // Corrupt or unreadable cache — start fresh
-      this.data = { version: '1', entries: {} };
     }
+    this.data = { version: '1', configHash: this.currentConfigHash, entries: {} };
   }
 
   /** Persist the cache to disk. */
   save(): void {
+    if (this.currentConfigHash) {
+      this.data.configHash = this.currentConfigHash;
+    }
     fs.writeFileSync(this.cacheFile, JSON.stringify(this.data, null, 2), 'utf8');
   }
 

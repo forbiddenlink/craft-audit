@@ -3,6 +3,7 @@
  */
 
 import chalk from 'chalk';
+import * as crypto from 'node:crypto';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 
@@ -23,6 +24,7 @@ import {
   resolveBaselinePath,
   writeBaselineFile,
 } from '../core/baseline';
+// resolveBaselinePath is also used for --fail-on-regression validation
 import {
   loadAuditFileConfig,
   LoadedAuditFileConfig,
@@ -278,7 +280,7 @@ async function runAnalyzerStep(
     return result;
   } catch (error) {
     if (!quiet) process.stdout.write(`✖ ${step.name} failed\n`);
-    logger.debug(`${step.name} error:`, error);
+    logger.debug({ err: error }, `${step.name} error`);
     return [{
       severity: 'high',
       category: step.category,
@@ -336,7 +338,7 @@ async function runTemplateAnalysis(config: AuditConfig, cache?: AnalysisCache, s
     return filteredTemplateIssues;
   } catch (error) {
     if (!quiet) process.stdout.write('✖ Template analysis failed\n');
-    logger.debug('Template analysis error:', error);
+    logger.debug({ err: error }, 'Template analysis error');
     return [{
       severity: 'high',
       category: 'system',
@@ -666,6 +668,13 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
   if (effectiveOptions.cache) {
     const cachePath = path.resolve(absolutePath, effectiveOptions.cacheLocation ?? '.craft-audit-cache.json');
     cache = new AnalysisCache(cachePath);
+    // Build a config fingerprint so cache is invalidated when preset/ruleSettings change
+    const configFingerprint = JSON.stringify({
+      preset: effectiveOptions.preset,
+      ruleSettings: effectiveOptions.ruleSettings,
+      qualityGate: effectiveOptions.qualityGate,
+    });
+    cache.setConfigHash(crypto.createHash('sha256').update(configFingerprint).digest('hex'));
     cache.load();
   }
 
@@ -801,6 +810,16 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
     // --fail-on-regression: fail only if there are NEW issues (not suppressed by baseline)
     // This mode ignores --exit-threshold since it's specifically about regressions
     if (effectiveOptions.failOnRegression) {
+      if (effectiveOptions.baseline === false || (suppressedCount === 0 && filteredResult.summary.total > 0)) {
+        // No baseline is active — warn the user that --fail-on-regression needs a baseline
+        const baselinePath = resolveBaselinePath(
+          absolutePath,
+          typeof effectiveOptions.baseline === 'string' ? effectiveOptions.baseline : undefined
+        );
+        if (!fs.existsSync(baselinePath) && effectiveOptions.baseline !== false) {
+          logger.warn(`--fail-on-regression: no baseline file found at ${baselinePath}. All issues are treated as regressions. Run with --write-baseline first.`);
+        }
+      }
       if (filteredResult.summary.total > 0) {
         if (!machineOutput) {
           console.log(chalk.red(`\n✖ Regression detected: ${filteredResult.summary.total} new issue(s) not in baseline.`));
@@ -841,7 +860,7 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
       paths: watchPaths,
       extensions: watchExtensions,
       onChange: async (changedFiles) => {
-        console.clear();
+        if (process.stdout.isTTY) console.clear();
         console.log(chalk.gray(`Changed: ${changedFiles.map((f) => path.relative(absolutePath, f)).join(', ')}\n`));
         try {
           await executeAuditCommand(projectPath, {

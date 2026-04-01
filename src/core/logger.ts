@@ -1,11 +1,20 @@
 /**
- * Lightweight structured logging module for Craft Audit.
+ * Structured logging module for Craft Audit using Pino.
  *
- * Provides levelled logging (debug < info < warn < error < silent) with
- * coloured output via chalk.  Warn/error go to stderr; debug/info go to stdout.
+ * Usage:
+ *   import { logger, scannerLogger, auditLogger, reporterLogger } from './logger.js';
+ *   logger.info({ projectPath }, 'Starting audit');
+ *   scannerLogger.debug({ fileCount: 50 }, 'Scanning templates');
+ *   auditLogger.warn({ rule: 'n+1', file: 'index.twig' }, 'N+1 query detected');
+ *   reporterLogger.info({ format: 'sarif' }, 'Report generated');
+ *
+ * With correlation IDs:
+ *   const reqLogger = createRequestLogger();
+ *   reqLogger.info({ phase: 'security' }, 'Running security checks');
  */
 
-import chalk from 'chalk';
+import pino from 'pino';
+import { randomUUID } from 'crypto';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 
@@ -21,40 +30,69 @@ export function isLogLevel(value: string): value is LogLevel {
   return value in LOG_LEVEL_ORDER;
 }
 
-class Logger {
-  private level: LogLevel = 'info';
+const isDevelopment = process.env['NODE_ENV'] === 'development';
 
+const pinoLogger = pino({
+  level: process.env['LOG_LEVEL'] || 'info',
+  transport: isDevelopment
+    ? { target: 'pino-pretty', options: { colorize: true } }
+    : undefined,
+  base: {
+    service: 'craft-audit',
+    env: process.env['NODE_ENV'] || 'development',
+  },
+  timestamp: pino.stdTimeFunctions.isoTime,
+});
+
+// Track current level for getLevel()
+let currentLevel: LogLevel = (process.env['LOG_LEVEL'] as LogLevel) || 'info';
+
+/**
+ * Extended logger with setLevel/getLevel for backward compatibility
+ */
+export const logger = Object.assign(pinoLogger, {
   setLevel(level: LogLevel): void {
-    this.level = level;
-  }
-
+    currentLevel = level;
+    pinoLogger.level = level === 'silent' ? 'silent' : level;
+  },
   getLevel(): LogLevel {
-    return this.level;
-  }
+    return currentLevel;
+  },
+});
 
-  private shouldLog(target: LogLevel): boolean {
-    return LOG_LEVEL_ORDER[target] >= LOG_LEVEL_ORDER[this.level];
-  }
+// Module-specific child loggers
+export const scannerLogger = logger.child({ module: 'scanner' });
+export const auditLogger = logger.child({ module: 'audit' });
+export const reporterLogger = logger.child({ module: 'reporter' });
+export const cveLogger = logger.child({ module: 'cve' });
+export const watcherLogger = logger.child({ module: 'watcher' });
 
-  debug(message: string, ...args: unknown[]): void {
-    if (!this.shouldLog('debug')) return;
-    console.log(chalk.gray(`[DEBUG] ${message}`), ...args);
-  }
-
-  info(message: string, ...args: unknown[]): void {
-    if (!this.shouldLog('info')) return;
-    console.log(message, ...args);
-  }
-
-  warn(message: string, ...args: unknown[]): void {
-    if (!this.shouldLog('warn')) return;
-    console.error(chalk.yellow(`⚠ ${message}`), ...args);
-  }
-
-  error(message: string, ...args: unknown[]): void {
-    if (!this.shouldLog('error')) return;
-    console.error(chalk.red(`✖ ${message}`), ...args);
-  }
+/**
+ * Generate a correlation ID for request tracing
+ */
+export function generateCorrelationId(): string {
+  return `${Date.now().toString(36)}-${randomUUID().slice(0, 8)}`;
 }
 
-export const logger = new Logger();
+/**
+ * Create a child logger with correlation ID for request tracing
+ */
+export function createRequestLogger(correlationId?: string) {
+  return logger.child({
+    correlationId: correlationId || generateCorrelationId(),
+  });
+}
+
+/**
+ * Log performance metrics
+ */
+export function logPerformance(
+  operation: string,
+  durationMs: number,
+  context?: Record<string, unknown>
+): void {
+  const level = durationMs > 5000 ? 'warn' : 'info';
+  logger[level]({ operation, durationMs, ...context }, `Performance: ${operation}`);
+}
+
+export default logger;

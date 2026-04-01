@@ -35,12 +35,19 @@ function matchesExtension(filePath: string, extensions: Set<string>): boolean {
   return extensions.has(path.extname(filePath).toLowerCase());
 }
 
-async function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): Promise<{ files: string[]; truncated: boolean }> {
+const DEFAULT_WALK_TIMEOUT_MS = 30_000;
+
+async function walkFiles(
+  rootDir: string,
+  maxFiles = DEFAULT_FILE_LIMIT,
+  timeoutMs = DEFAULT_WALK_TIMEOUT_MS
+): Promise<{ files: string[]; truncated: boolean }> {
   const files: string[] = [];
   const queue = [rootDir];
   const visitedDirs = new Set<string>();
   let truncated = false;
   let queueOverflow = false;
+  const deadline = Date.now() + timeoutMs;
 
   try {
     const rootReal = await fs.promises.realpath(rootDir);
@@ -50,6 +57,11 @@ async function walkFiles(rootDir: string, maxFiles = DEFAULT_FILE_LIMIT): Promis
   }
 
   while (queue.length > 0 && files.length < maxFiles) {
+    if (Date.now() > deadline) {
+      truncated = true;
+      break;
+    }
+
     const current = queue.shift();
     if (!current) continue;
 

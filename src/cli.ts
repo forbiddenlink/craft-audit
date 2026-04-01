@@ -135,7 +135,7 @@ function addSharedOptions(cmd: Command): Command {
 program
   .name('craft-audit')
   .description('Comprehensive audit tool for Craft CMS projects')
-  .version(TOOL_VERSION)
+  .version(TOOL_VERSION, '-V, --version', 'Show craft-audit version')
   .option('--no-color', 'Disable colored output (also respects NO_COLOR env variable)')
   .hook('preAction', () => {
     // Check --no-color flag (Commander sets this as program.opts().color === false)
@@ -162,6 +162,14 @@ addSharedOptions(
     'console'
   )
   .option('--output-file <path>', 'Write final report payload to a file')
+  .addHelpText('after', `
+Examples:
+  $ craft-audit audit /path/to/craft-project
+  $ craft-audit audit . --output sarif --output-file report.sarif
+  $ craft-audit audit . --site-url https://example.com --preset strict
+  $ craft-audit audit . --fix --safe-only
+  $ craft-audit audit . --watch --cache
+`)
   .action(async (projectPath: string, options: AuditCommandOptions, command: Command) => {
     const logLevel = options.verbose ? 'debug' : (options as Record<string, unknown>).logLevel as string;
     if (logLevel && isLogLevel(logLevel)) logger.setLevel(logLevel);
@@ -187,6 +195,12 @@ addSharedOptions(
     'sarif'
   )
   .option('--output-file <path>', 'Write final report payload to a file', 'craft-audit.sarif')
+  .addHelpText('after', `
+Examples:
+  $ craft-audit audit-ci /path/to/craft-project
+  $ craft-audit audit-ci . --baseline --fail-on-regression
+  $ craft-audit audit-ci . --output sarif --sarif-category security
+`)
   .action(async (projectPath: string, options: AuditCommandOptions & { includeSystem?: boolean }, command: Command) => {
     const logLevel = options.verbose ? 'debug' : (options as Record<string, unknown>).logLevel as string;
     if (logLevel && isLogLevel(logLevel)) logger.setLevel(logLevel);
@@ -294,7 +308,7 @@ program
 program
   .command('completion')
   .description('Generate shell completion script')
-  .argument('[shell]', 'Shell type: bash or zsh', 'zsh')
+  .argument('[shell]', 'Shell type: bash, zsh, or fish', 'zsh')
   .action((shell: string) => {
     const commands = program.commands.map((c) => c.name()).filter((n) => n !== 'completion');
     if (shell === 'bash') {
@@ -307,6 +321,14 @@ program
         '  COMPREPLY=( $(compgen -W "$commands" -- "$cur") )',
         '}',
         'complete -F _craft_audit_completions craft-audit',
+      ].join('\n'));
+    } else if (shell === 'fish') {
+      console.log([
+        '# craft-audit fish completion',
+        '# Add to ~/.config/fish/completions/craft-audit.fish',
+        ...commands.map((c) =>
+          `complete -c craft-audit -n '__fish_use_subcommand' -a '${c}' -d 'Run ${c}'`
+        ),
       ].join('\n'));
     } else {
       console.log([

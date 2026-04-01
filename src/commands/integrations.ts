@@ -2,9 +2,9 @@
  * Integration handlers for Craft Audit CLI
  */
 
-import chalk from 'chalk';
 import { AuditResult, AuditCommandOptions } from '../types';
 import { summarizeIssues, AuditConfigError } from './audit';
+import { logger } from '../core/logger';
 import { sendSlackNotification, IntegrationSendOn } from '../integrations/slack';
 import { publishBitbucketInsights } from '../integrations/bitbucket';
 import { createClickUpTask } from '../integrations/clickup';
@@ -45,15 +45,15 @@ async function handleSlackIntegration(
 ): Promise<void> {
   const webhookUrl = options.slackWebhookUrl ?? process.env.SLACK_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.error(chalk.yellow('Slack integration enabled but no webhook URL provided.'));
+    logger.warn('Slack integration enabled but no webhook URL provided.');
     return;
   }
   const sendOn = normalizeSendOn(options.slackSendOn, 'issues');
   const response = await sendSlackNotification({ webhookUrl, sendOn }, result);
   if (!response.ok) {
-    console.error(chalk.yellow(`Slack notification failed: ${response.error ?? 'unknown error'}`));
+    logger.warn(`Slack notification failed: ${response.error ?? 'unknown error'}`);
   } else if (options.verbose) {
-    console.error(chalk.gray('Slack notification sent.'));
+    logger.debug('Slack notification sent.');
   }
 }
 
@@ -66,11 +66,11 @@ async function handleClickUpIntegration(
   const tokenEnv = options.clickupTokenEnv ?? 'CLICKUP_API_TOKEN';
   const token = process.env[tokenEnv];
   if (!listId) {
-    console.error(chalk.yellow('ClickUp integration enabled but clickupListId is missing.'));
+    logger.warn('ClickUp integration enabled but clickupListId is missing.');
     return;
   }
   if (!token) {
-    console.error(chalk.yellow(`ClickUp integration enabled but token env "${tokenEnv}" is not set.`));
+    logger.warn(`ClickUp integration enabled but token env "${tokenEnv}" is not set.`);
     return;
   }
   const sendOn = normalizeSendOn(options.clickupSendOn, 'high');
@@ -89,16 +89,16 @@ async function handleClickUpIntegration(
     };
 
     if (options.verbose && filtered.skippedCount > 0) {
-      console.error(chalk.gray(`ClickUp dedupe skipped ${filtered.skippedCount} previously sent issue(s).`));
+      logger.debug(`ClickUp dedupe skipped ${filtered.skippedCount} previously sent issue(s).`);
     }
   }
 
   const response = await createClickUpTask({ listId, token, sendOn, findingsUrl }, taskResult);
   if (!response.ok) {
-    console.error(chalk.yellow(`ClickUp task creation failed: ${response.error ?? 'unknown error'}`));
+    logger.warn(`ClickUp task creation failed: ${response.error ?? 'unknown error'}`);
   } else if (options.verbose) {
     const taskIdSuffix = response.taskId ? ` (id=${response.taskId})` : '';
-    console.error(chalk.gray(`ClickUp task created${taskIdSuffix}.`));
+    logger.debug(`ClickUp task created${taskIdSuffix}.`);
   }
 
   if (response.ok && options.clickupOnlyNew) {
@@ -155,17 +155,15 @@ async function handleBitbucketIntegration(
 ): Promise<void> {
   const config = resolveBitbucketConfig(options);
   if ('error' in config) {
-    console.error(chalk.yellow(config.error));
+    logger.warn(config.error);
     return;
   }
   const response = await publishBitbucketInsights(config, result);
   if (!response.ok) {
-    console.error(chalk.yellow(`Bitbucket report publish failed: ${response.error ?? 'unknown error'}`));
+    logger.warn(`Bitbucket report publish failed: ${response.error ?? 'unknown error'}`);
   } else if (options.verbose) {
-    console.error(
-      chalk.gray(
-        `Bitbucket report published (annotations: ${response.annotationsSent ?? 0}, batches: ${response.annotationBatchesSent ?? 0}).`
-      )
+    logger.debug(
+      `Bitbucket report published (annotations: ${response.annotationsSent ?? 0}, batches: ${response.annotationBatchesSent ?? 0}).`
     );
   }
 }
@@ -178,11 +176,11 @@ async function handleLinearIntegration(
   const tokenEnv = options.linearTokenEnv ?? 'LINEAR_API_KEY';
   const token = process.env[tokenEnv];
   if (!teamId) {
-    console.error(chalk.yellow('Linear integration enabled but linearTeamId is missing.'));
+    logger.warn('Linear integration enabled but linearTeamId is missing.');
     return;
   }
   if (!token) {
-    console.error(chalk.yellow(`Linear integration enabled but token env "${tokenEnv}" is not set.`));
+    logger.warn(`Linear integration enabled but token env "${tokenEnv}" is not set.`);
     return;
   }
   const sendOn = normalizeSendOn(options.linearSendOn, 'high');
@@ -202,10 +200,10 @@ async function handleLinearIntegration(
     result
   );
   if (!response.ok && !response.skipped) {
-    console.error(chalk.yellow(`Linear issue creation failed: ${response.error ?? 'unknown error'}`));
+    logger.warn(`Linear issue creation failed: ${response.error ?? 'unknown error'}`);
   } else if (options.verbose && response.issueIdentifier) {
     const urlSuffix = response.issueUrl ? ` (${response.issueUrl})` : '';
-    console.error(chalk.gray(`Linear issue created: ${response.issueIdentifier}${urlSuffix}`));
+    logger.debug(`Linear issue created: ${response.issueIdentifier}${urlSuffix}`);
   }
 }
 
@@ -225,7 +223,7 @@ export async function runIntegrations(
     const results = await Promise.allSettled(tasks);
     for (const r of results) {
       if (r.status === 'rejected') {
-        console.error(chalk.yellow(`Integration error: ${r.reason}`));
+        logger.warn(`Integration error: ${r.reason}`);
       }
     }
   }
