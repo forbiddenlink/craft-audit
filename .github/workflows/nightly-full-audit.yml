@@ -71,28 +71,32 @@ jobs:
         run: |
           # Default to test-craft-project when no path specified
           path="${{ steps.cfg.outputs.project_path }}"
+          threshold="high"
           if [ "$path" = "." ]; then
             path="test-craft-project"
+            threshold="none"  # Test project has intentional issues
           fi
           node dist/cli.js audit "$path" \
             --output sarif \
             --output-file craft-audit-nightly.sarif \
-            --exit-threshold high
+            --exit-threshold "$threshold"
 
       - name: Run full audit (with visual)
         if: steps.cfg.outputs.visual == 'true'
         run: |
           # Default to test-craft-project when no path specified
           path="${{ steps.cfg.outputs.project_path }}"
+          threshold="high"
           if [ "$path" = "." ]; then
             path="test-craft-project"
+            threshold="none"  # Test project has intentional issues
           fi
           node dist/cli.js audit "$path" \
             --production "${{ steps.cfg.outputs.production_url }}" \
             --staging "${{ steps.cfg.outputs.staging_url }}" \
             --output sarif \
             --output-file craft-audit-nightly.sarif \
-            --exit-threshold high
+            --exit-threshold "$threshold"
 
       - name: Upload nightly SARIF
         uses: github/codeql-action/upload-sarif@v3
