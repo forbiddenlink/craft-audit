@@ -69,9 +69,9 @@ jobs:
       - name: Run full audit (no visual)
         if: steps.cfg.outputs.visual == 'false'
         run: |
-          # Default to test-craft-project for scheduled runs (no inputs)
+          # Default to test-craft-project when no path specified
           path="${{ steps.cfg.outputs.project_path }}"
-          if [ "$path" = "." ] && [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "$path" = "." ]; then
             path="test-craft-project"
           fi
           node dist/cli.js audit "$path" \
@@ -82,9 +82,9 @@ jobs:
       - name: Run full audit (with visual)
         if: steps.cfg.outputs.visual == 'true'
         run: |
-          # Default to test-craft-project for scheduled runs (no inputs)
+          # Default to test-craft-project when no path specified
           path="${{ steps.cfg.outputs.project_path }}"
-          if [ "$path" = "." ] && [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "$path" = "." ]; then
             path="test-craft-project"
           fi
           node dist/cli.js audit "$path" \
