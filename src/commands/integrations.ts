@@ -155,7 +155,8 @@ async function handleBitbucketIntegration(
 ): Promise<void> {
   const config = resolveBitbucketConfig(options);
   if ('error' in config) {
-    logger.warn(config.error);
+    // Use console.warn for CLI user-facing warnings (stderr)
+    console.warn(`⚠ ${config.error}`);
     return;
   }
   const response = await publishBitbucketInsights(config, result);

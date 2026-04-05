@@ -885,7 +885,8 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
   }
   } catch (error) {
     if (error instanceof AuditConfigError) {
-      logger.error(error.message);
+      // Use console.error for CLI user-facing errors (stderr)
+      console.error(`✖ ${error.message}`);
       process.exitCode = 1;
       return;
     }
