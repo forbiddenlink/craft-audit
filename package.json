@@ -58,8 +58,7 @@
     "minimatch": "^10.2.1",
     "next-safe-action": "^8.3.0",
     "ora": "^5.4.1",
-    "pino": "^10.3.1",
-    "pino-pretty": "^13.1.3"
+    "pino": "^10.3.1"
   },
   "optionalDependencies": {
     "backstopjs": "^6.3.2"
@@ -67,8 +66,6 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",
     "@eslint/js": "^10.0.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
     "@types/node": "^20.10.0",
     "@types/sarif": "^2.1.7",
     "@vitejs/plugin-react": "^6.0.1",
@@ -85,8 +82,9 @@
     "npm": ">=9.0.0"
   },
   "overrides": {
-    "minimatch": "$minimatch"
+    "minimatch": "$minimatch",
+    "lodash": "^4.18.0"
   },
-  "comment:overrides": "Pin transitive minimatch to our direct v10.x to avoid CVE-2024-XXXXX in minimatch <9.0.5 pulled by backstopjs",
+  "comment:overrides": "Pin transitive deps: minimatch for CVE-2024-XXXXX, lodash for CVE-2026-4800/CVE-2026-2950 (both via backstopjs)",
   "private": false
 }
