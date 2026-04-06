@@ -9,6 +9,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { AuditIssue, Severity } from '../types';
 import { logger } from './logger';
+import { safeReadFileSync } from '../utils/fs';
 
 /** Context passed to custom rule `create()` functions */
 export interface RuleContext {
@@ -336,11 +337,7 @@ export class RuleRegistry {
           const fullPath = path.resolve(projectPath, relativePath);
           // Guard against path traversal
           if (!fullPath.startsWith(projectPath)) return undefined;
-          try {
-            return fs.readFileSync(fullPath, 'utf8');
-          } catch {
-            return undefined;
-          }
+          return safeReadFileSync(fullPath);
         },
 
         listFiles(pattern: string): string[] {

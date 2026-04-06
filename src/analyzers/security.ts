@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import { SecurityIssue } from '../types';
 import { checkFilePermissions } from './security/file-permissions';
 import { checkHttpHeaders } from './security/http-headers';
+import { walkFiles, safeReadFile, toRelativePath } from '../utils/fs';
 
 const TEXT_FILE_EXTENSIONS = new Set([
   '.php',
@@ -16,109 +17,19 @@ const TEXT_FILE_EXTENSIONS = new Set([
 ]);
 
 const DEFAULT_FILE_LIMIT = 2000;
-const MAX_QUEUE_SIZE = 10000;
-const SKIP_DIR_NAMES = new Set(['vendor', 'node_modules', '.git', '.svn', '.hg']);
 
-async function safeRead(filePath: string): Promise<string | undefined> {
-  try {
-    return await fs.promises.readFile(filePath, 'utf8');
-  } catch {
-    return undefined;
-  }
-}
-
-function shouldSkipDir(name: string): boolean {
-  return SKIP_DIR_NAMES.has(name);
+function toRelative(projectPath: string, filePath: string): string {
+  return path.relative(projectPath, filePath) || filePath;
 }
 
 function matchesExtension(filePath: string, extensions: Set<string>): boolean {
   return extensions.has(path.extname(filePath).toLowerCase());
 }
 
-const DEFAULT_WALK_TIMEOUT_MS = 30_000;
-
-async function walkFiles(
-  rootDir: string,
-  maxFiles = DEFAULT_FILE_LIMIT,
-  timeoutMs = DEFAULT_WALK_TIMEOUT_MS
-): Promise<{ files: string[]; truncated: boolean }> {
-  const files: string[] = [];
-  const queue = [rootDir];
-  const visitedDirs = new Set<string>();
-  let truncated = false;
-  let queueOverflow = false;
-  const deadline = Date.now() + timeoutMs;
-
-  try {
-    const rootReal = await fs.promises.realpath(rootDir);
-    visitedDirs.add(rootReal);
-  } catch {
-    // ignore unresolvable root
-  }
-
-  while (queue.length > 0 && files.length < maxFiles) {
-    if (Date.now() > deadline) {
-      truncated = true;
-      break;
-    }
-
-    const current = queue.shift();
-    if (!current) continue;
-
-    let entries: fs.Dirent[];
-    try {
-      entries = await fs.promises.readdir(current, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-
-    for (const entry of entries) {
-      if (files.length >= maxFiles) {
-        truncated = true;
-        break;
-      }
-
-      if (entry.isSymbolicLink()) continue;
-
-      const fullPath = path.join(current, entry.name);
-
-      if (entry.isDirectory()) {
-        if (!shouldSkipDir(entry.name)) {
-          try {
-            const realPath = await fs.promises.realpath(fullPath);
-            if (!visitedDirs.has(realPath)) {
-              visitedDirs.add(realPath);
-              if (queue.length >= MAX_QUEUE_SIZE) {
-                queueOverflow = true;
-              } else {
-                queue.push(fullPath);
-              }
-            }
-          } catch {
-            // skip unresolvable directories
-          }
-        }
-      } else if (entry.isFile()) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  if (!truncated && (queue.length > 0 || queueOverflow) && files.length >= maxFiles) {
-    truncated = true;
-  }
-
-  return { files, truncated };
-}
-
-function toRelative(projectPath: string, filePath: string): string {
-  return path.relative(projectPath, filePath) || filePath;
-}
-
 async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
   const generalConfigPath = path.join(projectPath, 'config', 'general.php');
-  const content = await safeRead(generalConfigPath);
+  const content = await safeReadFile(generalConfigPath);
   if (!content) return issues;
 
   if (/['"]devMode['"]\s*=>\s*true/i.test(content)) {
@@ -293,7 +204,7 @@ async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> 
 async function scanEnvFile(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
   const envPath = path.join(projectPath, '.env');
-  const content = await safeRead(envPath);
+  const content = await safeReadFile(envPath);
   if (!content) return issues;
 
   const isProduction = /^\s*CRAFT_ENVIRONMENT\s*=\s*production\s*$/im.test(content);
@@ -345,7 +256,7 @@ async function scanDebugPatterns(
   fileLimit: number
 ): Promise<{ issues: SecurityIssue[]; truncated: boolean; scannedFiles: number }> {
   const issues: SecurityIssue[] = [];
-  const { files: allFiles, truncated } = await walkFiles(projectPath, fileLimit);
+  const { files: allFiles, truncated } = await walkFiles(projectPath, { maxFiles: fileLimit });
 
   const textFiles = allFiles.filter(filePath => {
     if (!matchesExtension(filePath, TEXT_FILE_EXTENSIONS)) return false;
@@ -358,7 +269,7 @@ async function scanDebugPatterns(
     const batch = textFiles.slice(b, b + BATCH_SIZE);
     const results = await Promise.all(
       batch.map(async (filePath) => {
-        const content = await safeRead(filePath);
+        const content = await safeReadFile(filePath);
         return { filePath, content };
       })
     );
@@ -440,7 +351,7 @@ function isVersionAffected(
 
 async function readCraftVersion(projectPath: string): Promise<string | undefined> {
   // Try composer.lock first
-  const lockContent = await safeRead(path.join(projectPath, 'composer.lock'));
+  const lockContent = await safeReadFile(path.join(projectPath, 'composer.lock'));
   if (lockContent) {
     try {
       const lock = JSON.parse(lockContent);
@@ -454,7 +365,7 @@ async function readCraftVersion(projectPath: string): Promise<string | undefined
   }
 
   // Fall back to composer.json
-  const jsonContent = await safeRead(path.join(projectPath, 'composer.json'));
+  const jsonContent = await safeReadFile(path.join(projectPath, 'composer.json'));
   if (jsonContent) {
     try {
       const composerJson = JSON.parse(jsonContent);
