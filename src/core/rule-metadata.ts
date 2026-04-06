@@ -1,7 +1,22 @@
+import type { Severity } from '../types';
+
+export type RuleCategory = 'template' | 'security' | 'system' | 'visual' | 'runtime';
+
 export interface RuleMetadata {
   title: string;
   description: string;
   helpUri?: string;
+}
+
+/**
+ * Extended rule metadata with severity and category information.
+ * Used by list-rules and explain commands.
+ */
+export interface ExtendedRuleMetadata extends RuleMetadata {
+  severity: Severity;
+  category: RuleCategory;
+  examples?: string[];
+  fixGuidance?: string;
 }
 
 const RULE_METADATA: Record<string, RuleMetadata> = {
@@ -304,4 +319,450 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
 
 export function getRuleMetadata(ruleId: string): RuleMetadata | undefined {
   return RULE_METADATA[ruleId];
+}
+
+/**
+ * Extended rule metadata with severity and category.
+ * Severity is derived from the rule ID prefix.
+ */
+const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
+  // Template rules - performance
+  'template/n-plus-one-loop': {
+    ...RULE_METADATA['template/n-plus-one-loop'],
+    severity: 'high',
+    category: 'template',
+    examples: [
+      '{% for entry in entries %}\n  {{ entry.author.name }} {# N+1: author is fetched per iteration #}\n{% endfor %}',
+    ],
+    fixGuidance: 'Use .with() to eager load relations: craft.entries().with(["author"]).all()',
+  },
+  'template/missing-eager-load': {
+    ...RULE_METADATA['template/missing-eager-load'],
+    severity: 'medium',
+    category: 'template',
+    examples: [
+      '{% for entry in entries %}\n  {% for asset in entry.images.all() %} {# fetches images per entry #}\n{% endfor %}',
+    ],
+    fixGuidance: 'Add .with(["images"]) to the parent query to eager load the relation.',
+  },
+  'template/missing-limit': {
+    ...RULE_METADATA['template/missing-limit'],
+    severity: 'medium',
+    category: 'template',
+    examples: [
+      '{% for entry in craft.entries().all() %} {# no limit - could fetch thousands #}',
+    ],
+    fixGuidance: 'Add .limit(N) to queries to prevent fetching excessive rows.',
+  },
+  'template/deprecated-api': {
+    ...RULE_METADATA['template/deprecated-api'],
+    severity: 'low',
+    category: 'template',
+    fixGuidance: 'Check Craft CMS upgrade documentation for migration paths.',
+  },
+  'template/inefficient-query': {
+    ...RULE_METADATA['template/inefficient-query'],
+    severity: 'medium',
+    category: 'template',
+    fixGuidance: 'Review query patterns and consider eager loading or query optimization.',
+  },
+  'template/mixed-loading-strategy': {
+    ...RULE_METADATA['template/mixed-loading-strategy'],
+    severity: 'info',
+    category: 'template',
+    fixGuidance: 'Standardize on either .with() or .eagerly() for consistent performance behavior.',
+  },
+  'template/unknown': {
+    ...RULE_METADATA['template/unknown'],
+    severity: 'info',
+    category: 'template',
+  },
+  'template/form-missing-csrf': {
+    ...RULE_METADATA['template/form-missing-csrf'],
+    severity: 'high',
+    category: 'template',
+    examples: [
+      '<form method="post">\n  {# Missing: {{ csrfInput() }} #}\n</form>',
+    ],
+    fixGuidance: 'Add {{ csrfInput() }} inside all POST forms.',
+  },
+  'template/img-missing-alt': {
+    ...RULE_METADATA['template/img-missing-alt'],
+    severity: 'medium',
+    category: 'template',
+    examples: ['<img src="photo.jpg">'],
+    fixGuidance: 'Add alt="" for decorative images or descriptive alt text for informative images.',
+  },
+  'template/input-missing-label': {
+    ...RULE_METADATA['template/input-missing-label'],
+    severity: 'medium',
+    category: 'template',
+    fixGuidance: 'Add a <label for="id"> or aria-label attribute to form inputs.',
+  },
+  'template/empty-link': {
+    ...RULE_METADATA['template/empty-link'],
+    severity: 'medium',
+    category: 'template',
+    fixGuidance: 'Add visible text or aria-label to link elements.',
+  },
+  'template/missing-lang': {
+    ...RULE_METADATA['template/missing-lang'],
+    severity: 'low',
+    category: 'template',
+    examples: ['<html> {# Missing lang attribute #}'],
+    fixGuidance: 'Add lang="en" (or appropriate language code) to the <html> element.',
+  },
+
+  // Security rules
+  'security/dev-mode-enabled': {
+    ...RULE_METADATA['security/dev-mode-enabled'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Use environment variable: "devMode" => App::env("DEV_MODE") ?? false',
+  },
+  'security/admin-changes-enabled': {
+    ...RULE_METADATA['security/admin-changes-enabled'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Set allowAdminChanges to false in production environments.',
+  },
+  'security/dev-mode-enabled-in-production': {
+    ...RULE_METADATA['security/dev-mode-enabled-in-production'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Ensure DEV_MODE=false in production .env files.',
+  },
+  'security/debug-output-pattern': {
+    ...RULE_METADATA['security/debug-output-pattern'],
+    severity: 'high',
+    category: 'security',
+    examples: ['{{ dump(entry) }}', '<?php dd($variable); ?>'],
+    fixGuidance: 'Remove dump(), dd(), and var_dump() calls before deploying to production.',
+  },
+  'security/hardcoded-security-key': {
+    ...RULE_METADATA['security/hardcoded-security-key'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Move security key to environment variable: "securityKey" => App::env("CRAFT_SECURITY_KEY")',
+  },
+  'security/csrf-disabled': {
+    ...RULE_METADATA['security/csrf-disabled'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Remove or set enableCsrfProtection to true.',
+  },
+  'security/dangerous-file-extensions': {
+    ...RULE_METADATA['security/dangerous-file-extensions'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Remove dangerous extensions (php, phar, sh, exe) from extraAllowedFileExtensions.',
+  },
+  'security/file-scan-truncated': {
+    ...RULE_METADATA['security/file-scan-truncated'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Increase --security-file-limit if you want to scan more files.',
+  },
+  'security/known-cve': {
+    ...RULE_METADATA['security/known-cve'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Update Craft CMS to a patched version: composer update craftcms/cms',
+  },
+  'security/allow-updates-enabled': {
+    ...RULE_METADATA['security/allow-updates-enabled'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Set allowUpdates to false in production to prevent control panel updates.',
+  },
+  'security/template-caching-disabled': {
+    ...RULE_METADATA['security/template-caching-disabled'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Enable template caching in production for better performance.',
+  },
+  'security/test-email-configured': {
+    ...RULE_METADATA['security/test-email-configured'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Remove testToEmailAddress setting in production.',
+  },
+  'security/powered-by-header': {
+    ...RULE_METADATA['security/powered-by-header'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Set sendPoweredByHeader to false to reduce information disclosure.',
+  },
+  'security/default-cp-trigger': {
+    ...RULE_METADATA['security/default-cp-trigger'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Change cpTrigger to a non-default value like "cms" or "backend".',
+  },
+  'security/insecure-site-url': {
+    ...RULE_METADATA['security/insecure-site-url'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Update site URL to use HTTPS.',
+  },
+  'security/missing-hsts': {
+    ...RULE_METADATA['security/missing-hsts'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Add Strict-Transport-Security header with max-age of at least 31536000.',
+  },
+  'security/missing-x-content-type-options': {
+    ...RULE_METADATA['security/missing-x-content-type-options'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Add X-Content-Type-Options: nosniff header.',
+  },
+  'security/missing-x-frame-options': {
+    ...RULE_METADATA['security/missing-x-frame-options'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Add X-Frame-Options: DENY or SAMEORIGIN header.',
+  },
+  'security/missing-csp': {
+    ...RULE_METADATA['security/missing-csp'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Add Content-Security-Policy header. Use --generate-csp for recommendations.',
+  },
+  'security/missing-referrer-policy': {
+    ...RULE_METADATA['security/missing-referrer-policy'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Add Referrer-Policy: strict-origin-when-cross-origin header.',
+  },
+  'security/missing-permissions-policy': {
+    ...RULE_METADATA['security/missing-permissions-policy'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Add Permissions-Policy header to restrict browser features.',
+  },
+  'security/server-header-exposed': {
+    ...RULE_METADATA['security/server-header-exposed'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Configure web server to remove or obscure Server header.',
+  },
+  'security/x-powered-by-exposed': {
+    ...RULE_METADATA['security/x-powered-by-exposed'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Configure web server to remove X-Powered-By header.',
+  },
+  'security/http-header-check-failed': {
+    ...RULE_METADATA['security/http-header-check-failed'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Ensure the site URL is accessible and try again.',
+  },
+  'security/world-readable-config': {
+    ...RULE_METADATA['security/world-readable-config'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Set file permissions to 640 or more restrictive.',
+  },
+  'security/sensitive-file-in-webroot': {
+    ...RULE_METADATA['security/sensitive-file-in-webroot'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Move sensitive files outside web root or deny access via web server config.',
+  },
+  'security/world-readable-storage': {
+    ...RULE_METADATA['security/world-readable-storage'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Set storage directory permissions to 750 or more restrictive.',
+  },
+  'security/cors-wildcard-origin': {
+    ...RULE_METADATA['security/cors-wildcard-origin'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Restrict Access-Control-Allow-Origin to specific trusted domains.',
+  },
+  'security/cors-credentials-wildcard': {
+    ...RULE_METADATA['security/cors-credentials-wildcard'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Never allow credentials with wildcard CORS origin.',
+  },
+  'security/deprecated-x-xss-protection': {
+    ...RULE_METADATA['security/deprecated-x-xss-protection'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Remove X-XSS-Protection header; use CSP instead.',
+  },
+  'security/hsts-preload-not-eligible': {
+    ...RULE_METADATA['security/hsts-preload-not-eligible'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Add includeSubDomains and preload directives to HSTS header.',
+  },
+  'security/csp-report-only-mode': {
+    ...RULE_METADATA['security/csp-report-only-mode'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Add an enforcing Content-Security-Policy alongside Report-Only.',
+  },
+
+  // System rules
+  'system/composer-missing': {
+    ...RULE_METADATA['system/composer-missing'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Ensure composer.json exists in project root.',
+  },
+  'system/craft-not-detected': {
+    ...RULE_METADATA['system/craft-not-detected'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Add craftcms/cms to composer.json requirements.',
+  },
+  'system/craft-version-legacy': {
+    ...RULE_METADATA['system/craft-version-legacy'],
+    severity: 'medium',
+    category: 'system',
+    fixGuidance: 'Plan migration to Craft 4 or 5.',
+  },
+  'system/craft-major-upgrade-candidate': {
+    ...RULE_METADATA['system/craft-major-upgrade-candidate'],
+    severity: 'info',
+    category: 'system',
+    fixGuidance: 'Consider upgrading to Craft 5 for latest features.',
+  },
+  'system/php-version-old': {
+    ...RULE_METADATA['system/php-version-old'],
+    severity: 'medium',
+    category: 'system',
+    fixGuidance: 'Upgrade to PHP 8.2 or newer.',
+  },
+  'system/composer-tooling-missing': {
+    ...RULE_METADATA['system/composer-tooling-missing'],
+    severity: 'info',
+    category: 'system',
+    fixGuidance: 'Install Composer globally or ensure it is in PATH.',
+  },
+  'system/composer-validate-errors': {
+    ...RULE_METADATA['system/composer-validate-errors'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Fix composer.json schema errors.',
+  },
+  'system/composer-validate-warnings': {
+    ...RULE_METADATA['system/composer-validate-warnings'],
+    severity: 'low',
+    category: 'system',
+    fixGuidance: 'Address composer.json warnings for cleaner configuration.',
+  },
+  'system/composer-audit-advisories': {
+    ...RULE_METADATA['system/composer-audit-advisories'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Run composer update to get patched versions.',
+  },
+  'system/composer-audit-advisory': {
+    ...RULE_METADATA['system/composer-audit-advisory'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Update the affected dependency to a patched version.',
+  },
+  'system/composer-audit-abandoned': {
+    ...RULE_METADATA['system/composer-audit-abandoned'],
+    severity: 'medium',
+    category: 'system',
+    fixGuidance: 'Replace abandoned packages with maintained alternatives.',
+  },
+  'system/composer-outdated-direct': {
+    ...RULE_METADATA['system/composer-outdated-direct'],
+    severity: 'low',
+    category: 'system',
+    fixGuidance: 'Run composer update to get latest versions.',
+  },
+
+  // Visual rules
+  'visual/backstop-missing': {
+    ...RULE_METADATA['visual/backstop-missing'],
+    severity: 'info',
+    category: 'visual',
+    fixGuidance: 'Install BackstopJS: npm install -g backstopjs',
+  },
+  'visual/reference-missing': {
+    ...RULE_METADATA['visual/reference-missing'],
+    severity: 'info',
+    category: 'visual',
+    fixGuidance: 'Run backstop reference to create baseline images.',
+  },
+  'visual/regression-detected': {
+    ...RULE_METADATA['visual/regression-detected'],
+    severity: 'medium',
+    category: 'visual',
+    fixGuidance: 'Review visual diff and update reference if change is intentional.',
+  },
+
+  // Runtime rules
+  'runtime/template-analyzer-failed': {
+    ...RULE_METADATA['runtime/template-analyzer-failed'],
+    severity: 'high',
+    category: 'runtime',
+    fixGuidance: 'Check error details and fix analyzer configuration.',
+  },
+  'runtime/system-analyzer-failed': {
+    ...RULE_METADATA['runtime/system-analyzer-failed'],
+    severity: 'high',
+    category: 'runtime',
+    fixGuidance: 'Check error details and fix analyzer configuration.',
+  },
+  'runtime/security-analyzer-failed': {
+    ...RULE_METADATA['runtime/security-analyzer-failed'],
+    severity: 'high',
+    category: 'runtime',
+    fixGuidance: 'Check error details and fix analyzer configuration.',
+  },
+  'runtime/visual-analyzer-failed': {
+    ...RULE_METADATA['runtime/visual-analyzer-failed'],
+    severity: 'high',
+    category: 'runtime',
+    fixGuidance: 'Check error details and fix analyzer configuration.',
+  },
+};
+
+/**
+ * Get extended rule metadata with severity and category.
+ */
+export function getExtendedRuleMetadata(ruleId: string): ExtendedRuleMetadata | undefined {
+  return EXTENDED_RULE_METADATA[ruleId];
+}
+
+/**
+ * Get all rule IDs.
+ */
+export function getAllRuleIds(): string[] {
+  return Object.keys(EXTENDED_RULE_METADATA);
+}
+
+/**
+ * Get all rules as an array of extended metadata with rule IDs.
+ */
+export function getAllRules(): Array<ExtendedRuleMetadata & { ruleId: string }> {
+  return Object.entries(EXTENDED_RULE_METADATA).map(([ruleId, meta]) => ({
+    ruleId,
+    ...meta,
+  }));
+}
+
+/**
+ * Filter rules by category and/or severity.
+ */
+export function filterRules(options: {
+  category?: RuleCategory;
+  severity?: Severity;
+}): Array<ExtendedRuleMetadata & { ruleId: string }> {
+  return getAllRules().filter((rule) => {
+    if (options.category && rule.category !== options.category) return false;
+    if (options.severity && rule.severity !== options.severity) return false;
+    return true;
+  });
 }

@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { Severity } from '../types';
 
-export const SUPPORTED_OUTPUT_FORMATS = ['console', 'json', 'sarif', 'bitbucket', 'html'] as const;
+export const SUPPORTED_OUTPUT_FORMATS = ['console', 'json', 'json-stream', 'sarif', 'bitbucket', 'html'] as const;
 export type SupportedOutputFormat = (typeof SUPPORTED_OUTPUT_FORMATS)[number];
 export const SUPPORTED_AUDIT_CI_OUTPUT_FORMATS = ['json', 'sarif', 'bitbucket'] as const;
 export type SupportedAuditCiOutputFormat = (typeof SUPPORTED_AUDIT_CI_OUTPUT_FORMATS)[number];

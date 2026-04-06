@@ -15,6 +15,7 @@ import { analyzePluginSecurity } from '../analyzers/plugin-security';
 import { runVisualRegression } from '../analyzers/visual';
 import { ConsoleReporter } from '../reporters/console';
 import { JsonReporter } from '../reporters/json';
+import { JsonStreamReporter } from '../reporters/json-stream';
 import { SarifReporter } from '../reporters/sarif';
 import { BitbucketInsightsReporter } from '../reporters/bitbucket-insights';
 import { HtmlReporter } from '../reporters/html';
@@ -24,6 +25,14 @@ import {
   resolveBaselinePath,
   writeBaselineFile,
 } from '../core/baseline';
+import {
+  compareToBaseline,
+  renderDiffConsole,
+  diffToJson,
+  diffToNdjson,
+  validateBaselineForDiff,
+  DiffResult,
+} from '../core/diff';
 // resolveBaselinePath is also used for --fail-on-regression validation
 import {
   loadAuditFileConfig,
@@ -133,7 +142,7 @@ function formatList(values: readonly string[]): string {
 }
 
 function isMachineOutput(format: string): boolean {
-  return format === 'json' || format === 'sarif' || format === 'bitbucket' || format === 'html';
+  return format === 'json' || format === 'json-stream' || format === 'sarif' || format === 'bitbucket' || format === 'html';
 }
 
 function validateOutputAndThreshold(
@@ -390,6 +399,8 @@ function renderAndWriteOutput(
   let renderedOutput: string | undefined;
   if (outputFormat === 'json') {
     renderedOutput = new JsonReporter().toJson(result);
+  } else if (outputFormat === 'json-stream') {
+    renderedOutput = new JsonStreamReporter().toNdjson(result);
   } else if (outputFormat === 'sarif') {
     renderedOutput = new SarifReporter().toSarif(result, {
       category: options.sarifCategory,
@@ -740,6 +751,47 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
   }
 
   const { filteredResult, suppressedCount } = applyBaselineFiltering(enrichedResult, effectiveOptions, absolutePath);
+
+  // Diff mode: compare against baseline and show differences
+  if (effectiveOptions.diff) {
+    const baselineValidation = validateBaselineForDiff(
+      absolutePath,
+      typeof effectiveOptions.baseline === 'string' ? effectiveOptions.baseline : undefined
+    );
+
+    if (!baselineValidation.valid) {
+      throw new AuditConfigError(`Error: ${baselineValidation.error}\nRun with --write-baseline first to create a baseline.`);
+    }
+
+    const diff = compareToBaseline(enrichedResult, baselineValidation.path);
+    const baselineFingerprints = loadBaselineFingerprints(baselineValidation.path);
+
+    if (outputFormat === 'json') {
+      const jsonOutput = diffToJson(diff, baselineValidation.path, baselineFingerprints.size);
+      if (effectiveOptions.outputFile) {
+        fs.writeFileSync(path.resolve(effectiveOptions.outputFile), jsonOutput, 'utf8');
+      } else {
+        console.log(jsonOutput);
+      }
+    } else if (outputFormat === 'json-stream') {
+      const ndjsonOutput = diffToNdjson(diff, baselineValidation.path, baselineFingerprints.size);
+      if (effectiveOptions.outputFile) {
+        fs.writeFileSync(path.resolve(effectiveOptions.outputFile), ndjsonOutput, 'utf8');
+      } else {
+        console.log(ndjsonOutput);
+      }
+    } else {
+      // Console output for diff
+      renderDiffConsole(diff, suppressedCount);
+    }
+
+    // Exit with error if there are new issues
+    if (diff.summary.new > 0 && !effectiveOptions.watch) {
+      process.exitCode = 1;
+    }
+    return;
+  }
+
   renderAndWriteOutput(filteredResult, outputFormat, effectiveOptions, suppressedCount);
 
   // CSP header generation
@@ -852,13 +904,16 @@ export async function executeAuditCommand(projectPath: string, options: AuditCom
 
     const watchExtensions = ['.twig', '.html', '.php', '.json', '.yaml', '.yml'];
     const watchPaths = [config.templatesPath || path.join(absolutePath, 'templates')];
+    const watchDebounce = effectiveOptions.watchDebounce ?? 300;
 
     console.log(chalk.bold.cyan('\n👀 Watching for changes...'));
-    console.log(chalk.gray(`  Extensions: ${watchExtensions.join(', ')}\n`));
+    console.log(chalk.gray(`  Extensions: ${watchExtensions.join(', ')}`));
+    console.log(chalk.gray(`  Debounce: ${watchDebounce}ms\n`));
 
     const watcher = startWatcher({
       paths: watchPaths,
       extensions: watchExtensions,
+      debounce: watchDebounce,
       onChange: async (changedFiles) => {
         if (process.stdout.isTTY) console.clear();
         console.log(chalk.gray(`Changed: ${changedFiles.map((f) => path.relative(absolutePath, f)).join(', ')}\n`));

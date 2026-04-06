@@ -138,6 +138,7 @@ export interface AuditCommandOptions {
   staging?: string;
   baseline?: string | boolean;
   writeBaseline?: string | boolean;
+  diff?: boolean;
   output?: string;
   outputFile?: string;
   exitThreshold?: string;
@@ -179,6 +180,7 @@ export interface AuditCommandOptions {
   cacheLocation?: string;
   clearCache?: boolean;
   watch?: boolean;
+  watchDebounce?: number;
   rulesDir?: string;
   preset?: string;
   qualityGate?: string;

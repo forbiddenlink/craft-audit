@@ -31,6 +31,8 @@ import { executeAuditCommand } from './commands/audit';
 import { executeRecommendConfigCommand, RecommendConfigCommandOptions } from './commands/recommend-config';
 import { executeInitCommand } from './commands/init';
 import { executeUpdateCvesCommand } from './commands/update-cves';
+import { executeListRulesCommand, ListRulesCommandOptions } from './commands/list-rules';
+import { executeExplainCommand } from './commands/explain';
 
 // Graceful shutdown on SIGINT (Ctrl+C) and SIGTERM
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
@@ -83,6 +85,7 @@ function addSharedOptions(cmd: Command): Command {
     .option('--baseline <path>', 'Path to baseline fingerprint file (default: .craft-audit-baseline.json)')
     .option('--no-baseline', 'Disable baseline suppression')
     .option('--write-baseline [path]', 'Write current findings to a baseline fingerprint file')
+    .option('--diff', 'Compare current audit against baseline, showing new/fixed/unchanged issues')
     .option('--debug-profile <path>', 'Path to debug profile JSON used to correlate runtime cost to findings')
     .option('--config <path>', 'Path to craft-audit config file (default: <project>/craft-audit.config.json)')
     .option('--preset <name>', 'Preset profile: strict|balanced|legacy-migration')
@@ -121,6 +124,11 @@ function addSharedOptions(cmd: Command): Command {
     .option('--cache-location <path>', 'Cache file location', '.craft-audit-cache.json')
     .option('--clear-cache', 'Clear the analysis cache and exit')
     .option('--watch', 'Watch for file changes and re-run analysis')
+    .option(
+      '--watch-debounce <ms>',
+      'Debounce time in milliseconds for watch mode (default: 300)',
+      (value: string) => parsePositiveInt(value, '--watch-debounce')
+    )
     .option('--rules-dir <path>', 'Load custom rules from directory')
     .option('--quality-gate <name>', 'Use a named quality gate profile (strict, recommended, security-only, relaxed, ci)')
     .option('--exit-threshold <level>', 'Fail on severity threshold: none|high|medium|low|info', 'high')
@@ -303,6 +311,37 @@ program
   .description('Fetch latest Craft CMS CVEs from GitHub Advisories and update the database')
   .action(async () => {
     await executeUpdateCvesCommand();
+  });
+
+program
+  .command('list-rules')
+  .description('List all built-in audit rules')
+  .option('-c, --category <category>', 'Filter by category: template, security, system, visual, runtime')
+  .option('-s, --severity <severity>', 'Filter by severity: high, medium, low, info')
+  .option('--json', 'Output as JSON for scripting')
+  .addHelpText('after', `
+Examples:
+  $ craft-audit list-rules
+  $ craft-audit list-rules --category security
+  $ craft-audit list-rules --severity high --json
+  $ craft-audit list-rules --category template --severity medium
+`)
+  .action((options: ListRulesCommandOptions) => {
+    executeListRulesCommand(options);
+  });
+
+program
+  .command('explain')
+  .description('Show detailed information about a specific rule')
+  .argument('<rule-id>', 'The rule ID to explain (e.g., security/csrf-disabled)')
+  .addHelpText('after', `
+Examples:
+  $ craft-audit explain security/csrf-disabled
+  $ craft-audit explain template/n-plus-one-loop
+  $ craft-audit explain system/composer-audit-advisories
+`)
+  .action((ruleId: string) => {
+    executeExplainCommand(ruleId);
   });
 
 program
