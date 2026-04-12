@@ -86,5 +86,13 @@
     "lodash": "^4.18.0"
   },
   "comment:overrides": "Pin transitive deps: minimatch for CVE-2024-XXXXX, lodash for CVE-2026-4800/CVE-2026-2950 (both via backstopjs)",
-  "private": false
+  "private": false,
+  "pnpm": {
+    "overrides": {
+      "basic-ftp": ">=5.2.2",
+      "next": ">=16.2.3",
+      "picomatch": ">=4.0.4",
+      "rollup": ">=4.59.0"
+    }
+  }
 }
