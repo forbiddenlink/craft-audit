@@ -31,7 +31,6 @@ import {
   diffToJson,
   diffToNdjson,
   validateBaselineForDiff,
-  DiffResult,
 } from '../core/diff';
 // resolveBaselinePath is also used for --fail-on-regression validation
 import {

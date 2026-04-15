@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { SecurityIssue } from '../types';
 import { checkFilePermissions } from './security/file-permissions';
 import { checkHttpHeaders } from './security/http-headers';
-import { walkFiles, safeReadFile, toRelativePath } from '../utils/fs';
+import { walkFiles, safeReadFile } from '../utils/fs';
 
 const TEXT_FILE_EXTENSIONS = new Set([
   '.php',
