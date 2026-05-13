@@ -6,7 +6,7 @@ settings:
 
 overrides:
   basic-ftp: '>=5.3.1'
-  next: '>=16.2.3'
+  next: '>=16.2.6'
   picomatch: '>=4.0.4'
   rollup: '>=4.59.0'
 
@@ -1715,7 +1715,7 @@ packages:
     resolution: {integrity: sha512-TKSZnJWRbmpAcAlyKZkPm7LXHheSmG8bpx1ZSCr/8FQpac88fEMaN4mMdmiT5r17trCq/m2nOgxvtSLa1RTqxg==}
     engines: {node: '>=18.17'}
     peerDependencies:
-      next: '>=16.2.3'
+      next: '>=16.2.6'
       react: '>= 18.2.0'
       react-dom: '>= 18.2.0'
 
