@@ -1,12 +1,35 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/vscode-craft-audit"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      patch-and-minor:
+        patterns: ["*"]
+        update-types: ["patch", "minor"]
+      major-updates:
+        patterns: ["*"]
+        update-types: ["major"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "chore(deps):"
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+      day: "monday"
+    open-pull-requests-limit: 5
     groups:
-      minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps):"
