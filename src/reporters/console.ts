@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk, { type ChalkInstance } from 'chalk';
 
 import { AuditIssue, AuditResult, TemplateIssue, VisualIssue } from '../types';
 import { summarizeIssues } from '../core/summary.js';
@@ -241,7 +241,7 @@ export class ConsoleReporter {
     return summarizeIssues(issues);
   }
 
-  colorForSeverity(severity: AuditIssue['severity']): chalk.Chalk {
+  colorForSeverity(severity: AuditIssue['severity']): ChalkInstance {
     if (severity === 'high') return chalk.red.bold;
     if (severity === 'medium') return chalk.yellow.bold;
     if (severity === 'low') return chalk.blue.bold;
