@@ -117,12 +117,12 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.9.4",
-    "@types/vscode": "^1.120.0",
+    "@types/vscode": "^1.125.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^10.5.0",
+    "eslint": "^10.6.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.1"
+    "typescript-eslint": "^8.62.1"
   },
   "overrides": {
     "minimatch": ">=9.0.5"
