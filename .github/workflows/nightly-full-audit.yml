@@ -51,13 +51,19 @@ jobs:
 
       - name: Resolve audit settings
         id: cfg
+        env:
+          # Pass untrusted workflow_dispatch inputs via env, not direct template
+          # expansion, so a crafted value can't inject shell (zizmor template-injection).
+          IN_PROJECT_PATH: ${{ github.event.inputs.project_path }}
+          IN_PRODUCTION_URL: ${{ github.event.inputs.production_url }}
+          IN_STAGING_URL: ${{ github.event.inputs.staging_url }}
         run: |
-          project_path="${{ github.event.inputs.project_path }}"
+          project_path="$IN_PROJECT_PATH"
           if [ -z "$project_path" ]; then project_path="."; fi
           echo "project_path=$project_path" >> "$GITHUB_OUTPUT"
 
-          prod="${{ github.event.inputs.production_url }}"
-          stage="${{ github.event.inputs.staging_url }}"
+          prod="$IN_PRODUCTION_URL"
+          stage="$IN_STAGING_URL"
           if [ -z "$prod" ] || [ -z "$stage" ]; then
             echo "visual=false" >> "$GITHUB_OUTPUT"
           else
