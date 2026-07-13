@@ -64,18 +64,18 @@
     "backstopjs": "^6.3.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.2",
+    "@biomejs/biome": "^2.5.3",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.9.4",
+    "@types/node": "^25.9.5",
     "@types/sarif": "^2.1.7",
     "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^10.6.0",
     "jsdom": "^29.1.1",
-    "msw": "^2.14.6",
+    "msw": "^2.14.7",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.1",
-    "vitest": "^4.1.9"
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=18.0.0",
