@@ -70,7 +70,7 @@
     "@types/sarif": "^2.1.7",
     "@vitejs/plugin-react": "^6.0.4",
     "eslint": "^10.7.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.0",
     "msw": "^2.15.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
