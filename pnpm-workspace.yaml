@@ -1,3 +1,7 @@
+allowBuilds:
+  msw: true
+  puppeteer: true
+  sharp: true
 # Pin transitive deps: minimatch for CVE-2024-XXXXX, lodash for CVE-2026-4800/CVE-2026-2950 (both via backstopjs)
 overrides:
   basic-ftp: ">=5.3.1"
