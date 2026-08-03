@@ -99,7 +99,7 @@ jobs:
             --exit-threshold "$threshold"
 
       - name: Upload nightly SARIF
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.37.4
         with:
           sarif_file: craft-audit-nightly.sarif
           category: craft-audit-nightly
