@@ -64,7 +64,7 @@
     "backstopjs": "^6.3.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.6",
+    "@biomejs/biome": "^2.5.7",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.1.2",
     "@types/sarif": "^2.1.7",
@@ -74,7 +74,7 @@
     "msw": "^2.15.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.65.0",
+    "typescript-eslint": "^8.66.0",
     "vitest": "^4.1.10"
   },
   "engines": {
