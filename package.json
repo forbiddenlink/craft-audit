@@ -1,7 +1,7 @@
 {
   "name": "craft-audit",
   "version": "1.0.0",
-  "description": "Comprehensive audit tool for Craft CMS projects — template analysis, security scanning, HTTP headers, CVE detection, system checks, and visual regression",
+  "description": "Comprehensive audit tool for Craft CMS projects \u2014 template analysis, security scanning, HTTP headers, CVE detection, system checks, and visual regression",
   "main": "dist/cli.js",
   "bin": {
     "craft-audit": "./dist/cli.js"
@@ -81,5 +81,15 @@
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
   },
-  "private": false
+  "private": false,
+  "pnpm": {
+    "overrides": {
+      "body-parser": ">=1.20.6 <2",
+      "ip-address": ">=10.3.1 <11",
+      "js-yaml": ">=4.3.1 <5",
+      "postcss": ">=8.5.23 <9",
+      "sharp": ">=0.35.0 <1",
+      "vite": ">=8.0.16 <9"
+    }
+  }
 }
