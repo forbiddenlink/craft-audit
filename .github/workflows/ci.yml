@@ -84,7 +84,7 @@ jobs:
           node dist/cli.js audit-ci "$tmpdir" --skip-templates --skip-security --output sarif --output-file craft-audit.sarif
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v4.37.7
+        uses: github/codeql-action/upload-sarif@v4.37.8
         with:
           sarif_file: craft-audit.sarif
           category: craft-audit-ci
