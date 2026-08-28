@@ -21,6 +21,17 @@ function hasGit() {
   }
 }
 
+function initTestRepo(repoRoot) {
+  execFileSync('git', ['init'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['config', 'user.email', 'test@example.com'], {
+    cwd: repoRoot,
+    stdio: 'ignore',
+  });
+  execFileSync('git', ['config', 'user.name', 'Test User'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['config', 'commit.gpgsign', 'false'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], { cwd: repoRoot, stdio: 'ignore' });
+}
+
 test('changed-only helper maps changed template paths relative to templates dir', { skip: !hasGit() }, () => {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-'));
   const templatesDir = path.join(repoRoot, 'templates');
@@ -29,9 +40,7 @@ test('changed-only helper maps changed template paths relative to templates dir'
   fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
   fs.writeFileSync(path.join(templatesDir, 'b.twig'), '{{ "b" }}\n', 'utf8');
 
-  execFileSync('git', ['init'], { cwd: repoRoot, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: repoRoot, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.name', 'Test User'], { cwd: repoRoot, stdio: 'ignore' });
+  initTestRepo(repoRoot);
   execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
   execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
 
@@ -51,9 +60,7 @@ test('changed-only helper supports base ref diff for PR-style comparisons', { sk
   fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
   fs.writeFileSync(path.join(templatesDir, 'b.twig'), '{{ "b" }}\n', 'utf8');
 
-  execFileSync('git', ['init'], { cwd: repoRoot, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: repoRoot, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.name', 'Test User'], { cwd: repoRoot, stdio: 'ignore' });
+  initTestRepo(repoRoot);
   execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
   execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
 
@@ -79,9 +86,7 @@ test('changed-only helper resolves remote base refs when local branch is absent'
   const remoteRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-remote-bare-'));
   const clonedRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-remote-clone-'));
 
-  execFileSync('git', ['init'], { cwd: seedRepo, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: seedRepo, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.name', 'Test User'], { cwd: seedRepo, stdio: 'ignore' });
+  initTestRepo(seedRepo);
   execFileSync('git', ['branch', '-M', 'main'], { cwd: seedRepo, stdio: 'ignore' });
 
   const seedTemplatesDir = path.join(seedRepo, 'templates');
@@ -102,6 +107,8 @@ test('changed-only helper resolves remote base refs when local branch is absent'
   execFileSync('git', ['clone', remoteRepo, clonedRepo], { stdio: 'ignore' });
   execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: clonedRepo, stdio: 'ignore' });
   execFileSync('git', ['config', 'user.name', 'Test User'], { cwd: clonedRepo, stdio: 'ignore' });
+  execFileSync('git', ['config', 'commit.gpgsign', 'false'], { cwd: clonedRepo, stdio: 'ignore' });
+  execFileSync('git', ['config', 'core.hooksPath', '/dev/null'], { cwd: clonedRepo, stdio: 'ignore' });
   execFileSync('git', ['checkout', '-b', 'feature/test'], { cwd: clonedRepo, stdio: 'ignore' });
   execFileSync('git', ['branch', '-D', 'main'], { cwd: clonedRepo, stdio: 'ignore' });
 
@@ -121,9 +128,7 @@ test('changed-only helper falls back to working tree when base ref cannot be res
   fs.mkdirSync(templatesDir, { recursive: true });
 
   fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
-  execFileSync('git', ['init'], { cwd: repoRoot, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: repoRoot, stdio: 'ignore' });
-  execFileSync('git', ['config', 'user.name', 'Test User'], { cwd: repoRoot, stdio: 'ignore' });
+  initTestRepo(repoRoot);
   execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
   execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
 
