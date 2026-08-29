@@ -28,26 +28,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '8.2'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Resolve audit settings
         id: cfg
@@ -60,23 +64,26 @@ jobs:
         run: |
           project_path="$IN_PROJECT_PATH"
           if [ -z "$project_path" ]; then project_path="."; fi
-          echo "project_path=$project_path" >> "$GITHUB_OUTPUT"
 
           prod="$IN_PRODUCTION_URL"
           stage="$IN_STAGING_URL"
-          if [ -z "$prod" ] || [ -z "$stage" ]; then
-            echo "visual=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "visual=true" >> "$GITHUB_OUTPUT"
-            echo "production_url=$prod" >> "$GITHUB_OUTPUT"
-            echo "staging_url=$stage" >> "$GITHUB_OUTPUT"
-          fi
+          visual="false"
+          if [ -n "$prod" ] && [ -n "$stage" ]; then visual="true"; fi
+
+          {
+            echo "project_path=$project_path"
+            echo "visual=$visual"
+            echo "production_url=$prod"
+            echo "staging_url=$stage"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Run full audit (no visual)
         if: steps.cfg.outputs.visual == 'false'
+        env:
+          PROJECT_PATH: ${{ steps.cfg.outputs.project_path }}
         run: |
           # Default to test-craft-project when no path specified
-          path="${{ steps.cfg.outputs.project_path }}"
+          path="$PROJECT_PATH"
           threshold="high"
           if [ "$path" = "." ]; then
             path="test-craft-project"
@@ -89,23 +96,27 @@ jobs:
 
       - name: Run full audit (with visual)
         if: steps.cfg.outputs.visual == 'true'
+        env:
+          PROJECT_PATH: ${{ steps.cfg.outputs.project_path }}
+          PRODUCTION_URL: ${{ steps.cfg.outputs.production_url }}
+          STAGING_URL: ${{ steps.cfg.outputs.staging_url }}
         run: |
           # Default to test-craft-project when no path specified
-          path="${{ steps.cfg.outputs.project_path }}"
+          path="$PROJECT_PATH"
           threshold="high"
           if [ "$path" = "." ]; then
             path="test-craft-project"
             threshold="none"  # Test project has intentional issues
           fi
           node dist/cli.js audit "$path" \
-            --production "${{ steps.cfg.outputs.production_url }}" \
-            --staging "${{ steps.cfg.outputs.staging_url }}" \
+            --production "$PRODUCTION_URL" \
+            --staging "$STAGING_URL" \
             --output sarif \
             --output-file craft-audit-nightly.sarif \
             --exit-threshold "$threshold"
 
       - name: Upload nightly SARIF
-        uses: github/codeql-action/upload-sarif@v4.37.8
+        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
         with:
           sarif_file: craft-audit-nightly.sarif
           category: craft-audit-nightly
