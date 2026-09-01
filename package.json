@@ -58,7 +58,7 @@
   },
   "homepage": "https://github.com/forbiddenlink/craft-audit#readme",
   "dependencies": {
-    "chalk": "^5.6.2",
+    "chalk": "^6.0.0",
     "commander": "^15.0.0",
     "minimatch": "^10.2.6",
     "next-safe-action": "^8.6.1",
