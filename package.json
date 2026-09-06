@@ -1,7 +1,7 @@
 {
   "name": "craft-audit",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.18.0",
+  "packageManager": "pnpm@10.34.5",
   "description": "Comprehensive audit tool for Craft CMS projects — template analysis, security scanning, HTTP headers, CVE detection, system checks, and visual regression",
   "main": "dist/cli.js",
   "bin": {
