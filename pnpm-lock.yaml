@@ -38,7 +38,7 @@ importers:
         version: 10.2.6
       next-safe-action:
         specifier: ^8.6.1
-        version: 8.6.1(next@16.2.12(@types/node@26.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 8.7.1(next@16.2.12(@types/node@26.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       ora:
         specifier: ^9.4.1
         version: 9.4.1
@@ -1620,8 +1620,8 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
-  next-safe-action@8.6.1:
-    resolution: {integrity: sha512-qFkpXnuZ+xEGsKlQi1079B5hy1aNlvb8kJVcEvzFXP1PMm9z5GI5VhfhZCDVLCXkT1rryaFLeUdJGHm1L7ef0Q==}
+  next-safe-action@8.7.1:
+    resolution: {integrity: sha512-V28rFyRbsbmd+yUrnqu1defEYPqNlxnsvdVd0XcXo+iwAZZFrIEOX1LGQ9SBDzh+/Ro+zHsabqetTY3SPERUZg==}
     engines: {node: '>=18.17'}
     peerDependencies:
       next: '>=16.2.11'
@@ -3799,7 +3799,7 @@ snapshots:
   negotiator@0.6.3:
     optional: true
 
-  next-safe-action@8.6.1(next@16.2.12(@types/node@26.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  next-safe-action@8.7.1(next@16.2.12(@types/node@26.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       next: 16.2.12(@types/node@26.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
