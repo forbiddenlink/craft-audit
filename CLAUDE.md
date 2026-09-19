@@ -7,9 +7,9 @@ Guidance for Claude Code (and other AI agents via the AGENTS.md symlink) working
 `craft-audit` is a CLI tool published to the npm registry under the package name
 `craft-audit` (author `forbiddenlink`) that
 audits Craft CMS projects: Twig template performance (N+1 queries, missing eager loading),
-security (19 core CVEs, 10 plugin CVEs, header checks, hardening checks), outdated
-dependencies (composer), and visual regressions (BackstopJS). Outputs in 5 formats (console,
-JSON, SARIF, HTML, Bitbucket Code Insights) and integrates with Slack, ClickUp, Linear, and
+security (10 core CVEs, 10 plugin CVEs, header checks, hardening checks), outdated
+dependencies (composer), and visual regressions (BackstopJS). Outputs in 6 formats (console,
+JSON, JSON stream, SARIF, HTML, Bitbucket Code Insights) and integrates with Slack, ClickUp, Linear, and
 Bitbucket. Repo: github.com/forbiddenlink/craft-audit.
 
 ## Stack
@@ -102,7 +102,7 @@ output); CI-context vars read for attribution: `BITBUCKET_COMMIT`,
 
 ## CI
 
-`.github/workflows/`: `ci.yml` (tests on Node 18/20/22), `codeql.yml`, `ally-a11y.yml`,
+`.github/workflows/`: `ci.yml` (tests on Node 20/22), `codeql.yml`, `ally-a11y.yml`,
 `nightly-full-audit.yml`, `scorecard.yml`, `verify-overrides.yml` (checks the pnpm
 `overrides` in `pnpm-workspace.yaml`), `dependabot-automerge.yml`,
 `dependabot-lockfile-resync.yml`. The SARIF job in `ci.yml` runs on `main` only and uploads
