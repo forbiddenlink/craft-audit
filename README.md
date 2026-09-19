@@ -5,7 +5,7 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 ## Features
 
 - **Template Analysis** — N+1 queries, missing eager loading, deprecated APIs, unbounded queries, mixed loading strategies, XSS risks, SSTI patterns, missing CSRF tokens, accessibility checks (missing alt, labels, lang)
-- **Security Scanning** — 19 known CVEs (2023–2026), 10 plugin CVEs, production config hardening (5 checks), HTTPS enforcement, file permission checks, web-exposed sensitive files, hardcoded security keys, disabled CSRF, devMode in production, dangerous file extensions, debug output patterns
+- **Security Scanning** — 10 known CVEs (2026), 10 plugin CVEs, production config hardening (5 checks), HTTPS enforcement, file permission checks, web-exposed sensitive files, hardcoded security keys, disabled CSRF, devMode in production, dangerous file extensions, debug output patterns
 - **Plugin Vulnerability Scanner** — Checks installed Craft plugins against a curated database of 10 known plugin CVEs
 - **HTTP Security Headers** — Opt-in `--site-url` check for HSTS (with preload eligibility), X-Content-Type-Options, X-Frame-Options, CSP (including Report-Only mode detection), Referrer-Policy, Permissions-Policy, CORS misconfiguration, deprecated X-XSS-Protection warning, plus Server/X-Powered-By leak detection
 - **CSP Header Generator** — `--generate-csp` scans templates and generates Content-Security-Policy recommendations
@@ -20,7 +20,7 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 - **Incremental Caching** — `--cache` skips unchanged files for faster re-runs
 - **Structured Logging** — `--log-level` (debug/info/warn/error/silent) for controllable output
 - **Parallel Analyzers** — Independent analyzers run concurrently for faster audits
-- **5 Output Formats** — Console (Biome-style diagnostics), JSON, SARIF, HTML, Bitbucket Code Insights
+- **6 Output Formats** — Console (Biome-style diagnostics), JSON, JSON stream, SARIF, HTML, Bitbucket Code Insights
 - **4 Integrations** — Slack, ClickUp, Linear, Bitbucket
 - **3 Presets** — strict, balanced, legacy-migration
 - **VS Code Extension** — Real-time diagnostics, quick fixes, workspace scanning, quality gate settings
@@ -44,8 +44,8 @@ Or run locally:
 ```bash
 git clone <repo-url>
 cd craft-audit
-npm install
-npm run build
+pnpm install
+pnpm run build
 ```
 
 ## Quick Start
@@ -195,8 +195,8 @@ See [docs/presets.md](docs/presets.md) for details.
 | `template/deprecated-api` | Deprecated Craft/Twig API usage |
 | `template/inefficient-query` | Inefficient query pattern |
 | `template/mixed-loading-strategy` | Mixed `.with()` and `.eagerly()` usage |
-| `template/xss-raw-output` | Unescaped raw output (XSS risk) |
-| `template/ssti-dynamic-include` | Dynamic include/embed (SSTI risk) |
+| `security/xss-raw-output` | Unescaped raw output (XSS risk) |
+| `security/ssti-dynamic-include` | Dynamic include/embed (SSTI risk) |
 | `template/missing-status-filter` | Missing `.status()` on `.all()` queries |
 | `template/dump-call` | Debug dump/dd call in template |
 | `template/include-tag` | Include tag usage |
@@ -217,7 +217,7 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/csrf-disabled` | CSRF protection disabled |
 | `security/dangerous-file-extensions` | Executable file types in allowed extensions |
 | `security/debug-output-pattern` | dump/dd/var_dump in code files |
-| `security/known-cve` | Craft version affected by known CVE (19 CVEs tracked) |
+| `security/known-cve` | Craft version affected by known CVE (10 CVEs tracked) |
 | `security/plugin-cve` | Installed plugin affected by known CVE (10 plugin CVEs tracked) |
 | `security/allow-updates-enabled` | allowUpdates enabled in production |
 | `security/template-caching-disabled` | Template caching disabled in production |
@@ -346,14 +346,14 @@ See [vscode-craft-audit/](vscode-craft-audit/) for setup instructions.
 Requires **Node.js 22+** (see `.nvmrc`). See [CONTRIBUTING.md](CONTRIBUTING.md) for the full developer guide.
 
 ```bash
-npm install          # Install dependencies
-npm run build        # Compile TypeScript
-npm test             # Build + run all tests
-npm run lint         # ESLint
-npm run lint:fix     # Lint and auto-fix
-npm run typecheck    # Type-check without emitting
-npm run clean        # Remove dist/
-npm run test:watch   # Build + run tests in watch mode
+pnpm install          # Install dependencies
+pnpm run build        # Compile TypeScript
+pnpm test             # Build + run all tests
+pnpm run lint         # ESLint
+pnpm run lint:fix     # Lint and auto-fix
+pnpm run typecheck    # Type-check without emitting
+pnpm run clean        # Remove dist/
+pnpm run test:watch   # Build + run tests in watch mode
 ```
 
 ### Project Structure
@@ -376,9 +376,9 @@ src/
     validate.ts          #   Input validation (--site-url SSRF prevention)
     watcher.ts           #   File watcher for --watch mode
   integrations/          # Slack, ClickUp, Linear, Bitbucket clients
-  reporters/             # Console, JSON, SARIF, HTML, Bitbucket formatters
+  reporters/             # Console, JSON, JSON stream, SARIF, HTML, Bitbucket formatters
 data/
-  known-cves.json        # Craft CMS core CVEs (19 entries)
+  known-cves.json        # Craft CMS core CVEs (10 entries)
   known-plugin-cves.json # Plugin CVEs (10 entries)
 php/
   analyze-templates.php  # Twig template regex analyzer
