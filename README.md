@@ -44,8 +44,8 @@ Or run locally:
 ```bash
 git clone <repo-url>
 cd craft-audit
-npm install
-npm run build
+pnpm install
+pnpm run build
 ```
 
 ## Quick Start
@@ -346,14 +346,14 @@ See [vscode-craft-audit/](vscode-craft-audit/) for setup instructions.
 Requires **Node.js 22+** (see `.nvmrc`). See [CONTRIBUTING.md](CONTRIBUTING.md) for the full developer guide.
 
 ```bash
-npm install          # Install dependencies
-npm run build        # Compile TypeScript
-npm test             # Build + run all tests
-npm run lint         # ESLint
-npm run lint:fix     # Lint and auto-fix
-npm run typecheck    # Type-check without emitting
-npm run clean        # Remove dist/
-npm run test:watch   # Build + run tests in watch mode
+pnpm install          # Install dependencies
+pnpm run build        # Compile TypeScript
+pnpm test             # Build + run all tests
+pnpm run lint         # ESLint
+pnpm run lint:fix     # Lint and auto-fix
+pnpm run typecheck    # Type-check without emitting
+pnpm run clean        # Remove dist/
+pnpm run test:watch   # Build + run tests in watch mode
 ```
 
 ### Project Structure

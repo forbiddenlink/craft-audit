@@ -5,23 +5,23 @@
 **Prerequisites:** Node.js 22+ (see `.nvmrc`)
 
 ```bash
-npm install
-npm run build
-npm test
+pnpm install
+pnpm run build
+pnpm test
 ```
 
 ### Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run build` | Compile TypeScript (`tsc`) |
-| `npm run dev` | Run CLI via ts-node (no build step) |
-| `npm run lint` | Lint source files with ESLint |
-| `npm run lint:fix` | Lint and auto-fix |
-| `npm run typecheck` | Type-check without emitting (`tsc --noEmit`) |
-| `npm run clean` | Remove `dist/` |
-| `npm test` | Build + run all tests |
-| `npm run test:watch` | Build + run tests in watch mode |
+| `pnpm run build` | Compile TypeScript (`tsc`) |
+| `pnpm run dev` | Run CLI via ts-node (no build step) |
+| `pnpm run lint` | Lint source files with ESLint |
+| `pnpm run lint:fix` | Lint and auto-fix |
+| `pnpm run typecheck` | Type-check without emitting (`tsc --noEmit`) |
+| `pnpm run clean` | Remove `dist/` |
+| `pnpm test` | Build + run all tests |
+| `pnpm run test:watch` | Build + run tests in watch mode |
 
 ---
 
@@ -216,21 +216,21 @@ The project uses the **Node.js built-in test runner** (`node:test`).
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run a specific test file
-npm run build && node --test tests/security-analyzer.test.cjs
+pnpm run build && node --test tests/security-analyzer.test.cjs
 
 # Run tests matching a name pattern
-npm run build && node --test --test-name-pattern "CVE" tests/*.test.cjs
+pnpm run build && node --test --test-name-pattern "CVE" tests/*.test.cjs
 
 # Watch mode
-npm run test:watch
+pnpm run test:watch
 ```
 
 - Test files live in `tests/*.test.cjs` (CommonJS).
 - Fixtures (sample projects, config files, templates) are in `tests/fixtures/`.
-- Tests import from `../dist/` — always run `npm run build` first.
+- Tests import from `../dist/` — always run `pnpm run build` first.
 
 ---
 
@@ -246,7 +246,7 @@ Craft Audit ships two CVE data files:
 ### Updating from GitHub Advisory Database
 
 ```bash
-npm run build && node dist/cli.js update-cves
+pnpm run build && node dist/cli.js update-cves
 ```
 
 This fetches the latest advisories from the GitHub Advisory Database and merges them into the local JSON files.
@@ -263,5 +263,5 @@ Add an entry to the appropriate JSON file following the existing schema (id, aff
 - **2-space indentation**, single quotes
 - Use `node:` prefix for built-in modules (`import * as fs from 'node:fs'`)
 - Use `Logger` (`src/core/logger.ts`) instead of `console.log` for debug/diagnostic output
-- Run `npm run lint` before submitting changes
-- Run `npm run typecheck` to catch type errors without a full build
+- Run `pnpm run lint` before submitting changes
+- Run `pnpm run typecheck` to catch type errors without a full build
