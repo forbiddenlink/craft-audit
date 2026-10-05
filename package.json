@@ -71,7 +71,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
     "@eslint/js": "10.0.1",
-    "@types/node": "26.6.2",
+    "@types/node": "26.6.4",
     "@types/sarif": "2.1.7",
     "@vitejs/plugin-react": "6.1.1",
     "eslint": "10.11.0",
