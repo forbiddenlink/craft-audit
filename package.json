@@ -71,17 +71,17 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@eslint/js": "10.0.1",
-    "@types/node": "26.6.4",
+    "@types/node": "26.6.5",
     "@types/sarif": "2.1.7",
-    "@vitejs/plugin-react": "6.1.1",
-    "eslint": "10.11.0",
-    "jsdom": "30.1.1",
+    "@vitejs/plugin-react": "6.1.2",
+    "eslint": "10.12.0",
+    "jsdom": "30.1.3",
     "msw": "2.15.0",
     "ts-node": "10.9.2",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.70.1",
-    "vite": "8.3.0",
-    "vitest": "4.1.11"
+    "typescript-eslint": "8.71.2",
+    "vite": "8.3.4",
+    "vitest": "4.1.12"
   },
   "engines": {
     "node": ">=18.0.0",
