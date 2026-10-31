@@ -60,7 +60,7 @@
   "dependencies": {
     "chalk": "^6.0.0",
     "commander": "^15.0.0",
-    "minimatch": "^10.2.6",
+    "minimatch": "^11.0.0",
     "next-safe-action": "^8.6.1",
     "ora": "^9.4.1",
     "pino": "^10.3.1"
