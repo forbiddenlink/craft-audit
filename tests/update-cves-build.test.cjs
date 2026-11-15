@@ -48,3 +48,17 @@ test('buildCveEntries output order does not depend on input order', () => {
   const reverse = buildCveEntries([b, a]).map((e) => e.id);
   assert.deepEqual(forward, reverse);
 });
+
+test('buildCveEntries merges affects from two records sharing an id', () => {
+  const vuln = (fixed) => ({
+    package: { ecosystem: 'composer', name: 'craftcms/cms' },
+    vulnerable_version_range: 'x',
+    first_patched_version: fixed,
+  });
+  const five = advisory({ vulnerabilities: [vuln('5.8.1')] });
+  const four = advisory({ vulnerabilities: [vuln('4.16.2'), vuln('5.8.1')] });
+  const entries = buildCveEntries([five, four]);
+  assert.equal(entries.length, 1);
+  const fixed = entries[0].affects.map((a) => a.fixedAt).sort();
+  assert.deepEqual(fixed, ['4.16.2', '5.8.1']);
+});

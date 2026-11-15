@@ -94,7 +94,7 @@ function resolveJsonPath(): string {
 }
 
 /**
- * Convert advisories to CVE entries. Drops withdrawn and duplicate ids and
+ * Convert advisories to CVE entries. Drops withdrawn advisories, merges records that share an id and
  * sorts by id so the weekly refresh produces a stable, reviewable diff
  * regardless of the order the API returns.
  */
@@ -102,7 +102,23 @@ export function buildCveEntries(advisories: GitHubAdvisory[]): CveEntry[] {
   const byId = new Map<string, CveEntry>();
   for (const advisory of advisories) {
     const entry = advisoryToCveEntry(advisory);
-    if (entry && !byId.has(entry.id)) byId.set(entry.id, entry);
+    if (!entry) continue;
+    const existing = byId.get(entry.id);
+    if (!existing) {
+      byId.set(entry.id, entry);
+      continue;
+    }
+    // Same id seen twice (e.g. one record per major): keep every range so a
+    // vulnerable major is never dropped.
+    for (const range of entry.affects) {
+      const seen = existing.affects.some(
+        (a) =>
+          a.minMajor === range.minMajor &&
+          a.maxMajor === range.maxMajor &&
+          a.fixedAt === range.fixedAt,
+      );
+      if (!seen) existing.affects.push(range);
+    }
   }
   return [...byId.values()].sort((a, b) => b.id.localeCompare(a.id));
 }
