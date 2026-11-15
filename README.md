@@ -35,18 +35,17 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 
 ## Installation
 
-```bash
-npm install -g craft-audit
-```
-
-Or run locally:
+craft-audit is not published to npm yet (`npm install -g craft-audit` returns E404). Install from a clone:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/forbiddenlink/craft-audit.git
 cd craft-audit
 pnpm install
 pnpm run build
+node dist/cli.js --version
 ```
+
+Examples below use `craft-audit` for brevity; run them as `node dist/cli.js` from the clone until the package is published.
 
 ## Quick Start
 
