@@ -8,6 +8,8 @@ That means `audit-ci` can use `--base-ref auto` in Bitbucket without extra scrip
 
 ## Recommended: Direct publish from CLI
 
+craft-audit is not published to npm yet, so the pipeline below builds it from a clone (see [Getting Started](getting-started.md#install-from-a-clone)).
+
 Use the built-in Bitbucket integration to post Code Insights reports + annotations directly.
 
 ```yaml
@@ -22,8 +24,9 @@ pipelines:
             - node
           script:
             - npm ci
-            - npm run build
-            - npx craft-audit audit-ci . --output bitbucket --publish-bitbucket --bitbucket-token-env BITBUCKET_TOKEN --debug-profile ./runtime/debug-profile.json
+            - git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git /tmp/craft-audit
+            - (cd /tmp/craft-audit && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
+            - craft-audit audit-ci . --output bitbucket --publish-bitbucket --bitbucket-token-env BITBUCKET_TOKEN --debug-profile ./runtime/debug-profile.json
 ```
 
 Required env vars in Bitbucket:
@@ -46,7 +49,7 @@ Optional overrides:
 If you prefer not to use direct publish, emit payload JSON and post it yourself:
 
 ```bash
-npx craft-audit audit-ci . --output bitbucket --output-file craft-audit-bitbucket.json
+craft-audit audit-ci . --output bitbucket --output-file craft-audit-bitbucket.json
 ```
 
 The JSON contains:
