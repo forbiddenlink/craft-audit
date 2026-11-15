@@ -206,7 +206,9 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install -g craft-audit backstopjs
+          npm install -g backstopjs
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
           npx playwright install chromium
 
       - name: Run visual regression
@@ -231,7 +233,9 @@ jobs:
 ```dockerfile
 FROM node:20
 
-RUN npm install -g craft-audit backstopjs
+RUN npm install -g backstopjs pnpm
+RUN git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git /opt/craft-audit \
+ && cd /opt/craft-audit && pnpm install --frozen-lockfile && pnpm run build && npm link
 RUN npx playwright install chromium --with-deps
 
 WORKDIR /app

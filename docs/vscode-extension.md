@@ -19,11 +19,17 @@ code --install-extension vscode-craft-audit-0.1.0.vsix
 
 ## Requirements
 
-The extension requires the craft-audit CLI to be installed:
+The extension requires the craft-audit CLI. craft-audit is not published to npm yet (`npm install -g craft-audit` returns E404), so install from source:
 
 ```bash
-npm install -g craft-audit
+git clone https://github.com/forbiddenlink/craft-audit.git
+cd craft-audit
+pnpm install
+pnpm run build
+npm link
 ```
+
+`npm link` puts `craft-audit` on your PATH. Otherwise set `craftAudit.executablePath` to `node /path/to/craft-audit/dist/cli.js`.
 
 The extension will automatically detect the CLI if it is available in your PATH.
 
@@ -141,7 +147,7 @@ Click the status bar item to re-scan the current file.
 3. Or use npx:
    ```json
    {
-     "craftAudit.executablePath": "npx craft-audit"
+     "craftAudit.executablePath": "node /path/to/craft-audit/dist/cli.js"
    }
    ```
 

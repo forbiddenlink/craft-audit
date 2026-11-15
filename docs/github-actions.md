@@ -33,7 +33,9 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Install Craft Audit
-        run: npm install -g craft-audit
+        run: |
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Run audit (SARIF)
         run: craft-audit audit . --output sarif --output-file results.sarif
@@ -132,7 +134,8 @@ jobs:
       - name: Install
         run: |
           composer install --no-interaction --prefer-dist
-          npm install -g craft-audit
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Generate new baseline
         run: craft-audit audit . --write-baseline .craft-audit-baseline.json
@@ -241,7 +244,8 @@ jobs:
       - name: Install
         run: |
           composer install --no-interaction --prefer-dist
-          npm install -g craft-audit
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Run ${{ matrix.name }} audit
         run: |
@@ -290,7 +294,8 @@ jobs:
       - name: Install
         run: |
           composer install --no-interaction --prefer-dist
-          npm install -g craft-audit
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Run audit
         id: audit
@@ -402,7 +407,9 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Install Craft Audit
-        run: npm install -g craft-audit
+        run: |
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Run full audit
         run: |
@@ -472,7 +479,8 @@ jobs:
       - name: Install
         run: |
           composer install --no-interaction --prefer-dist
-          npm install -g craft-audit
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Audit changed files
         run: |

@@ -306,7 +306,8 @@ jobs:
       - name: Install
         run: |
           composer install --no-interaction --prefer-dist
-          npm install -g craft-audit
+          git clone --depth 1 https://github.com/forbiddenlink/craft-audit.git "$RUNNER_TEMP/craft-audit"
+          (cd "$RUNNER_TEMP/craft-audit" && corepack enable && pnpm install --frozen-lockfile && pnpm run build && npm link)
 
       - name: Audit (fast)
         run: |
