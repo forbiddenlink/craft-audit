@@ -123,6 +123,8 @@ eval "$(craft-audit completion bash)"
 | `recommend-config <path>` | Suggest a tuned config based on findings |
 | `init <path>` | Create a starter `craft-audit.config.json` |
 | `update-cves` | Fetch latest Craft CMS CVEs from GitHub Advisories |
+| `list-rules` | List built-in rules; filter with `--category` and `--severity`, or use `--json` |
+| `explain <rule-id>` | Show details for one rule |
 | `completion [bash\|zsh]` | Generate shell completion script |
 
 ## Output Formats
@@ -130,6 +132,7 @@ eval "$(craft-audit completion bash)"
 ```bash
 craft-audit audit . --output console    # Default, human-readable
 craft-audit audit . --output json       # Structured JSON
+craft-audit audit . --output json-stream # Streaming JSON
 craft-audit audit . --output sarif      # SARIF for GitHub Code Scanning
 craft-audit audit . --output html --output-file report.html
 craft-audit audit . --output bitbucket  # Bitbucket Code Insights
@@ -392,7 +395,14 @@ vscode-craft-audit/      # VS Code extension
 |----------|-------------|
 | [Configuration](docs/configuration.md) | All config file options and CLI flags |
 | [Presets](docs/presets.md) | Preset profiles for different project stages |
+| [Getting Started](docs/getting-started.md) | Install from a clone and run a first audit |
 | [Rule Tuning](docs/rule-tuning.md) | Per-rule severity and path overrides |
+| [Custom Rules](docs/custom-rules.md) | Write JS, YAML or JSON rules for `--rules-dir` |
+| [Quality Gates](docs/quality-gates.md) | Built-in `--quality-gate` profiles |
+| [Visual Regression](docs/visual-regression.md) | BackstopJS setup and usage |
+| [Performance](docs/performance.md) | Caching and speed options |
+| [Troubleshooting](docs/troubleshooting.md) | Common problems |
+| [VS Code Extension](docs/vscode-extension.md) | Extension setup |
 | [Debug Correlation](docs/debug-correlation.md) | Runtime profile data integration |
 | [Config Recommendations](docs/recommend-config.md) | Auto-generated config from findings |
 | [GitHub Actions](docs/github-actions.md) | SARIF upload workflow examples |
@@ -402,4 +412,4 @@ vscode-craft-audit/      # VS Code extension
 
 ## License
 
-MIT
+MIT. See [LICENSE](LICENSE).
