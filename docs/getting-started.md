@@ -20,33 +20,19 @@ php --version    # Should print 8.x.x or higher
 
 ## Installation
 
-### Global Install (Recommended)
+### Install from a clone
 
-Install craft-audit globally to use it from any directory:
-
-```bash
-npm install -g craft-audit
-```
-
-Verify the installation:
+craft-audit is not published to npm yet (`npm install -g craft-audit` returns E404), so install from source:
 
 ```bash
-craft-audit --version
+git clone https://github.com/forbiddenlink/craft-audit.git
+cd craft-audit
+pnpm install
+pnpm run build
+node dist/cli.js --version
 ```
 
-### Local Install
-
-For CI pipelines or project-specific versions, install as a dev dependency:
-
-```bash
-npm install -D craft-audit
-```
-
-Then run via `npx`:
-
-```bash
-npx craft-audit audit .
-```
+Examples in these docs use `craft-audit` for brevity; run them as `node dist/cli.js` from the clone until the package is published.
 
 ## Running Your First Audit
 
