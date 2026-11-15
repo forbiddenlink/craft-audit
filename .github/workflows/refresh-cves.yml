@@ -1,0 +1,63 @@
+name: Refresh CVE data
+
+# Weekly: pull Craft CMS advisories from GitHub and open a PR when
+# data/known-cves.json changes, so the CVE list does not depend on someone
+# remembering to run `craft-audit update-cves`. A human reviews and merges.
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Fetch advisories
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node dist/cli.js update-cves
+
+      - name: Open a pull request if the data changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/known-cves.json; then
+            echo "No CVE changes."
+            exit 0
+          fi
+          branch="chore/refresh-cves-$(date -u +%Y-%m-%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add data/known-cves.json
+          git commit -m "chore(data): refresh known Craft CMS CVEs"
+          git push origin "$branch"
+          gh pr create \
+            --title "chore(data): refresh known Craft CMS CVEs" \
+            --body "Automated weekly refresh from the GitHub advisory database via craft-audit update-cves. Review the diff before merging."

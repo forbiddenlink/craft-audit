@@ -12,6 +12,7 @@ interface GitHubAdvisory {
   cve_id: string | null;
   summary: string;
   severity: string;
+  withdrawn_at?: string | null;
   vulnerabilities: Array<{
     package: {
       ecosystem: string;
@@ -51,6 +52,9 @@ function mapSeverity(severity: string): 'high' | 'medium' {
 }
 
 function advisoryToCveEntry(advisory: GitHubAdvisory): CveEntry | null {
+  // Withdrawn advisories were retracted upstream; they must not flag projects
+  if (advisory.withdrawn_at) return null;
+
   // Skip low-severity advisories
   if (advisory.severity === 'low') return null;
 
@@ -89,6 +93,20 @@ function resolveJsonPath(): string {
   return path.resolve(__dirname, '../../data/known-cves.json');
 }
 
+/**
+ * Convert advisories to CVE entries. Drops withdrawn and duplicate ids and
+ * sorts by id so the weekly refresh produces a stable, reviewable diff
+ * regardless of the order the API returns.
+ */
+export function buildCveEntries(advisories: GitHubAdvisory[]): CveEntry[] {
+  const byId = new Map<string, CveEntry>();
+  for (const advisory of advisories) {
+    const entry = advisoryToCveEntry(advisory);
+    if (entry && !byId.has(entry.id)) byId.set(entry.id, entry);
+  }
+  return [...byId.values()].sort((a, b) => b.id.localeCompare(a.id));
+}
+
 async function fetchAdvisories(): Promise<GitHubAdvisory[]> {
   const response = await fetch(
     'https://api.github.com/advisories?ecosystem=composer&package=craftcms/cms&per_page=100',
@@ -96,6 +114,10 @@ async function fetchAdvisories(): Promise<GitHubAdvisory[]> {
       headers: {
         'Accept': 'application/vnd.github+json',
         'User-Agent': 'craft-audit',
+        // Optional token lifts the unauthenticated rate limit (CI runs).
+        ...(process.env.GITHUB_TOKEN
+          ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+          : {}),
       },
     },
   );
@@ -120,11 +142,7 @@ export async function executeUpdateCvesCommand(): Promise<void> {
       chalk.gray(`Fetched ${advisories.length} advisories from GitHub`),
     );
 
-    const entries: CveEntry[] = [];
-    for (const advisory of advisories) {
-      const entry = advisoryToCveEntry(advisory);
-      if (entry) entries.push(entry);
-    }
+    const entries = buildCveEntries(advisories);
 
     console.log(chalk.gray(`Parsed ${entries.length} applicable CVE entries`));
 
