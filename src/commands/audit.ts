@@ -12,6 +12,9 @@ import { analyzeTwigTemplates } from '../analyzers/twig';
 import { collectSystemInfo } from '../analyzers/system';
 import { collectSecurityIssues } from '../analyzers/security';
 import { analyzePluginSecurity } from '../analyzers/plugin-security';
+import { analyzePhpHardening } from '../analyzers/php-hardening';
+import { analyzeComposerSupplyChain } from '../analyzers/composer-supply-chain';
+import { probeExposure } from '../analyzers/exposure-probes';
 import { runVisualRegression } from '../analyzers/visual';
 import { ConsoleReporter } from '../reporters/console';
 import { JsonReporter } from '../reporters/json';
@@ -547,6 +550,54 @@ async function runAudit(config: AuditConfig, cache?: AnalysisCache): Promise<Aud
         true
       ),
     });
+
+    tasks.push({
+      name: 'PHP and container hardening',
+      promise: runAnalyzerStep(
+        {
+          name: 'Checking PHP and container hardening',
+          ruleId: 'runtime/php-hardening-failed',
+          category: 'security',
+          failureMessage: 'PHP hardening analyzer failed; php.ini and Dockerfile findings may be incomplete.',
+          run: () => analyzePhpHardening(config.projectPath),
+        },
+        config,
+        true
+      ),
+    });
+
+    tasks.push({
+      name: 'Composer supply chain',
+      promise: runAnalyzerStep(
+        {
+          name: 'Checking Composer supply chain',
+          ruleId: 'runtime/composer-supply-chain-failed',
+          category: 'security',
+          failureMessage: 'Composer supply-chain analyzer failed; Composer configuration findings may be incomplete.',
+          run: () => analyzeComposerSupplyChain(config.projectPath),
+        },
+        config,
+        true
+      ),
+    });
+
+    if (config.siteUrl) {
+      const siteUrl = config.siteUrl;
+      tasks.push({
+        name: 'Live exposure probes',
+        promise: runAnalyzerStep(
+          {
+            name: 'Probing the live site for exposed files',
+            ruleId: 'runtime/exposure-probes-failed',
+            category: 'security',
+            failureMessage: 'Exposure probes failed; live exposure findings may be incomplete.',
+            run: () => probeExposure(siteUrl),
+          },
+          config,
+          true
+        ),
+      });
+    }
   }
 
   if (!config.skipVisual && config.productionUrl && config.stagingUrl) {

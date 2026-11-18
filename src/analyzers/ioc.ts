@@ -47,7 +47,7 @@ const TWIG_PATTERNS: RegExp[] = [
 ];
 
 const DOCS = {
-  mimo: 'https://github.com/advisories?query=CVE-2025-32432',
+  mimo: 'https://github.com/craftcms/cms/security/advisories/GHSA-f3gw-9ww9-jmc3',
 };
 
 interface WalkEntry {
@@ -218,7 +218,7 @@ export async function scanForCompromise(
             'Review the file. If it is not your code, remove it, find how it got there, and treat the server as potentially compromised.',
           code: hit.text,
           confidence: 0.8,
-          docsUrl: 'https://owasp.org/www-community/attacks/Web_Shell',
+          docsUrl: 'https://attack.mitre.org/techniques/T1505/003/',
           fingerprint: `${ruleId}:${rel}`,
         });
       }

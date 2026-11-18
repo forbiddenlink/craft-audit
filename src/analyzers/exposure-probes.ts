@@ -11,7 +11,7 @@ import { logger } from '../core/logger.js';
 
 export type ProbeFetch = (
   url: string,
-  init: { method: 'GET' | 'HEAD'; redirect: 'manual'; signal: AbortSignal }
+  init: { method: 'GET' | 'HEAD'; redirect: 'manual'; signal: AbortSignal; headers: Record<string, string> }
 ) => Promise<{ status: number; headers: { get(name: string): string | null }; text(): Promise<string> }>;
 
 export interface ProbeOptions {
@@ -96,7 +96,7 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
     let timer: NodeJS.Timeout | undefined;
     try {
       const run = (async (): Promise<ProbeResponse> => {
-        const res = await fetchImpl(url, { method: 'GET', redirect: 'manual', signal: controller.signal });
+        const res = await fetchImpl(url, { method: 'GET', redirect: 'manual', signal: controller.signal, headers: { 'User-Agent': 'craft-audit' } });
         let body = '';
         if (res.status >= 200 && res.status < 300) {
           body = (await res.text()).slice(0, MAX_BODY_BYTES);

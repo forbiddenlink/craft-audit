@@ -31,6 +31,8 @@ import { executeAuditCommand } from './commands/audit';
 import { executeRecommendConfigCommand, RecommendConfigCommandOptions } from './commands/recommend-config';
 import { executeInitCommand } from './commands/init';
 import { executeUpdateCvesCommand } from './commands/update-cves';
+import { scanForCompromise } from './analyzers/ioc';
+import { summarizeIssues } from './core/summary';
 import { executeListRulesCommand, ListRulesCommandOptions } from './commands/list-rules';
 import { executeExplainCommand } from './commands/explain';
 
@@ -304,6 +306,40 @@ program
       process.exitCode = 1;
       return;
     }
+  });
+
+program
+  .command('ioc')
+  .description('Scan a copy of a server\'s files for signs the site was already compromised')
+  .argument('[path]', 'Path to the site files', '.')
+  .option('--file-limit <n>', 'Maximum number of files to scan', '20000')
+  .option('--json', 'Print findings as JSON')
+  .action(async (sitePath: string, options: { fileLimit: string; json?: boolean }) => {
+    const absolutePath = path.resolve(sitePath);
+    if (!fs.existsSync(absolutePath)) {
+      console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
+      process.exitCode = 1;
+      return;
+    }
+    const fileLimit = Number.parseInt(options.fileLimit, 10);
+    if (!Number.isInteger(fileLimit) || fileLimit < 1) {
+      console.error(chalk.red('Error: --file-limit must be a positive integer'));
+      process.exitCode = 1;
+      return;
+    }
+    const issues = await scanForCompromise(absolutePath, { fileLimit });
+    const result = {
+      projectPath: absolutePath,
+      timestamp: new Date().toISOString(),
+      issues,
+      summary: summarizeIssues(issues),
+    };
+    if (options.json) {
+      process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+    } else {
+      new ConsoleReporter().report(result);
+    }
+    if (issues.some((issue) => issue.severity !== 'info')) process.exitCode = 1;
   });
 
 program
