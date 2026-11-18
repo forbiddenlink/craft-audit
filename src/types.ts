@@ -57,7 +57,7 @@ export interface SystemIssue extends AuditIssue {
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'plugin-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'plugin-cve' | 'dependency-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
 }
 
 export interface VisualIssue extends AuditIssue {

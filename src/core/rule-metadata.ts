@@ -163,6 +163,16 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'The installed Craft CMS version is affected by a known security vulnerability.',
     helpUri: 'https://github.com/advisories',
   },
+  'security/plugin-cve': {
+    title: 'Known Craft plugin vulnerability detected',
+    description: 'An installed Craft plugin version is affected by a published security advisory.',
+    helpUri: 'https://github.com/advisories?query=ecosystem%3Acomposer',
+  },
+  'security/dependency-cve': {
+    title: 'Known vulnerability in a Craft dependency',
+    description: 'A library installed with Craft (Yii, Twig, Guzzle, Symfony and others) is affected by a published security advisory.',
+    helpUri: 'https://github.com/advisories?query=ecosystem%3Acomposer',
+  },
   'security/allow-updates-enabled': {
     title: 'Auto-updates enabled in config',
     description: 'allowUpdates is enabled, permitting CMS and plugin updates from the control panel.',
@@ -618,6 +628,18 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     severity: 'high',
     category: 'security',
     fixGuidance: 'Update Craft CMS to a patched version: composer update craftcms/cms',
+  },
+  'security/plugin-cve': {
+    ...RULE_METADATA['security/plugin-cve'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Update the plugin to the fixed version named in the finding: composer update <vendor/plugin>',
+  },
+  'security/dependency-cve': {
+    ...RULE_METADATA['security/dependency-cve'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Update the library to the fixed version named in the finding: composer update <vendor/package> --with-dependencies',
   },
   'security/allow-updates-enabled': {
     ...RULE_METADATA['security/allow-updates-enabled'],

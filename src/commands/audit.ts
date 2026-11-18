@@ -15,6 +15,7 @@ import { analyzePluginSecurity } from '../analyzers/plugin-security';
 import { analyzePhpHardening } from '../analyzers/php-hardening';
 import { analyzeComposerSupplyChain } from '../analyzers/composer-supply-chain';
 import { probeExposure } from '../analyzers/exposure-probes';
+import { dropComposerAuditDuplicates } from '../core/advisories';
 import { runVisualRegression } from '../analyzers/visual';
 import { ConsoleReporter } from '../reporters/console';
 import { JsonReporter } from '../reporters/json';
@@ -651,7 +652,7 @@ async function runAudit(config: AuditConfig, cache?: AnalysisCache): Promise<Aud
     }
   }
 
-  const issues = results.flat();
+  const issues = dropComposerAuditDuplicates(results.flat());
 
   return {
     projectPath: config.projectPath,

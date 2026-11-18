@@ -1,7 +1,7 @@
 name: Refresh CVE data
 
-# Weekly: pull Craft CMS advisories from GitHub and open a PR when
-# data/known-cves.json changes, so the CVE list does not depend on someone
+# Weekly: pull Craft CMS, plugin and dependency advisories from GitHub and open a PR when
+# data/advisories.json changes, so the CVE list does not depend on someone
 # remembering to run `craft-audit update-cves`. A human reviews and merges.
 #
 # Two jobs on purpose. The fetch job installs dependencies and runs project
@@ -51,8 +51,8 @@ jobs:
       - name: Upload CVE data
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: known-cves
-          path: data/known-cves.json
+          name: advisories
+          path: data/advisories.json
           retention-days: 1
           if-no-files-found: error
 
@@ -72,14 +72,14 @@ jobs:
       - name: Download CVE data
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: known-cves
+          name: advisories
           path: data
 
       - name: Open a pull request if the data changed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if git diff --quiet -- data/known-cves.json; then
+          if git diff --quiet -- data/advisories.json; then
             echo "No CVE changes."
             exit 0
           fi
@@ -88,9 +88,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git add data/known-cves.json
-          git commit -m "chore(data): refresh known Craft CMS CVEs"
+          git add data/advisories.json
+          git commit -m "chore(data): refresh Craft advisory data"
           git push origin "$branch"
           gh pr create \
-            --title "chore(data): refresh known Craft CMS CVEs" \
-            --body "Automated weekly refresh from the GitHub advisory database via craft-audit update-cves. Review the diff before merging."
+            --title "chore(data): refresh Craft advisory data" \
+            --body "Automated weekly refresh of Craft CMS, plugin and dependency advisories from the GitHub advisory database and the CISA KEV catalog via craft-audit update-cves. Review the diff before merging."

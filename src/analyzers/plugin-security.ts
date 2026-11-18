@@ -1,27 +1,22 @@
-import { satisfiesRange } from '../core/semver';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
 import { logger } from '../core/logger.js';
+import {
+  Advisory,
+  effectiveSeverity,
+  findAdvisories,
+  fixSuggestion,
+  kevNote,
+  loadAdvisories,
+} from '../core/advisories';
 
-export interface PluginCveEntry {
-  package: string;
-  cve: string;
-  title: string;
-  severity: 'critical' | 'high' | 'medium';
-  affectedVersions: string;
-  fixedIn: string;
-  url: string;
-}
-
-interface ComposerLockPackage {
+export interface ComposerLockPackage {
   name: string;
   version: string;
   type?: string;
 }
-
-const PLUGIN_CVE_JSON_PATH = path.resolve(__dirname, '../../data/known-plugin-cves.json');
 
 const CRAFT_PLUGIN_VENDORS = new Set([
   'craftcms',
@@ -32,20 +27,6 @@ const CRAFT_PLUGIN_VENDORS = new Set([
   'doublesecretagency',
 ]);
 
-function loadKnownPluginCves(): PluginCveEntry[] {
-  try {
-    const raw = fs.readFileSync(PLUGIN_CVE_JSON_PATH, 'utf-8');
-    return JSON.parse(raw) as PluginCveEntry[];
-  } catch {
-    logger.debug('Could not load known-plugin-cves.json');
-    return [];
-  }
-}
-
-function isVersionAffected(installedVersion: string, affectedVersions: string): boolean {
-  return satisfiesRange(installedVersion, affectedVersions);
-}
-
 function isCraftPlugin(pkg: ComposerLockPackage): boolean {
   if (pkg.type === 'craft-plugin') return true;
 
@@ -53,11 +34,6 @@ function isCraftPlugin(pkg: ComposerLockPackage): boolean {
   if (vendor && CRAFT_PLUGIN_VENDORS.has(vendor)) return true;
 
   return false;
-}
-
-function mapSeverity(severity: string): 'high' | 'medium' {
-  if (severity === 'critical' || severity === 'high') return 'high';
-  return 'medium';
 }
 
 async function readComposerLock(projectPath: string): Promise<ComposerLockPackage[] | undefined> {
@@ -71,57 +47,59 @@ async function readComposerLock(projectPath: string): Promise<ComposerLockPackag
   }
 }
 
-export async function analyzePluginSecurity(
-  projectPath: string
-): Promise<SecurityIssue[]> {
+/**
+ * Match every installed package except Craft itself (covered by
+ * security/known-cve) against `advisories`. Craft plugins report as
+ * security/plugin-cve; the libraries underneath report as
+ * security/dependency-cve.
+ */
+export function matchPackageAdvisories(
+  packages: readonly ComposerLockPackage[],
+  advisories: readonly Advisory[],
+): SecurityIssue[] {
   const issues: SecurityIssue[] = [];
+  for (const pkg of packages) {
+    if (!pkg?.name || !pkg.version || pkg.name === 'craftcms/cms') continue;
+    const type = isCraftPlugin(pkg) ? 'plugin-cve' : 'dependency-cve';
 
-  const packages = await readComposerLock(projectPath);
-  if (!packages) {
-    logger.debug('composer.lock not found — skipping plugin vulnerability scan.');
-    return issues;
-  }
-
-  const plugins = packages.filter(isCraftPlugin);
-  if (plugins.length === 0) {
-    logger.debug('No Craft plugins found in composer.lock.');
-    return issues;
-  }
-
-  logger.debug(`Found ${plugins.length} Craft plugin(s) in composer.lock.`);
-
-  const knownCves = loadKnownPluginCves();
-  if (knownCves.length === 0) {
-    logger.debug('No known plugin CVEs loaded.');
-    return issues;
-  }
-
-  for (const plugin of plugins) {
-    const matchingCves = knownCves.filter(
-      (cve) => cve.package === plugin.name && isVersionAffected(plugin.version, cve.affectedVersions)
-    );
-
-    for (const cve of matchingCves) {
+    for (const { advisory, range } of findAdvisories(advisories, pkg.name, pkg.version)) {
       issues.push({
-        severity: mapSeverity(cve.severity),
+        severity: effectiveSeverity(advisory),
         category: 'security',
-        type: 'plugin-cve',
-        ruleId: 'security/plugin-cve',
-        message: `${cve.cve}: ${cve.title}. Installed ${plugin.name}@${plugin.version} is affected.`,
-        suggestion: `Update ${plugin.name} to ${cve.fixedIn} or later to resolve ${cve.cve}.`,
-        docsUrl: cve.url,
+        type,
+        ruleId: `security/${type}`,
+        message: `${advisory.id}: ${advisory.title}. Installed ${pkg.name}@${pkg.version} is affected.${kevNote(advisory)}`,
+        suggestion: fixSuggestion(pkg.name, advisory, range),
+        docsUrl: advisory.url,
         confidence: 0.95,
         evidence: {
-          details: `${plugin.name}@${plugin.version} affected by ${cve.cve} (fixed in ${cve.fixedIn})`,
+          details: `${pkg.name}@${pkg.version} is in ${range.vulnerable} (fixed in ${range.fixedIn ?? 'no release yet'})`,
         },
-        fingerprint: `security/plugin-cve:${cve.cve}:${plugin.name}:${plugin.version}`,
+        fingerprint: `security/${type}:${advisory.id}:${pkg.name}:${pkg.version}`,
       });
     }
   }
+  return issues;
+}
 
-  if (issues.length > 0) {
-    logger.debug(`Found ${issues.length} plugin CVE(s) affecting installed packages.`);
+export async function analyzePluginSecurity(
+  projectPath: string
+): Promise<SecurityIssue[]> {
+  const packages = await readComposerLock(projectPath);
+  if (!packages) {
+    logger.debug('composer.lock not found — skipping package vulnerability scan.');
+    return [];
   }
 
+  const advisories = loadAdvisories();
+  if (advisories.length === 0) {
+    logger.debug('No advisories loaded.');
+    return [];
+  }
+
+  const issues = matchPackageAdvisories(packages, advisories);
+  if (issues.length > 0) {
+    logger.debug(`Found ${issues.length} advisory match(es) in installed packages.`);
+  }
   return issues;
 }

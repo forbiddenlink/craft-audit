@@ -344,7 +344,7 @@ program
 
 program
   .command('update-cves')
-  .description('Fetch latest Craft CMS CVEs from GitHub Advisories and update the database')
+  .description('Refresh bundled Craft CMS, plugin and dependency advisories from GitHub and the CISA KEV catalog')
   .action(async () => {
     await executeUpdateCvesCommand();
   });
