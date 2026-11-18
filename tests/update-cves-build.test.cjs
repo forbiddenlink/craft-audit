@@ -62,3 +62,38 @@ test('buildCveEntries merges affects from two records sharing an id', () => {
   const fixed = entries[0].affects.map((a) => a.fixedAt).sort();
   assert.deepEqual(fixed, ['4.16.2', '5.8.1']);
 });
+
+test('nextPageUrl follows the rel="next" link only', () => {
+  const { nextPageUrl } = require('../dist/commands/update-cves');
+  const header =
+    '<https://api.github.com/advisories?affects=craftcms%2Fcms&after=Y3Vy>; rel="next", <https://api.github.com/advisories?affects=craftcms%2Fcms>; rel="first"';
+  assert.equal(nextPageUrl(header), 'https://api.github.com/advisories?affects=craftcms%2Fcms&after=Y3Vy');
+  assert.equal(nextPageUrl('<https://api.github.com/advisories>; rel="prev"'), undefined);
+  assert.equal(nextPageUrl(null), undefined);
+});
+
+test('assertPlausibleRefresh refuses an empty or gutted result', () => {
+  const { assertPlausibleRefresh } = require('../dist/commands/update-cves');
+  assert.throws(() => assertPlausibleRefresh(0, 10), /refusing to empty/);
+  assert.throws(() => assertPlausibleRefresh(4, 10), /refusing to drop/);
+  assert.doesNotThrow(() => assertPlausibleRefresh(5, 10));
+  assert.doesNotThrow(() => assertPlausibleRefresh(40, 10));
+  assert.doesNotThrow(() => assertPlausibleRefresh(3, 0));
+});
+
+test('parseVersionRange keeps lower bounds and spans majors', () => {
+  const { parseVersionRange } = require('../dist/commands/update-cves');
+  assert.deepEqual(parseVersionRange('>= 5.0.0-RC1, < 5.6.17', '5.6.17'), [
+    { minMajor: 5, maxMajor: 5, fixedAt: '5.6.17' },
+  ]);
+  assert.deepEqual(parseVersionRange('>= 4.13.8, < 4.16.3', '4.16.3'), [
+    { minMajor: 4, maxMajor: 4, fixedAt: '4.16.3', minVersion: '4.13.8' },
+  ]);
+  assert.deepEqual(parseVersionRange('>= 3.5.0, <= 4.16.16', '4.16.17'), [
+    { minMajor: 3, maxMajor: 4, fixedAt: '4.16.17', minVersion: '3.5.0' },
+  ]);
+  assert.deepEqual(parseVersionRange('< 3.9.15', '3.9.15'), [
+    { minMajor: 3, maxMajor: 3, fixedAt: '3.9.15' },
+  ]);
+  assert.deepEqual(parseVersionRange('< 1.0.0', null), []);
+});

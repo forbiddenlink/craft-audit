@@ -1,5 +1,759 @@
 [
   {
+    "id": "GHSA-wg23-69c2-gjc8",
+    "title": "Craft CMS: Passkey login accepts replayed WebAuthn assertions",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.5"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-wg23-69c2-gjc8"
+  },
+  {
+    "id": "GHSA-p8x7-9vfw-p7vc",
+    "title": "Craft CMS: Arbitrary user password reset leading to administrator account takeover",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.8"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-p8x7-9vfw-p7vc"
+  },
+  {
+    "id": "GHSA-2rp4-x2j7-qmcc",
+    "title": "Craft CMS: Stored XSS in the control panel via unescaped draft name",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.8"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-2rp4-x2j7-qmcc"
+  },
+  {
+    "id": "CVE-2026-72785",
+    "title": "Craft CMS: Authorization bypass: view-only Categories user can modify category structure via structures/move-element",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.6"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-xxpx-f366-4xpq"
+  },
+  {
+    "id": "CVE-2026-72782",
+    "title": "Craft CMS: Authenticated leak of secret environment variables",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.6"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.2"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-596p-6jv8-775v"
+  },
+  {
+    "id": "CVE-2026-72781",
+    "title": "Craft CMS: Authenticated RCE through Twig sandbox escape",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.7"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.3"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f5wm-88jv-g5hx"
+  },
+  {
+    "id": "CVE-2026-72779",
+    "title": "Craft CMS: Arbitrary file read via SplFileObject in non-sandboxed template contexts",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.6"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.2"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-957r-qf9p-67xw"
+  },
+  {
+    "id": "CVE-2026-72778",
+    "title": "Craft CMS: Authenticated RCE via `condition.config` JSON cleanse bypass",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.6"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.2"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-265m-7826-wjqm"
+  },
+  {
+    "id": "CVE-2026-56384",
+    "title": "Craft CMS: Authenticated \"assets/preview-thumb\" discloses signed fallback transform preview link to CP users without asset-view permission",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.8"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.14"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-x76w-8c62-48mg"
+  },
+  {
+    "id": "CVE-2026-56382",
+    "title": "Craft CMS: RCE via missing cleanseConfig in FieldsController::actionRenderCardPreview",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.14",
+        "minVersion": "5.5.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-86vw-x4ww-x467"
+  },
+  {
+    "id": "CVE-2026-55794",
+    "title": "Craft CMS: Potential authenticated Remote Code Execution via referrer redirect",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.0",
+        "minVersion": "5.9.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f74w-488g-8x5r"
+  },
+  {
+    "id": "CVE-2026-55793",
+    "title": "Craft CMS: Stored XSS via Structure entry title in table view",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.53"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-xrqc-p465-2xvg"
+  },
+  {
+    "id": "CVE-2026-55792",
+    "title": "Craft CMS: Sensitive File Disclosure / Server-Side File Read",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.0"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-287w-mxq6-x2cp"
+  },
+  {
+    "id": "CVE-2026-55790",
+    "title": "Craft CMS: DOM XSS via GitHub issue title in CraftSupport widget",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.23"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.16"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-24x4-j6x9-rfw5"
+  },
+  {
+    "id": "CVE-2026-50284",
+    "title": "Craft CMS: Missing peer-permission check in `AssetsController::actionDeleteFolder` allows deletion of other users' assets",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.22"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.15"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7h62-6v23-v8fm"
+  },
+  {
+    "id": "CVE-2026-50283",
+    "title": "Craft CMS: Unauthorized Deletion of Source Assets During File Replacement",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.21"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.14"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qh45-9g5p-m2v4"
+  },
+  {
+    "id": "CVE-2026-50282",
+    "title": "Craft CMS Vulnerable to Unauthorized Deletion of Destination Folders During Forced Moves",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.21"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.14"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-3w32-23wj-rxg3"
+  },
+  {
+    "id": "CVE-2026-50281",
+    "title": "Craft CMS's mass assignment via id in newAttributes during bulk duplicate overwrites existing elements",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.21",
+        "minVersion": "5.7.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-x5m4-g2cq-52pq"
+  },
+  {
+    "id": "CVE-2026-50280",
+    "title": "Craft CMS: Authorization bypass in `entries/move-to-section` via missing target-section save check",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.21"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-43cq-c2gq-pfpw"
+  },
+  {
+    "id": "CVE-2026-50279",
+    "title": "Craft CMS: Authorship spoofing in `entries/save-entry` via pre-check/post-mutation authorization gap",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.21"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qq2c-2q8j-jh27"
+  },
+  {
+    "id": "CVE-2026-44012",
+    "title": "Craft CMS's Missing Volume Permission Check in AssetsController::actionShowInFolder Allows Information Disclosure",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.18"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-33m5-hqp9-97pw"
+  },
+  {
+    "id": "CVE-2026-44011",
+    "title": "Craft CMS has Potential Authenticated Remote Code Execution via Malicious Attached Behavior",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.12"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.18"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qrgm-p9w5-rrfw"
+  },
+  {
+    "id": "CVE-2026-44010",
+    "title": "Craft CMS's Missing Authorization in GraphQL Address Resolver Allows Cross-Scope PII Disclosure",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.18"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.12"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-gj2p-p9m4-c8gw"
+  },
+  {
+    "id": "CVE-2026-41130",
+    "title": "Craft CMS has a host header injection leading to SSRF via resource-js endpoint",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.15"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.9"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-95wr-3f2v-v2wh"
+  },
+  {
+    "id": "CVE-2026-41129",
+    "title": "Server-Side Request Forgery (SSRF) in Craft CMS with Asset Uploads Mutations",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.15"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.9"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-3m9m-24vh-39wx"
+  },
+  {
+    "id": "CVE-2026-41128",
+    "title": "Craft CMS has a Missing Authorization Check on User Group Removal via save-permissions Action",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.15",
+        "minVersion": "5.6.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-jq2f-59pj-p3m3"
+  },
+  {
+    "id": "CVE-2026-33162",
+    "title": "Craft CMS has an authorization bypass which allows any control panel user to move entries without permissions",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.14",
+        "minVersion": "5.3.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f582-6gf6-gx4g"
+  },
+  {
+    "id": "CVE-2026-33159",
+    "title": "Craft CMS: Unauthenticated Users Can Perform Restricted Project Config Sync Operations",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.14"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.8"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-6mrr-q3pj-h53w"
+  },
+  {
+    "id": "CVE-2026-33158",
+    "title": "Craft CMS: Low-privilege users could read private asset contents when editing an asset (IDOR)",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.8"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.14"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-3pvf-vxrv-hh9c"
+  },
+  {
+    "id": "CVE-2026-33157",
+    "title": "Craft CMS is Vulnerable to Authenticated Remote Code Execution via Malicious Attached Behavior",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.13",
+        "minVersion": "5.6.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-2fph-6v5w-89hh"
+  },
+  {
+    "id": "CVE-2026-33051",
+    "title": "Craft CMS Vulnerable to Stored XSS in Revision Context Menu",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.11",
+        "minVersion": "5.9.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-3x4w-mxpf-fhqq"
+  },
+  {
+    "id": "CVE-2026-32267",
+    "title": "Craft CMS Vulnerable to Privilege Escalation/Bypass through UsersController->actionImpersonateWithToken()",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.6"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.12"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-cc7p-2j3x-x7xf"
+  },
+  {
+    "id": "CVE-2026-32264",
+    "title": "Craft CMS vulnerable to behavior injection RCE ElementIndexesController and FieldsController",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.5"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.11"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-4484-8v2f-5748"
+  },
+  {
+    "id": "CVE-2026-32263",
+    "title": "Craft CMS vulnerable to behavior injection RCE via EntryTypesController",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.11",
+        "minVersion": "5.6.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qx2q-q59v-wf3j"
+  },
+  {
+    "id": "CVE-2026-32262",
+    "title": "Craft CMS has a Path Traversal Vulnerability in AssetsController",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.5"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.11"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-472v-j2g4-g9h2"
+  },
+  {
+    "id": "CVE-2026-31859",
+    "title": "CraftCMS vulnerable to reflective XSS via incomplete return URL sanitization",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.3",
+        "minVersion": "4.15.3"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.7",
+        "minVersion": "5.7.5"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-fvwq-45qv-xvhv"
+  },
+  {
+    "id": "CVE-2026-31858",
+    "title": "CraftCMS's `ElementSearchController` Affected by Blind SQL Injection",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.9"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-g7j6-fmwx-7vp8"
+  },
+  {
+    "id": "CVE-2026-31857",
+    "title": "CraftCMS has an RCE vulnerability via relational conditionals in the control panel",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.9"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.4"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-fp5j-j7j4-mcxc"
+  },
+  {
+    "id": "CVE-2026-29069",
+    "title": "Craft CMS has unauthenticated activation email trigger with potential user enumeration",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.2"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.2"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-234q-vvw3-mrfq"
+  },
+  {
+    "id": "CVE-2026-28784",
+    "title": "Craft CMS has potential authenticated Remote Code Execution via Twig SSTI",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qc86-q28f-ggww"
+  },
+  {
+    "id": "CVE-2026-28783",
+    "title": "Craft CMS has Twig Function Blocklist Bypass",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-5fvc-7894-ghp4"
+  },
+  {
+    "id": "CVE-2026-28782",
+    "title": "Craft CMS has Permission Bypass and IDOR in Duplicate Entry Action",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-jxm3-pmm2-9gf6"
+  },
+  {
+    "id": "CVE-2026-28781",
+    "title": "Craft CMS: Entries Authorship Spoofing via Mass Assignment",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-2xfc-g69j-x2mp"
+  },
+  {
+    "id": "CVE-2026-28697",
+    "title": "Craft CMS Vulnerable to Authenticated RCE via \"craft.app.fs.write()\" in Twig Templates",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-v47q-jxvr-p68x"
+  },
+  {
+    "id": "CVE-2026-28696",
+    "title": "Craft CMS has IDOR via GraphQL @parseRefs",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7x43-mpfg-r9wj"
+  },
+  {
+    "id": "CVE-2026-28695",
+    "title": "Craft CMS Vulnerable to Authenticated RCE via Twig SSTI - create() function + Symfony Process gadget",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.9.0-beta.1",
+        "minVersion": "5.8.7"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.17.0-beta.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-94rc-cqvm-m4pw"
+  },
+  {
     "id": "CVE-2026-27129",
     "title": "Craft CMS: Cloud Metadata SSRF Protection Bypass via IPv6 Resolution",
     "severity": "medium",
@@ -10,9 +764,10 @@
         "fixedAt": "5.8.23"
       },
       {
-        "minMajor": 4,
+        "minMajor": 3,
         "maxMajor": 4,
-        "fixedAt": "4.16.19"
+        "fixedAt": "4.16.19",
+        "minVersion": "3.5.0"
       }
     ],
     "docsUrl": "https://github.com/advisories/GHSA-v2gc-rm6g-wrw9"
@@ -25,7 +780,8 @@
       {
         "minMajor": 4,
         "maxMajor": 4,
-        "fixedAt": "4.16.19"
+        "fixedAt": "4.16.19",
+        "minVersion": "4.5.0"
       },
       {
         "minMajor": 5,
@@ -46,9 +802,10 @@
         "fixedAt": "5.8.23"
       },
       {
-        "minMajor": 4,
+        "minMajor": 3,
         "maxMajor": 4,
-        "fixedAt": "4.16.19"
+        "fixedAt": "4.16.19",
+        "minVersion": "3.5.0"
       }
     ],
     "docsUrl": "https://github.com/advisories/GHSA-gp2f-7wcm-5fhx"
@@ -61,7 +818,8 @@
       {
         "minMajor": 4,
         "maxMajor": 4,
-        "fixedAt": "4.16.19"
+        "fixedAt": "4.16.19",
+        "minVersion": "4.5.0"
       },
       {
         "minMajor": 5,
@@ -178,5 +936,815 @@
       }
     ],
     "docsUrl": "https://github.com/advisories/GHSA-8jr8-7hr4-vhfx"
+  },
+  {
+    "id": "CVE-2026-14794",
+    "title": "Craft CMS: Missing authorization check allows non-admin control panel users access to user registration metrics",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.1"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.3"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-rvmm-v933-jgxq"
+  },
+  {
+    "id": "CVE-2026-14793",
+    "title": "Craft CMS: Missing authorization check allows non-admin control panel users to reorder Global Sets",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.18.1"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.10.3"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-9p7c-v5x3-rfx8"
+  },
+  {
+    "id": "CVE-2025-68456",
+    "title": "Unauthenticated Craft CMS users can trigger a database backup",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.21"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 4,
+        "fixedAt": "4.16.17"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-v64r-7wg9-23pr"
+  },
+  {
+    "id": "CVE-2025-68455",
+    "title": "Craft CMS vulnerable to potential authenticated Remote Code Execution via malicious attached Behavior",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.21"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.17"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-255j-qw47-wjh5"
+  },
+  {
+    "id": "CVE-2025-68454",
+    "title": "Craft CMS vulnerable to potential authenticated Remote Code Execution via Twig SSTI",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.21"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.17"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-742x-x762-7383"
+  },
+  {
+    "id": "CVE-2025-68437",
+    "title": "Craft CMS vulnerable to Server-Side Request Forgery (SSRF) via GraphQL Asset Upload Mutation",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.21"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 4,
+        "fixedAt": "4.16.17",
+        "minVersion": "3.5.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-x27p-wfqw-hfcc"
+  },
+  {
+    "id": "CVE-2025-68436",
+    "title": "Craft CMS vulnerable to potential information disclosure via unchecked asset relocation",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.21"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.17"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-53vf-c43h-j2x9"
+  },
+  {
+    "id": "CVE-2025-57811",
+    "title": "Craft CMS Potential Remote Code Execution via Twig SSTI",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.6"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.7"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-crcq-738g-pqvc"
+  },
+  {
+    "id": "CVE-2025-54417",
+    "title": "Craft CMS has a theoretical bypass for CVE-2025-23209",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.16.3",
+        "minVersion": "4.13.8"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.8.4",
+        "minVersion": "5.5.8"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-2vcf-qxv3-2mgw"
+  },
+  {
+    "id": "CVE-2025-46731",
+    "title": "Craft CMS Contains a Potential Remote Code Execution Vulnerability via Twig SSTI",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.14.13"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.6.15"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7c58-g782-9j38"
+  },
+  {
+    "id": "CVE-2025-35939",
+    "title": "Craft CMS stores arbitrary content provided by unauthenticated users in session files",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.7.5"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.15.3"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7vrx-9684-xrf2"
+  },
+  {
+    "id": "CVE-2025-32432",
+    "title": "Craft CMS Allows Remote Code Execution",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.9.15"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.14.15"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.6.17"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f3gw-9ww9-jmc3"
+  },
+  {
+    "id": "CVE-2025-23209",
+    "title": "Craft CMS has a potential RCE with a compromised security key",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.5.8"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.13.8"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-x684-96hh-833x"
+  },
+  {
+    "id": "CVE-2024-56145",
+    "title": "Craft CMS has potential RCE when PHP `register_argc_argv` config setting is enabled",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.5.2"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.13.2"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.9.14"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-2p6p-9rc9-62j9"
+  },
+  {
+    "id": "CVE-2024-52293",
+    "title": "Craft CMS vulnerable to Potential Remote Code Execution via missing path normalization & Twig SSTI",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.12.2"
+      },
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.4.3"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f3cw-hg6r-chfv"
+  },
+  {
+    "id": "CVE-2024-52292",
+    "title": "Craft CMS Arbitrary System File Read",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.4.9"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 4,
+        "fixedAt": "4.12.8",
+        "minVersion": "3.5.13"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-cw6g-qmjq-6w2w"
+  },
+  {
+    "id": "CVE-2024-52291",
+    "title": "Local File System Validation Bypass Leading to File Overwrite, Sensitive File Access, and Potential Code Execution",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.4.6"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.12.5"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-jrh5-vhr9-qh7q"
+  },
+  {
+    "id": "CVE-2024-45406",
+    "title": "Craft CMS vulnerable to stored XSS in breadcrumb list and title fields",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.1.2"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-28h4-788g-rh42"
+  },
+  {
+    "id": "CVE-2024-41800",
+    "title": "Craft CMS Allows TOTP Token To Stay Valid After Use",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 5,
+        "maxMajor": 5,
+        "fixedAt": "5.2.3"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-wmx7-pw49-88jx"
+  },
+  {
+    "id": "CVE-2024-21622",
+    "title": "Craft CMS Privilege Escalation",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.5.11"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.9.6"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-j5g9-j7r4-6qvx"
+  },
+  {
+    "id": "CVE-2023-41892",
+    "title": "Craft CMS Remote Code Execution vulnerability",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.15"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-4w8r-3xrw-v25g"
+  },
+  {
+    "id": "CVE-2023-40035",
+    "title": "Craft CMS vulnerable to Remote Code Execution via validatePath bypass",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.15"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.8.15"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-44wr-rmwq-3phw"
+  },
+  {
+    "id": "CVE-2023-36260",
+    "title": "Craft CMS Feed-Me",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.6.2"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-6p78-f7h9-6838"
+  },
+  {
+    "id": "CVE-2023-33197",
+    "title": "Craft CMS stored XSS in indexedVolumes",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.6"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-6qjx-787v-6pxr"
+  },
+  {
+    "id": "CVE-2023-33196",
+    "title": "Craft CMS stored XSS in review volume",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.7"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-cjmm-x9x9-m2w5"
+  },
+  {
+    "id": "CVE-2023-33195",
+    "title": "Craft CMS XSS in RSS widget feed",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.6",
+        "minVersion": "4.3.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qpgm-gjgf-8c2x"
+  },
+  {
+    "id": "CVE-2023-32679",
+    "title": "Craft CMS vulnerable to Remote Code Execution via unrestricted file extension ",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.6"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-vqxf-r9ph-cc9c"
+  },
+  {
+    "id": "CVE-2023-31144",
+    "title": "craftcms/cms vulnerable to cross site scripting in RSS feed widget",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.8.4"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.4"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-j4mx-98hw-6rv6"
+  },
+  {
+    "id": "CVE-2023-30177",
+    "title": "Cross Site Scripting in CraftCMS",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.68"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-wv7j-rc2q-9j67"
+  },
+  {
+    "id": "CVE-2023-2817",
+    "title": "Stored cross site scripting in Craft CMS",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.4.12"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7x94-jx75-3gh6"
+  },
+  {
+    "id": "CVE-2023-23927",
+    "title": "Craft CMS Stored Cross-site Scripting Injection Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.3.7"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.64",
+        "minVersion": "3.7.24"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-qcrj-6ffc-v7hq"
+  },
+  {
+    "id": "CVE-2022-37783",
+    "title": "Craft CMS discloses password hashes",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.33"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-h972-v458-m892"
+  },
+  {
+    "id": "CVE-2022-37251",
+    "title": "Craft CMS vulnerable to Cross-site Scripting via entry revisions and drafts",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.55.2",
+        "minVersion": "3.7.0"
+      },
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.2.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-mw37-wx8p-gp45"
+  },
+  {
+    "id": "CVE-2022-37250",
+    "title": "Craft CMS Stored Cross-site Scripting in User Addresses Title",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.2.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-8r89-x93x-mjq2"
+  },
+  {
+    "id": "CVE-2022-37248",
+    "title": "Craft CMS Cross site Scripting vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.2.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-wxvf-839f-jqmh"
+  },
+  {
+    "id": "CVE-2022-37247",
+    "title": "Craft CMS vulnerable to stored Cross-site Scripting via /admin/settings/fields page",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.2.1"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-3cvm-7wrh-qrf9"
+  },
+  {
+    "id": "CVE-2022-37246",
+    "title": "Craft CMS Cross-site Scripting vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 4,
+        "maxMajor": 4,
+        "fixedAt": "4.2.1"
+      },
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.51",
+        "minVersion": "3.7.39"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f546-v666-559x"
+  },
+  {
+    "id": "CVE-2022-29933",
+    "title": "Improper account password reset in Craft CMS",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.36"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-5cjr-78cq-3wrg"
+  },
+  {
+    "id": "CVE-2022-28378",
+    "title": "Cross-site Scripting in craftcms/cms",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.29"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7xj5-fwqr-5378"
+  },
+  {
+    "id": "CVE-2021-41824",
+    "title": "CSV Injection Vulnerability",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.7.14",
+        "minVersion": "3.4.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-h7vq-5qgw-jwwq"
+  },
+  {
+    "id": "CVE-2021-32470",
+    "title": "Craft CMS Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.6.13"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-h2rj-8wgg-mm43"
+  },
+  {
+    "id": "CVE-2021-27903",
+    "title": "Craft CMS Remote Code Injection",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.6.7"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-x2j7-6hxm-87p3"
+  },
+  {
+    "id": "CVE-2021-27902",
+    "title": "Craft CMS Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.6.0"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-3jxh-789f-p7m6"
+  },
+  {
+    "id": "CVE-2020-19626",
+    "title": "Craft CMS Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.1.33"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-33jj-92px-m4g7"
+  },
+  {
+    "id": "CVE-2019-17496",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.3.8"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-f3xr-q258-h7m9"
+  },
+  {
+    "id": "CVE-2019-15929",
+    "title": "Craft CMS possibility of brute force attempts",
+    "severity": "high",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.1.7"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-wvr4-w6cw-4px8"
+  },
+  {
+    "id": "CVE-2019-12823",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 3,
+        "maxMajor": 3,
+        "fixedAt": "3.1.31"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-w5q4-q7wp-qww6"
+  },
+  {
+    "id": "CVE-2017-9516",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 2,
+        "maxMajor": 2,
+        "fixedAt": "2.6.2982"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-6pvw-hh48-jx7p"
+  },
+  {
+    "id": "CVE-2017-8385",
+    "title": "Craft CMS subject to URL forgery",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 2,
+        "maxMajor": 2,
+        "fixedAt": "2.6.2976"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-j27g-r58q-624w"
+  },
+  {
+    "id": "CVE-2017-8384",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 2,
+        "maxMajor": 2,
+        "fixedAt": "2.6.2976"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-9mcw-mwxv-grwj"
+  },
+  {
+    "id": "CVE-2017-8383",
+    "title": "Craft CMS Unauthorized View",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 2,
+        "maxMajor": 2,
+        "fixedAt": "2.6.2976"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-7qq6-fgpw-xw45"
+  },
+  {
+    "id": "CVE-2017-8052",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "affects": [
+      {
+        "minMajor": 2,
+        "maxMajor": 2,
+        "fixedAt": "2.6.2974"
+      }
+    ],
+    "docsUrl": "https://github.com/advisories/GHSA-xv5f-2997-qhrq"
   }
 ]

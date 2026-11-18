@@ -309,7 +309,7 @@ export interface CveEntry {
   id: string;
   title: string;
   severity: 'high' | 'medium';
-  affects: Array<{ minMajor: number; maxMajor: number; fixedAt: string }>;
+  affects: Array<{ minMajor: number; maxMajor: number; fixedAt: string; minVersion?: string }>;
   docsUrl: string;
 }
 
@@ -330,6 +330,15 @@ function parseVersion(versionStr: string): { major: number; minor: number; patch
   };
 }
 
+function isBelow(
+  version: { major: number; minor: number; patch: number },
+  bound: { major: number; minor: number; patch: number }
+): boolean {
+  if (version.major !== bound.major) return version.major < bound.major;
+  if (version.minor !== bound.minor) return version.minor < bound.minor;
+  return version.patch < bound.patch;
+}
+
 function isVersionAffected(
   version: { major: number; minor: number; patch: number },
   affects: CveEntry['affects']
@@ -338,13 +347,9 @@ function isVersionAffected(
     if (version.major < range.minMajor || version.major > range.maxMajor) continue;
     const fixed = parseVersion(range.fixedAt);
     if (!fixed) continue;
-    if (
-      version.major < fixed.major ||
-      (version.major === fixed.major && version.minor < fixed.minor) ||
-      (version.major === fixed.major && version.minor === fixed.minor && version.patch < fixed.patch)
-    ) {
-      return true;
-    }
+    const min = range.minVersion ? parseVersion(range.minVersion) : undefined;
+    if (min && isBelow(version, min)) continue;
+    if (isBelow(version, fixed)) return true;
   }
   return false;
 }
