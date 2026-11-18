@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
+import { checkNginxImages } from './server-software';
 import { phpSupport } from '../core/eol';
 
 const MAX_DEPTH = 3;
@@ -323,6 +324,7 @@ export async function analyzePhpHardening(projectPath: string): Promise<Security
     const settings = kind === 'ini' ? parseIni(content) : parseDockerish(content);
     issues.push(...checkSettings(settings, rel));
     if (kind === 'dockerfile') issues.push(...checkDockerfile(content, rel));
+    if (kind === 'dockerfile' || kind === 'compose') issues.push(...checkNginxImages(content, rel));
   }
   return issues;
 }

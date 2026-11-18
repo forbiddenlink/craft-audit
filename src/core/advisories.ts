@@ -33,17 +33,33 @@ export interface Advisory {
 
 export const ADVISORIES_PATH = path.resolve(__dirname, '../../data/advisories.json');
 
-let cached: Advisory[] | undefined;
+/**
+ * Hand-maintained advisories for server software (nginx), kept apart from
+ * advisories.json because `update-cves` rewrites that file from Packagist data.
+ */
+export const SERVER_ADVISORIES_PATH = path.resolve(__dirname, '../../data/server-advisories.json');
+
+const cache = new Map<string, Advisory[]>();
+
+function load(file: string): Advisory[] {
+  const hit = cache.get(file);
+  if (hit) return hit;
+  let entries: Advisory[] = [];
+  try {
+    entries = JSON.parse(fs.readFileSync(file, 'utf-8')) as Advisory[];
+  } catch {
+    logger.debug(`Could not load ${path.relative(path.resolve(__dirname, '../..'), file)}`);
+  }
+  cache.set(file, entries);
+  return entries;
+}
 
 export function loadAdvisories(): Advisory[] {
-  if (cached) return cached;
-  try {
-    cached = JSON.parse(fs.readFileSync(ADVISORIES_PATH, 'utf-8')) as Advisory[];
-  } catch {
-    logger.debug('Could not load data/advisories.json');
-    cached = [];
-  }
-  return cached;
+  return load(ADVISORIES_PATH);
+}
+
+export function loadServerAdvisories(): Advisory[] {
+  return load(SERVER_ADVISORIES_PATH);
 }
 
 /** The range of `advisory` that `version` falls in, if any. */

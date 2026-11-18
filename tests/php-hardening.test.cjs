@@ -186,3 +186,15 @@ test('max depth is respected', async () => {
   const issues = await run({ 'a/b/c/d/php.ini': 'display_errors = On\n' });
   assert.deepEqual(issues, []);
 });
+
+test('nginx image tags affected by NGINX2Root are critical, fixed and unversioned tags are not', async () => {
+  const issues = await run({
+    'Dockerfile': 'FROM nginx:1.27.3-alpine AS web\nUSER nginx\n',
+    'docker/proxy.Dockerfile': 'FROM --platform=linux/amd64 docker.io/library/nginx:1.30\n',
+    'docker-compose.yml': 'services:\n  web:\n    image: "nginx:1.26"\n  ok:\n    image: nginx:1.31.9\n  floating:\n    image: nginx:alpine@sha256:abc\n',
+  });
+  const nginx = issues.filter((i) => i.ruleId === 'security/nginx-vulnerable');
+  assert.deepEqual(nginx.map((i) => `${i.file}:${i.line}`).sort(), ['Dockerfile:1', 'docker-compose.yml:3']);
+  assert.ok(nginx.every((i) => i.severity === 'critical'));
+  assert.match(nginx.find((i) => i.file === 'Dockerfile').message, /nginx:1\.27\.3-alpine.*CVE-2026-123007/);
+});
