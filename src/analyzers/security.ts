@@ -28,13 +28,17 @@ function matchesExtension(filePath: string, extensions: Set<string>): boolean {
   return extensions.has(path.extname(filePath).toLowerCase());
 }
 
+function setsTrue(content: string, setting: string): boolean {
+  return new RegExp(`['"]${setting}['"]\\s*=>\\s*true`, 'i').test(content);
+}
+
 async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
   const generalConfigPath = path.join(projectPath, 'config', 'general.php');
   const content = await safeReadFile(generalConfigPath);
   if (!content) return issues;
 
-  if (/['"]devMode['"]\s*=>\s*true/i.test(content)) {
+  if (setsTrue(content, 'devMode')) {
     issues.push({
       severity: 'high',
       category: 'security',
@@ -49,7 +53,7 @@ async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> 
     });
   }
 
-  if (/['"]allowAdminChanges['"]\s*=>\s*true/i.test(content)) {
+  if (setsTrue(content, 'allowAdminChanges')) {
     issues.push({
       severity: 'medium',
       category: 'security',
