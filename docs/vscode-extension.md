@@ -197,28 +197,6 @@ Click the status bar item to re-scan the current file.
 
 4. Verify your project has a `templates/` directory or configure `templates` in config.
 
-### PHP Errors in Output
-
-**Symptom:** PHP errors in the Craft Audit output channel
-
-**Solutions:**
-
-1. Ensure PHP 8.0+ is in your PATH:
-   ```bash
-   php --version
-   ```
-
-2. If using a version manager (Herd, Valet), ensure VS Code inherits the correct PATH.
-
-3. Add PHP to VS Code's terminal profile:
-   ```json
-   {
-     "terminal.integrated.env.osx": {
-       "PATH": "/path/to/php/bin:${env:PATH}"
-     }
-   }
-   ```
-
 ### Extension Not Activating
 
 The extension activates when:

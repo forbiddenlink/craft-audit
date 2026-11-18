@@ -2,75 +2,6 @@
 
 Common issues and their solutions.
 
-## PHP Not Found
-
-### Symptom
-
-```
-Error: PHP is not installed or not in PATH
-```
-
-Or template analysis silently fails.
-
-### Solutions
-
-**1. Verify PHP is installed:**
-
-```bash
-php --version
-```
-
-Should output PHP 8.0 or higher.
-
-**2. Install PHP:**
-
-macOS (Homebrew):
-```bash
-brew install php
-```
-
-Ubuntu/Debian:
-```bash
-sudo apt install php8.2-cli
-```
-
-Windows:
-- Install from [windows.php.net](https://windows.php.net/download/)
-- Or use [XAMPP](https://www.apachefriends.org/)
-
-**3. Add PHP to PATH:**
-
-If PHP is installed but not in PATH, add it:
-
-```bash
-# Add to ~/.zshrc or ~/.bashrc
-export PATH="/usr/local/opt/php/bin:$PATH"
-```
-
-**4. Using Herd or Valet:**
-
-Ensure the correct PHP version is linked:
-
-```bash
-# Herd
-herd link php@8.2
-
-# Valet
-valet use php@8.2
-```
-
-**5. VS Code PATH issues:**
-
-VS Code may not inherit your shell's PATH. Add to settings:
-
-```json
-{
-  "terminal.integrated.env.osx": {
-    "PATH": "/opt/homebrew/bin:${env:PATH}"
-  }
-}
-```
-
 ## Timeout Errors
 
 ### Symptom
@@ -373,30 +304,6 @@ But you know there are templates.
    ```
 
 3. Check file extensions (must be `.twig` or `.html.twig`)
-
-### PHP Parse Errors
-
-**Symptom:**
-```
-Template analyzer failed; template findings may be incomplete.
-```
-
-**Solutions:**
-
-1. Check PHP version:
-   ```bash
-   php --version
-   ```
-
-2. Check for syntax errors in templates:
-   ```bash
-   php -l templates/problem-file.twig
-   ```
-
-3. Run with verbose:
-   ```bash
-   craft-audit audit . --verbose --log-level debug
-   ```
 
 ### False Positives
 

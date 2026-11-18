@@ -1,31 +1,10 @@
-import { execFile } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { promisify } from 'node:util';
 
-import { TemplateIssue, Fix } from '../types';
+import { TemplateIssue } from '../types';
 import { AnalysisCache } from '../core/cache.js';
 import { logger } from '../core/logger.js';
-
-const execFileAsync = promisify(execFile);
-
-interface PhpTemplateIssue {
-  severity: 'high' | 'medium' | 'low' | 'info';
-  category: 'template';
-  pattern?: string;
-  file?: string;
-  line?: number;
-  message: string;
-  suggestion?: string;
-  code?: string;
-  fix?: Fix;
-}
-
-interface PhpTemplateAnalyzerResponse {
-  success: boolean;
-  issueCount: number;
-  issues: PhpTemplateIssue[];
-}
+import { analyzeTemplateSource, type RawTemplateIssue } from './twig-rules';
 
 const RULE_ID_BY_PATTERN: Record<string, string> = {
   'n+1': 'template/n-plus-one-loop',
@@ -95,7 +74,7 @@ const KNOWN_PATTERNS = new Set([
 function normalizePattern(pattern?: string): TemplateIssue['pattern'] {
   if (pattern && KNOWN_PATTERNS.has(pattern)) return pattern as TemplateIssue['pattern'];
   if (pattern) {
-    logger.warn(`Unknown template pattern "${pattern}" from PHP analyzer; mapping to "inefficient-query".`);
+    logger.warn(`Unknown template pattern "${pattern}" from template analyzer; mapping to "inefficient-query".`);
   }
   return 'inefficient-query';
 }
@@ -125,7 +104,7 @@ function confidenceForPattern(pattern: TemplateIssue['pattern']): number {
   return CONFIDENCE_BY_PATTERN[pattern] ?? 0.65;
 }
 
-function toTemplateIssue(issue: PhpTemplateIssue): TemplateIssue {
+function toTemplateIssue(issue: RawTemplateIssue): TemplateIssue {
   const pattern = normalizePattern(issue.pattern);
   const ruleId = RULE_ID_BY_PATTERN[pattern] ?? 'template/unknown';
   const fingerprint = `${ruleId}:${issue.file ?? ''}:${issue.line ?? 0}:${issue.message}`;
@@ -145,30 +124,6 @@ function toTemplateIssue(issue: PhpTemplateIssue): TemplateIssue {
     evidence: issue.code ? { snippet: issue.code } : undefined,
     fingerprint,
     fix: issue.fix,
-  };
-}
-
-function parseResponse(stdout: string): PhpTemplateAnalyzerResponse {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(stdout);
-  } catch {
-    throw new Error('Template analyzer returned invalid JSON output.');
-  }
-
-  if (!parsed || typeof parsed !== 'object') {
-    throw new Error('Template analyzer returned an unexpected response.');
-  }
-
-  const candidate = parsed as Partial<PhpTemplateAnalyzerResponse>;
-  if (!Array.isArray(candidate.issues)) {
-    throw new Error('Template analyzer response did not include issues[]');
-  }
-
-  return {
-    success: Boolean(candidate.success),
-    issueCount: Number(candidate.issueCount ?? candidate.issues.length),
-    issues: candidate.issues as PhpTemplateIssue[],
   };
 }
 
@@ -196,89 +151,31 @@ export async function analyzeTwigTemplates(
   verbose = false,
   cache?: AnalysisCache
 ): Promise<TemplateIssue[]> {
-  const phpScriptPath = path.resolve(__dirname, '../../php/analyze-templates.php');
-
   if (!fs.existsSync(templatesPath)) {
     throw new Error(`Templates path not found: ${templatesPath}`);
   }
 
-  if (!fs.existsSync(phpScriptPath)) {
-    throw new Error(`PHP analyzer not found: ${phpScriptPath}`);
+  const issues: TemplateIssue[] = [];
+  for (const filePath of findTemplateFiles(templatesPath)) {
+    const content = fs.readFileSync(filePath, 'utf8');
+    const cached = cache?.get(filePath, content);
+    if (cached) {
+      issues.push(...(cached as TemplateIssue[]));
+      continue;
+    }
+
+    const relativePath = path.relative(templatesPath, filePath).split(path.sep).join('/');
+    let fileIssues: TemplateIssue[];
+    try {
+      fileIssues = analyzeTemplateSource(content, relativePath).map(toTemplateIssue);
+    } catch (error) {
+      // One unreadable template must not hide findings in the rest.
+      if (verbose) logger.warn(`Skipped ${relativePath}: ${(error as Error).message}`);
+      continue;
+    }
+    cache?.set(filePath, content, fileIssues);
+    issues.push(...fileIssues);
   }
 
-  // Check cache for all template files; if every file is a hit, skip PHP entirely
-  if (cache) {
-    const templateFiles = findTemplateFiles(templatesPath);
-    const cachedIssues: TemplateIssue[] = [];
-    let allCached = true;
-
-    for (const filePath of templateFiles) {
-      const content = fs.readFileSync(filePath, 'utf8');
-      const cached = cache.get(filePath, content);
-      if (cached) {
-        cachedIssues.push(...(cached as TemplateIssue[]));
-      } else {
-        allCached = false;
-      }
-    }
-
-    if (allCached && templateFiles.length > 0) {
-      return cachedIssues;
-    }
-  }
-
-  try {
-    const { stdout, stderr } = await execFileAsync('php', [phpScriptPath, templatesPath], {
-      maxBuffer: 10 * 1024 * 1024,
-      timeout: 30_000,
-    });
-
-    if (verbose && stderr.trim().length > 0) {
-      process.stderr.write(`${stderr}\n`);
-    }
-
-    const response = parseResponse(stdout);
-    const issues = response.issues.map(toTemplateIssue);
-
-    // Store results per file in the cache
-    if (cache) {
-      const templateFiles = findTemplateFiles(templatesPath);
-      // Issues use relative paths from PHP; resolve them to absolute for cache key matching
-      const issuesByAbsPath = new Map<string, TemplateIssue[]>();
-      for (const issue of issues) {
-        if (issue.file) {
-          const absPath = path.resolve(templatesPath, issue.file);
-          const existing = issuesByAbsPath.get(absPath) ?? [];
-          existing.push(issue);
-          issuesByAbsPath.set(absPath, existing);
-        }
-      }
-      for (const filePath of templateFiles) {
-        const content = fs.readFileSync(filePath, 'utf8');
-        cache.set(filePath, content, issuesByAbsPath.get(filePath) ?? []);
-      }
-    }
-
-    return issues;
-  } catch (error) {
-    const err = error as Error & { code?: string; stderr?: string; stdout?: string };
-
-    if (err.code === 'ENOENT') {
-      throw new Error('PHP runtime not found. Install PHP to run template analysis.', { cause: error });
-    }
-
-    if (err.stdout) {
-      const response = parseResponse(err.stdout);
-      return response.issues.map(toTemplateIssue);
-    }
-
-    const rawDetails = [err.stderr, err.message].filter(Boolean).join('\n').trim();
-    const summary = rawDetails.split('\n')[0] || 'unknown PHP execution error';
-
-    if (verbose && rawDetails.length > 0) {
-      process.stderr.write(`${rawDetails}\n`);
-    }
-
-    throw new Error(`Template analysis failed: ${summary}`, { cause: error });
-  }
+  return issues;
 }

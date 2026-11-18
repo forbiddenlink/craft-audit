@@ -5,7 +5,7 @@
  * "missing-limit") inside `{# craft-audit-disable-next-line … #}` comments.
  * This module provides a single-source-of-truth mapping between the canonical
  * rule IDs used throughout the TypeScript codebase and the short tags expected
- * by the PHP analyzer.
+ * by the template analyzer.
  */
 
 /**

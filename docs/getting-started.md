@@ -8,14 +8,12 @@ Before installing, ensure you have:
 
 - **Node.js 18+** (LTS recommended)
 - **npm 9+** (included with Node.js)
-- **PHP 8.0+** (for template analysis)
 - A Craft CMS project to audit
 
 Verify your environment:
 
 ```bash
 node --version   # Should print v18.x.x or higher
-php --version    # Should print 8.x.x or higher
 ```
 
 ## Installation

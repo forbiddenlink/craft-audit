@@ -85,9 +85,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: PHP availability check
-        run: php -v
-
       - name: Generate SARIF smoke output
         run: |
           tmpdir="$(mktemp -d)"

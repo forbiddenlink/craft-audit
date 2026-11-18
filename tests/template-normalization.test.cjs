@@ -1,22 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { execFileSync } = require('node:child_process');
 const path = require('node:path');
 
 const { analyzeTwigTemplates } = require('../dist/analyzers/twig');
 
 const FIXTURES_DIR = path.resolve(__dirname, 'fixtures/templates');
 
-function hasPhpRuntime() {
-  try {
-    execFileSync('php', ['-v'], { stdio: 'ignore' });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-test('normalizes PHP template findings with stable metadata', { skip: !hasPhpRuntime() }, async () => {
+test('normalizes template findings with stable metadata', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   assert.ok(issues.length > 0, 'expected issues from fixture templates');
 
@@ -29,7 +19,7 @@ test('normalizes PHP template findings with stable metadata', { skip: !hasPhpRun
   }
 });
 
-test('maps known patterns to expected rule IDs', { skip: !hasPhpRuntime() }, async () => {
+test('maps known patterns to expected rule IDs', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
 
   const ruleIds = new Set(issues.map((issue) => issue.ruleId));
@@ -38,7 +28,7 @@ test('maps known patterns to expected rule IDs', { skip: !hasPhpRuntime() }, asy
   assert.ok(ruleIds.has('template/deprecated-api'));
 });
 
-test('detects query-variable loop patterns', { skip: !hasPhpRuntime() }, async () => {
+test('detects query-variable loop patterns', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const variableQueryIssue = issues.find(
     (issue) =>
@@ -50,7 +40,7 @@ test('detects query-variable loop patterns', { skip: !hasPhpRuntime() }, async (
   assert.ok(variableQueryIssue, 'expected missing-limit issue on query variable assignment line');
 });
 
-test('dedupes repeated n+1 access on the same loop relation', { skip: !hasPhpRuntime() }, async () => {
+test('dedupes repeated n+1 access on the same loop relation', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const duplicates = issues.filter(
     (issue) =>
@@ -61,7 +51,7 @@ test('dedupes repeated n+1 access on the same loop relation', { skip: !hasPhpRun
   assert.equal(duplicates.length, 1, 'expected one deduped n+1 finding for repeated relation calls');
 });
 
-test('does not flag missing-limit for constrained relatedTo query loops', { skip: !hasPhpRuntime() }, async () => {
+test('does not flag missing-limit for constrained relatedTo query loops', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const constrained = issues.find(
     (issue) =>
@@ -71,7 +61,7 @@ test('does not flag missing-limit for constrained relatedTo query loops', { skip
   assert.equal(constrained, undefined);
 });
 
-test('tracks chained query assignments before loop analysis', { skip: !hasPhpRuntime() }, async () => {
+test('tracks chained query assignments before loop analysis', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const chained = issues.find(
     (issue) =>
@@ -81,7 +71,7 @@ test('tracks chained query assignments before loop analysis', { skip: !hasPhpRun
   assert.equal(chained, undefined);
 });
 
-test('detects mixed .with() and .eagerly() loading strategies', { skip: !hasPhpRuntime() }, async () => {
+test('detects mixed .with() and .eagerly() loading strategies', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const mixedStrategy = issues.find(
     (issue) =>
@@ -92,7 +82,7 @@ test('detects mixed .with() and .eagerly() loading strategies', { skip: !hasPhpR
   assert.equal(mixedStrategy.severity, 'info');
 });
 
-test('suppresses issues with craft-audit-disable-next-line comment', { skip: !hasPhpRuntime() }, async () => {
+test('suppresses issues with craft-audit-disable-next-line comment', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const suppressionIssues = issues.filter((issue) => issue.file === 'suppression.twig');
 
@@ -121,7 +111,7 @@ test('suppresses issues with craft-audit-disable-next-line comment', { skip: !ha
   assert.equal(suppressedLimit, undefined, 'missing-limit with suppression should be suppressed');
 });
 
-test('detects XSS risk with |raw filter on request params (high severity)', { skip: !hasPhpRuntime() }, async () => {
+test('detects XSS risk with |raw filter on request params (high severity)', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
 
@@ -140,7 +130,7 @@ test('detects XSS risk with |raw filter on request params (high severity)', { sk
   assert.equal(deprecatedRequestRaw.severity, 'high');
 });
 
-test('detects XSS risk with |raw filter on variables (medium severity)', { skip: !hasPhpRuntime() }, async () => {
+test('detects XSS risk with |raw filter on variables (medium severity)', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
 
@@ -158,7 +148,7 @@ test('detects XSS risk with |raw filter on variables (medium severity)', { skip:
   assert.ok(anotherVariable, 'should detect unsuppressed |raw usage');
 });
 
-test('skips |raw when preceded by |purify', { skip: !hasPhpRuntime() }, async () => {
+test('skips |raw when preceded by |purify', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
 
@@ -169,7 +159,7 @@ test('skips |raw when preceded by |purify', { skip: !hasPhpRuntime() }, async ()
   assert.equal(purifiedRaw, undefined, '|purify|raw should not be flagged as XSS risk');
 });
 
-test('suppresses XSS issues with disable comment', { skip: !hasPhpRuntime() }, async () => {
+test('suppresses XSS issues with disable comment', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const xssIssues = issues.filter((issue) => issue.file === 'xss-raw.twig');
 
@@ -181,7 +171,7 @@ test('suppresses XSS issues with disable comment', { skip: !hasPhpRuntime() }, a
   assert.equal(suppressedIssues.length, 0, 'XSS issues with disable comment should be suppressed');
 });
 
-test('detects SSTI patterns (dynamic includes and template_from_string)', { skip: !hasPhpRuntime() }, async () => {
+test('detects SSTI patterns (dynamic includes and template_from_string)', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const sstiIssues = issues.filter((issue) => issue.file === 'ssti.twig');
 
@@ -211,7 +201,7 @@ test('detects SSTI patterns (dynamic includes and template_from_string)', { skip
   assert.equal(staticIncludes.length, 0, 'static includes should not be flagged');
 });
 
-test('suppresses SSTI issues with disable comment', { skip: !hasPhpRuntime() }, async () => {
+test('suppresses SSTI issues with disable comment', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const sstiIssues = issues.filter((issue) => issue.file === 'ssti.twig');
 
@@ -223,7 +213,7 @@ test('suppresses SSTI issues with disable comment', { skip: !hasPhpRuntime() }, 
   assert.equal(suppressedIssues.length, 0, 'SSTI issues with disable comment should be suppressed');
 });
 
-test('detects missing .status() filter on .all() queries', { skip: !hasPhpRuntime() }, async () => {
+test('detects missing .status() filter on .all() queries', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const statusIssues = issues.filter((issue) => issue.file === 'status-filter.twig');
 
@@ -247,7 +237,7 @@ test('detects missing .status() filter on .all() queries', { skip: !hasPhpRuntim
   assert.equal(suppressed.length, 0, 'suppressed missing-status-filter should not be flagged');
 });
 
-test('detects template injection payloads, open redirects and raw SQL', { skip: !hasPhpRuntime() }, async () => {
+test('detects template injection payloads, open redirects and raw SQL', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const found = issues
     .filter((issue) => issue.file === 'twig-injection.twig')
@@ -261,7 +251,7 @@ test('detects template injection payloads, open redirects and raw SQL', { skip: 
   ]);
 });
 
-test('flags only POST forms without csrfInput, including multi-line form tags', { skip: !hasPhpRuntime() }, async () => {
+test('flags only POST forms without csrfInput, including multi-line form tags', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const lines = issues
     .filter((issue) => issue.file === 'csrf-forms.twig' && issue.ruleId === 'template/form-missing-csrf')
@@ -270,7 +260,7 @@ test('flags only POST forms without csrfInput, including multi-line form tags', 
   assert.deepEqual(lines, [4, 12]);
 });
 
-test('does not report asset getUrl() as deprecated', { skip: !hasPhpRuntime() }, async () => {
+test('does not report asset getUrl() as deprecated', async () => {
   const issues = await analyzeTwigTemplates(FIXTURES_DIR);
   const getUrl = issues.filter(
     (issue) => issue.ruleId === 'template/deprecated-api' && /getUrl/.test(issue.message ?? '')

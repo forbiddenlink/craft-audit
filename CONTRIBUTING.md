@@ -92,7 +92,6 @@ data/                       # External data files
 └── advisories.json         #   Core, plugin and dependency advisories
 
 examples/rules/             # Example custom rules
-php/                        # PHP helper for template analysis
 tests/                      # Test files (*.test.cjs)
 ```
 
