@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
+import { phpSupport } from '../core/eol';
 
 const MAX_DEPTH = 3;
 const SKIP_DIRS = new Set(['vendor', 'node_modules', '.git']);
@@ -248,7 +249,7 @@ function checkDockerfile(content: string, file: string): SecurityIssue[] {
       if (img && !eol) {
         const major = Number(img[1]);
         const minor = Number(img[2]);
-        if (major < 8 || (major === 8 && minor <= 1)) eol = { version: `${major}.${minor}`, line: i + 1 };
+        if (phpSupport(major, minor).state === 'eol') eol = { version: `${major}.${minor}`, line: i + 1 };
       }
       return;
     }

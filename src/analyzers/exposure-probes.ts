@@ -8,6 +8,7 @@
  */
 import { SecurityIssue } from '../types';
 import { logger } from '../core/logger.js';
+import { phpSupport } from '../core/eol';
 
 export type ProbeFetch = (
   url: string,
@@ -272,7 +273,8 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
       const major = parseInt(php[1], 10);
       const minor = parseInt(php[2], 10);
       const version = `${major}.${minor}`;
-      if (major < 8 || (major === 8 && minor <= 1)) {
+      const support = phpSupport(major, minor);
+      if (support.state === 'eol') {
         issues.push(
           issue(siteUrl, PATHS.home, {
             severity: 'high',
@@ -281,13 +283,13 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
             suggestion: 'Upgrade to a supported PHP version (8.3 or newer) after checking Craft and plugin compatibility.',
           })
         );
-      } else if (major === 8 && minor === 2) {
+      } else if (support.state === 'ending-soon') {
         issues.push(
           issue(siteUrl, PATHS.home, {
             severity: 'medium',
             ruleId: 'security/php-eol-soon',
-            message: 'The live site runs PHP 8.2, whose security support ends 2026-12-31.',
-            suggestion: 'Plan an upgrade to PHP 8.3 or newer before security support ends.',
+            message: `The live site runs PHP ${version}, whose security support ends ${support.endsOn}.`,
+            suggestion: 'Plan an upgrade to a newer PHP version before security support ends.',
           })
         );
       }
