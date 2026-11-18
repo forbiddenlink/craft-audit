@@ -28,8 +28,63 @@ function matchesExtension(filePath: string, extensions: Set<string>): boolean {
   return extensions.has(path.extname(filePath).toLowerCase());
 }
 
+/** Multi-environment config keys whose settings never reach production. */
+const NON_PRODUCTION_ENVS = new Set(['dev', 'development', 'local', 'test', 'testing']);
+
+/**
+ * Array keys that open each bracket enclosing `index`, outermost first (null entries are
+ * unkeyed brackets). Returns null when `index` sits inside a comment or string literal.
+ */
+function enclosingKeys(content: string, index: number): Array<string | null> | null {
+  const stack: Array<string | null> = [];
+  let i = 0;
+  while (i < index) {
+    const ch = content[i];
+    if (ch === "'" || ch === '"') {
+      let j = i + 1;
+      while (j < content.length && content[j] !== ch) j += content[j] === '\\' ? 2 : 1;
+      i = j + 1;
+      if (i > index) return null;
+      continue;
+    }
+    if ((ch === '/' && content[i + 1] === '/') || (ch === '#' && content[i + 1] !== '[')) {
+      const nl = content.indexOf('\n', i);
+      i = nl === -1 ? content.length : nl;
+      if (i > index) return null;
+      continue;
+    }
+    if (ch === '/' && content[i + 1] === '*') {
+      const end = content.indexOf('*/', i + 2);
+      i = end === -1 ? content.length : end + 2;
+      if (i > index) return null;
+      continue;
+    }
+    if (ch === '[' || ch === '(') {
+      const key = /(['"])([^'"]*)\1\s*=>\s*$/.exec(content.slice(Math.max(0, i - 200), i));
+      stack.push(key ? key[2] : null);
+    } else if (ch === ']' || ch === ')') {
+      stack.pop();
+    }
+    i += 1;
+  }
+  return stack;
+}
+
+/**
+ * True when general.php turns `setting` on for production: `'setting' => true` in an array
+ * config, or `->setting()` / `->setting(true)` in a fluent GeneralConfig (the setter defaults
+ * to true). Values under a dev/local/test key of a multi-environment config are ignored.
+ */
 function setsTrue(content: string, setting: string): boolean {
-  return new RegExp(`['"]${setting}['"]\\s*=>\\s*true`, 'i').test(content);
+  const pattern = new RegExp(
+    `['"]${setting}['"]\\s*=>\\s*true\\b|->${setting}\\(\\s*(?:true\\s*)?\\)`,
+    'gi'
+  );
+  for (const match of content.matchAll(pattern)) {
+    const keys = enclosingKeys(content, match.index ?? 0);
+    if (keys && !keys.some((key) => key !== null && NON_PRODUCTION_ENVS.has(key.toLowerCase()))) return true;
+  }
+  return false;
 }
 
 async function scanGeneralConfig(projectPath: string): Promise<SecurityIssue[]> {
