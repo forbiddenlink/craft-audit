@@ -232,10 +232,17 @@ function checkSettings(settings: Settings, file: string): SecurityIssue[] {
   return issues;
 }
 
+/** PHP base images and the capture group order (major, minor) of their version tag. */
+const PHP_BASE_IMAGE = /^(?:docker\.io\/)?(?:(?:library\/)?php|craftcms\/(?:nginx|php-fpm|cli)):(\d+)\.(\d+)/i;
+
+/** Base images whose own Dockerfile ends with an unprivileged USER, which a child stage inherits. */
+const NON_ROOT_BASE_IMAGE = /^(?:docker\.io\/)?craftcms\/(?:nginx|php-fpm|cli):/i;
+
 function checkDockerfile(content: string, file: string): SecurityIssue[] {
   const issues: SecurityIssue[] = [];
   const lines = content.split(/\r?\n/);
   let lastFromLine = 0;
+  let lastFromImage = '';
   let lastUser: { name: string; line: number } | null = null;
   let eol: { version: string; line: number } | null = null;
 
@@ -244,8 +251,9 @@ function checkDockerfile(content: string, file: string): SecurityIssue[] {
     const from = /^FROM\s+(?:--\S+\s+)*(\S+)/i.exec(t);
     if (from) {
       lastFromLine = i + 1;
+      lastFromImage = from[1];
       lastUser = null;
-      const img = /^(?:docker\.io\/library\/|library\/)?php:(\d+)\.(\d+)/i.exec(from[1]);
+      const img = PHP_BASE_IMAGE.exec(from[1]);
       if (img && !eol) {
         const major = Number(img[1]);
         const minor = Number(img[2]);
@@ -273,7 +281,7 @@ function checkDockerfile(content: string, file: string): SecurityIssue[] {
 
   if (lastFromLine > 0) {
     const u = lastUser as { name: string; line: number } | null;
-    if (!u) {
+    if (!u && !NON_ROOT_BASE_IMAGE.test(lastFromImage)) {
       issues.push(
         issue(
           'low',
@@ -284,7 +292,7 @@ function checkDockerfile(content: string, file: string): SecurityIssue[] {
           'Add a USER instruction (for example USER www-data) in the final stage.',
         ),
       );
-    } else if (u.name.toLowerCase() === 'root' || u.name === '0') {
+    } else if (u && (u.name.toLowerCase() === 'root' || u.name === '0')) {
       issues.push(
         issue(
           'low',
