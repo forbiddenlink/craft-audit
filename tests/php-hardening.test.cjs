@@ -105,6 +105,18 @@ test('EOL php image is high, 8.2+ is not flagged', async () => {
   assert.deepEqual(await run({ Dockerfile: 'FROM php:8.10-fpm\nUSER www-data\n' }), []);
 });
 
+test('Craft official images: EOL tags are flagged and their non-root default USER is inherited', async () => {
+  const eol = await run({ Dockerfile: 'FROM craftcms/nginx:8.0\n' });
+  assert.deepEqual(ids(eol), ['security/docker-php-eol-image']);
+  assert.deepEqual(ids(await run({ Dockerfile: 'FROM craftcms/php-fpm:7.4-dev\n' })), [
+    'security/docker-php-eol-image',
+  ]);
+  assert.deepEqual(await run({ Dockerfile: 'FROM composer:2 AS vendor\nFROM craftcms/nginx:8.2\n' }), []);
+  assert.deepEqual(ids(await run({ Dockerfile: 'FROM craftcms/nginx:8.2\nUSER root\n' })), [
+    'security/docker-runs-as-root',
+  ]);
+});
+
 test('Dockerfile settings via echo into php.ini and -d', async () => {
   const df = [
     'FROM php:8.3-fpm',

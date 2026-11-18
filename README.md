@@ -279,7 +279,6 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/security-key-committed` | Security key committed to git |
 | `security/security-key-in-git-history` | Security key found in git history |
 | `security/security-key-reused` | Security key shared between environments |
-| `security/version-disclosure` | Software version disclosure |
 
 ### System Rules
 

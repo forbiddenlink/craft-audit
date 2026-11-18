@@ -32,6 +32,61 @@ test('security analyzer detects risky production config', async () => {
   assert.ok(ruleIds.has('security/debug-output-pattern'));
 });
 
+async function generalConfigRules(generalPhp) {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-general-'));
+  fs.mkdirSync(path.join(tempRoot, 'config'), { recursive: true });
+  fs.writeFileSync(path.join(tempRoot, 'config', 'general.php'), generalPhp, 'utf8');
+  const issues = await collectSecurityIssues(tempRoot);
+  return issues
+    .map((issue) => issue.ruleId)
+    .filter((id) => id === 'security/dev-mode-enabled' || id === 'security/admin-changes-enabled')
+    .sort();
+}
+
+test('devMode and allowAdminChanges under a dev-only environment key are not reported', async () => {
+  const rules = await generalConfigRules(`<?php
+return [
+    '*' => [
+        'enableCsrfProtection' => true, // ['devMode' => true] in a comment
+    ],
+    'dev' => [
+        'devMode' => true,
+        'allowAdminChanges' => true,
+    ],
+    'local' => ['devMode' => true],
+];`);
+  assert.deepEqual(rules, []);
+});
+
+test('devMode and allowAdminChanges under the wildcard or production key are reported', async () => {
+  const rules = await generalConfigRules(`<?php
+return [
+    '*' => ['allowAdminChanges' => true],
+    'dev' => ['devMode' => true],
+    'production' => ['devMode' => true],
+];`);
+  assert.deepEqual(rules, ['security/admin-changes-enabled', 'security/dev-mode-enabled']);
+});
+
+test('fluent GeneralConfig setters that default to true are reported', async () => {
+  const rules = await generalConfigRules(`<?php
+use craft\\config\\GeneralConfig;
+return GeneralConfig::create()
+    ->devMode()
+    ->allowAdminChanges(true)
+    ->omitScriptNameInUrls();`);
+  assert.deepEqual(rules, ['security/admin-changes-enabled', 'security/dev-mode-enabled']);
+});
+
+test('fluent GeneralConfig reading devMode from the environment is not reported', async () => {
+  const rules = await generalConfigRules(`<?php
+use craft\\helpers\\App;
+return GeneralConfig::create()
+    ->devMode(App::env('CRAFT_DEV_MODE') ?? false)
+    ->allowAdminChanges(false);`);
+  assert.deepEqual(rules, []);
+});
+
 test('security analyzer reports scan truncation when file cap is hit', async () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-security-cap-'));
   for (let i = 0; i < 3; i += 1) {

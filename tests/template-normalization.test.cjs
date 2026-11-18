@@ -260,3 +260,20 @@ test('detects template injection payloads, open redirects and raw SQL', { skip: 
     '8:security/raw-sql-in-template:medium',
   ]);
 });
+
+test('flags only POST forms without csrfInput, including multi-line form tags', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const lines = issues
+    .filter((issue) => issue.file === 'csrf-forms.twig' && issue.ruleId === 'template/form-missing-csrf')
+    .map((issue) => issue.line)
+    .sort((a, b) => a - b);
+  assert.deepEqual(lines, [4, 12]);
+});
+
+test('does not report asset getUrl() as deprecated', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const getUrl = issues.filter(
+    (issue) => issue.ruleId === 'template/deprecated-api' && /getUrl/.test(issue.message ?? '')
+  );
+  assert.deepEqual(getUrl, []);
+});

@@ -505,11 +505,6 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'The control panel responds at the default /admin path.',
     helpUri: 'https://craftcms.com/docs/5.x/reference/config/general.html#cptrigger',
   },
-  'security/version-disclosure': {
-    title: 'Software version disclosure',
-    description: 'The X-Powered-By header reveals Craft CMS or the PHP version.',
-    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
-  },
   'security/php-eol-live': {
     title: 'Live site runs end-of-life PHP',
     description: 'The site reports a PHP version that no longer receives security fixes.',
@@ -1159,12 +1154,6 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     severity: 'info',
     category: 'security',
     fixGuidance: 'Restrict the control panel by IP, or set a non-default cpTrigger.',
-  },
-  'security/version-disclosure': {
-    ...RULE_METADATA['security/version-disclosure'],
-    severity: 'low',
-    category: 'security',
-    fixGuidance: 'Set sendPoweredByHeader to false and expose_php = Off.',
   },
   'security/php-eol-live': {
     ...RULE_METADATA['security/php-eol-live'],

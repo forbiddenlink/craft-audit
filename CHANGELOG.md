@@ -50,6 +50,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - README now clarifies Node.js 18+ required, 22+ recommended
 
 ### Fixed
+- False positives found by auditing Craft's public demo projects: GET forms and forms without a `method` are no longer flagged for a missing CSRF token, multi-line `<form>` tags are read whole, `asset.getUrl()` is no longer reported as deprecated, and `devMode` or `allowAdminChanges` set only under a `dev`, `local` or `test` environment key no longer counts as enabled.
+- Fluent `GeneralConfig::create()->devMode()` and `->allowAdminChanges()` are now detected. Both default to `true` when called with no argument.
+- Craft's official images (`craftcms/nginx`, `craftcms/php-fpm`, `craftcms/cli`) are checked for an end-of-life PHP tag, and a child image that inherits their `www-data` user is not reported as running as root.
+- The reported PHP version comes from the project (DDEV config, `.php-version`, the Dockerfile or compose base image, then composer), not from the PHP installed on the machine running the audit.
+- The live probe recognizes an exposed `composer.lock` larger than its 64 KB read cap. Real lock files are hundreds of KB and were missed.
+- `X-Powered-By` is reported once, as `security/x-powered-by-exposed`. The probe's duplicate `security/version-disclosure` rule is removed.
 - `update-cves` queried the GitHub advisories API with `package=`, which the API ignores, and could overwrite the data with unrelated advisories. It now uses `affects=` and refuses a refresh that drops the core entries or more than half the file.
 - The composer validate check passed `--format=json`, which `composer validate` does not accept, so it never reported anything. It now reads Composer's text output.
 - VS Code `analyzeWorkspace` variable shadowing bug in runner.ts

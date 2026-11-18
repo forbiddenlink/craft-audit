@@ -187,17 +187,6 @@ $DEPRECATED_PATTERNS = [
         'fix' => null, // No safe auto-fix available
     ],
     [
-        'pattern' => '/getUrl\(\)/',
-        'message' => 'getUrl() is deprecated for assets',
-        'suggestion' => 'Use .url property instead',
-        'fix' => [
-            'safe' => true,
-            'search' => '.getUrl()',
-            'replacement' => '.url',
-            'description' => 'Replace with .url property',
-        ],
-    ],
-    [
         'pattern' => '/craft\.config\./',
         'message' => 'craft.config is deprecated',
         'suggestion' => 'Use craft.app.config.general instead',
@@ -301,6 +290,8 @@ function analyzeFile(string $filePath, string $basePath): array {
     $formStartCode = '';
     $hasCsrfInput = false;
     $isGetForm = false;
+    $formOpenTag = '';
+    $formTagClosed = false;
 
     foreach ($lines as $lineNum => $line) {
         $lineNumber = $lineNum + 1;
@@ -680,7 +671,18 @@ function analyzeFile(string $filePath, string $basePath): array {
             $formStartLine = $lineNumber;
             $formStartCode = trim($line);
             $hasCsrfInput = false;
-            $isGetForm = (bool) preg_match('/method\s*=\s*["\']?\s*get\b/i', $line);
+            $formOpenTag = substr($line, stripos($line, '<form'));
+            $formTagClosed = strpos($formOpenTag, '>') !== false;
+        } elseif ($inFormTag && !$formTagClosed) {
+            $formOpenTag .= ' ' . $line;
+            $formTagClosed = strpos($line, '>') !== false;
+        }
+
+        // A form without a method attribute submits with GET, which needs no CSRF token.
+        if ($inFormTag) {
+            $isGetForm = $formTagClosed
+                && (preg_match('/method\s*=\s*["\']?\s*get\b/i', $formOpenTag)
+                    || !preg_match('/\bmethod\s*=/i', $formOpenTag));
         }
 
         if ($inFormTag && strpos($line, 'csrfInput()') !== false) {

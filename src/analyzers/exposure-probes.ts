@@ -178,13 +178,10 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
   for (const p of [PATHS.composerLock, PATHS.composerJson]) {
     const res = ok(p);
     if (!res) continue;
-    try {
-      const parsed: unknown = JSON.parse(res.body);
-      if (parsed && typeof parsed === 'object' && ('packages' in parsed || 'require' in parsed)) {
-        composerHits.push(p);
-      }
-    } catch {
-      // not JSON
+    // The body is capped at MAX_BODY_BYTES and a real composer.lock is far larger, so match the
+    // opening of the document instead of parsing it whole.
+    if (/^\s*\{[\s\S]*?"(?:packages|require|content-hash)"\s*:/.test(res.body)) {
+      composerHits.push(p);
     }
   }
   if (composerHits.length > 0) {
@@ -253,22 +250,12 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
     }
   }
 
-  // 8. version disclosure
+  // 8. PHP support state from X-Powered-By. The header itself is reported by the
+  // HTTP header check (security/x-powered-by-exposed), so it is not reported twice here.
   const home = results.get(PATHS.home);
   const poweredBy = home?.headers.get('x-powered-by') ?? '';
   if (poweredBy) {
-    const craft = /Craft CMS/i.test(poweredBy);
     const php = poweredBy.match(/PHP\/(\d+)\.(\d+)/i);
-    if (craft || php) {
-      issues.push(
-        issue(siteUrl, PATHS.home, {
-          severity: 'low',
-          ruleId: 'security/version-disclosure',
-          message: `The X-Powered-By header discloses software details (${craft ? 'Craft CMS' : ''}${craft && php ? ', ' : ''}${php ? `PHP/${php[1]}.${php[2]}` : ''}).`,
-          suggestion: 'Remove X-Powered-By (set expose_php = Off in php.ini and strip the header in the web server).',
-        })
-      );
-    }
     if (php) {
       const major = parseInt(php[1], 10);
       const minor = parseInt(php[2], 10);
