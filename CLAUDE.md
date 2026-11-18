@@ -7,7 +7,7 @@ Guidance for Claude Code (and other AI agents via the AGENTS.md symlink) working
 `craft-audit` is a CLI tool published to the npm registry under the package name
 `craft-audit` (author `forbiddenlink`) that
 audits Craft CMS projects: Twig template performance (N+1 queries, missing eager loading),
-security (10 core CVEs, 10 plugin CVEs, header checks, hardening checks), outdated
+security (Craft core, plugin and dependency advisories with CISA KEV flags, security-key exposure, EOL Craft/PHP, PHP hardening, Composer supply chain, indicators of compromise, exposure probes, header and config checks), outdated
 dependencies (composer), and visual regressions (BackstopJS). Outputs in 6 formats (console,
 JSON, JSON stream, SARIF, HTML, Bitbucket Code Insights) and integrates with Slack, ClickUp, Linear, and
 Bitbucket. Repo: github.com/forbiddenlink/craft-audit.
@@ -65,8 +65,10 @@ built before testing** (the `test` script already does this). Fixtures live in
   git diffing, quality gates, logger, watcher
 - `src/integrations/`, `src/lib/`, `src/utils/`, `src/mocks/`
 - `php/analyze-templates.php` - the Twig template analyzer, invoked as a subprocess
-- `data/known-cves.json`, `data/known-plugin-cves.json` - curated CVE databases, updatable
-  via `craft-audit update-cves`
+- `data/advisories.json` - generated advisory database (core, plugins, core libraries, KEV
+  flags); rebuilt by `craft-audit update-cves`, never hand-edited
+- The audited project is untrusted: every git call goes through the overrides in
+  `src/core/git.ts` and every composer call passes `--no-plugins --no-scripts`
 - `tests/` - `node:test` suites (`.test.cjs`) plus `tests/fixtures/`
 - `docs/` - configuration, custom rules, CI integration, presets, quality gates, visual
   regression, VS Code extension, troubleshooting guides
