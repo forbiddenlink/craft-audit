@@ -1,13 +1,14 @@
 import type { Severity } from '../types';
 
 /** Every severity, most severe first. */
-export const SEVERITIES: readonly Severity[] = ['high', 'medium', 'low', 'info'];
+export const SEVERITIES: readonly Severity[] = ['critical', 'high', 'medium', 'low', 'info'];
 
 const SEVERITY_RANK: Record<Severity, number> = {
   info: 0,
   low: 1,
   medium: 2,
   high: 3,
+  critical: 4,
 };
 
 export function isSeverity(value: unknown): value is Severity {

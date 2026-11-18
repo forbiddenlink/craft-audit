@@ -255,7 +255,7 @@ export async function collectComposerSystemIssues(
 
     for (const advisory of auditParsed.advisoryDetails) {
       const severityMap: Record<string, SystemIssue['severity']> = {
-        critical: 'high',
+        critical: 'critical',
         high: 'high',
         medium: 'medium',
       };

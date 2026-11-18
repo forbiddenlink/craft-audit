@@ -2,7 +2,7 @@
  * Craft Audit - Type Definitions
  */
 
-export type Severity = 'high' | 'medium' | 'low' | 'info';
+export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 export interface Fix {
   safe: boolean;
@@ -110,6 +110,7 @@ export interface AuditResult {
   plugins?: PluginInfo[];
   issues: AuditIssue[];
   summary: {
+    critical: number;
     high: number;
     medium: number;
     low: number;

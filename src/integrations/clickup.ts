@@ -1,3 +1,5 @@
+import { countHighOrWorse } from '../core/summary';
+import { severityRank } from '../core/severity';
 import { AuditResult } from '../types';
 import { IntegrationSendOn } from './slack';
 import { projectLabel } from './utils';
@@ -19,7 +21,7 @@ interface ClickUpTaskPayload {
 
 export function shouldCreateClickUpTask(result: AuditResult, mode: IntegrationSendOn): boolean {
   if (mode === 'always') return true;
-  if (mode === 'high') return result.summary.high > 0;
+  if (mode === 'high') return countHighOrWorse(result.summary) > 0;
   return result.summary.total > 0;
 }
 
@@ -33,13 +35,10 @@ export function buildClickUpTaskPayload(
   const label = projectLabel(result.projectPath);
   const findings = result.issues
     .slice()
-    .sort((a, b) => {
-      const rank = { high: 4, medium: 3, low: 2, info: 1 } as const;
-      return rank[b.severity] - rank[a.severity];
-    })
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity))
     .slice(0, maxItems);
 
-  const name = `${namePrefix}: ${label} (H:${result.summary.high} M:${result.summary.medium} L:${result.summary.low})`;
+  const name = `${namePrefix}: ${label} (C:${result.summary.critical} H:${result.summary.high} M:${result.summary.medium} L:${result.summary.low})`;
 
   const lines = [
     `## Craft Audit Summary`,
@@ -47,6 +46,7 @@ export function buildClickUpTaskPayload(
     `- Project: \`${result.projectPath}\``,
     `- Timestamp: \`${result.timestamp}\``,
     `- Mode: \`${mode}\``,
+    `- Critical: **${result.summary.critical}**`,
     `- High: **${result.summary.high}**`,
     `- Medium: **${result.summary.medium}**`,
     `- Low: **${result.summary.low}**`,

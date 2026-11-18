@@ -32,6 +32,8 @@ function isValidSeverity(value: string): value is Severity {
 
 function severityColor(severity: Severity): (text: string) => string {
   switch (severity) {
+    case 'critical':
+      return chalk.red.bold;
     case 'high':
       return chalk.red;
     case 'medium':

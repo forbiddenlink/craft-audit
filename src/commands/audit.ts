@@ -162,7 +162,7 @@ function validateOutputAndThreshold(
   if (outputFormat === 'html' && !outputFile) {
     throw new AuditConfigError('Error: HTML output requires --output-file to be set.');
   }
-  if (!['none', 'high', 'medium', 'low', 'info'].includes(exitThreshold)) {
+  if (!['none', 'critical', 'high', 'medium', 'low', 'info'].includes(exitThreshold)) {
     throw new AuditConfigError(`Error: Unsupported exit threshold "${exitThreshold}".\nSupported values: none, high, medium, low, info`);
   }
 }

@@ -8,6 +8,8 @@ import { getExtendedRuleMetadata, getAllRuleIds } from '../core/rule-metadata';
 
 function severityColor(severity: string): (text: string) => string {
   switch (severity) {
+    case 'critical':
+      return chalk.red.bold;
     case 'high':
       return chalk.red;
     case 'medium':

@@ -1,3 +1,5 @@
+import { countHighOrWorse } from '../core/summary';
+import { severityRank } from '../core/severity';
 import { AuditResult } from '../types';
 import { projectLabel } from './utils';
 
@@ -16,7 +18,7 @@ interface SlackPayload {
 
 export function shouldSendByMode(result: AuditResult, mode: IntegrationSendOn): boolean {
   if (mode === 'always') return true;
-  if (mode === 'high') return result.summary.high > 0;
+  if (mode === 'high') return countHighOrWorse(result.summary) > 0;
   return result.summary.total > 0;
 }
 
@@ -27,15 +29,12 @@ export function buildSlackPayload(
 ): SlackPayload {
   const label = projectLabel(result.projectPath);
   const status = result.summary.high > 0 ? 'High findings detected' : 'Audit completed';
-  const summaryText = `craft-audit: ${label} | high ${result.summary.high} | medium ${result.summary.medium} | low ${result.summary.low} | info ${result.summary.info}`;
+  const summaryText = `craft-audit: ${label} | critical ${result.summary.critical} | high ${result.summary.high} | medium ${result.summary.medium} | low ${result.summary.low} | info ${result.summary.info}`;
   const headline = `*Craft Audit* for \`${label}\` - ${status}`;
 
   const topIssues = result.issues
     .slice()
-    .sort((a, b) => {
-      const rank = { high: 4, medium: 3, low: 2, info: 1 } as const;
-      return rank[b.severity] - rank[a.severity];
-    })
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity))
     .slice(0, maxItems)
     .map((issue) => {
       const location = issue.file ? ` (${issue.file}${issue.line ? `:${issue.line}` : ''})` : '';
@@ -54,7 +53,7 @@ export function buildSlackPayload(
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `*Summary*\nHigh: *${result.summary.high}* | Medium: *${result.summary.medium}* | Low: *${result.summary.low}* | Info: *${result.summary.info}*`,
+        text: `*Summary*\nCritical: *${result.summary.critical}* | High: *${result.summary.high}* | Medium: *${result.summary.medium}* | Low: *${result.summary.low}* | Info: *${result.summary.info}*`,
       },
     },
   ];

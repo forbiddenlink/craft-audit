@@ -1,12 +1,13 @@
 import { AuditResult } from '../types';
 import { meetsSeverity } from './severity';
 
-export type ExitThreshold = 'none' | 'high' | 'medium' | 'low' | 'info';
+export type ExitThreshold = 'none' | 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 export function normalizeExitThreshold(raw?: string): ExitThreshold {
   if (!raw) return 'high';
   const value = raw.toLowerCase();
   if (value === 'none') return 'none';
+  if (value === 'critical') return 'critical';
   if (value === 'high') return 'high';
   if (value === 'medium') return 'medium';
   if (value === 'low') return 'low';

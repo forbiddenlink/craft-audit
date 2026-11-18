@@ -110,7 +110,7 @@ export function applyQualityGate(
   let mediumCount = 0;
   let thresholdViolations = 0;
   for (const issue of relevant) {
-    if (issue.severity === 'high') highCount++;
+    if (issue.severity === 'critical' || issue.severity === 'high') highCount++;
     if (issue.severity === 'medium') mediumCount++;
     if (meetsThreshold(issue.severity, gate.failOn)) thresholdViolations++;
   }

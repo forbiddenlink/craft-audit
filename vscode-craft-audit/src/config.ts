@@ -18,6 +18,7 @@ const SEVERITY_ORDER: Record<string, number> = {
     low: 1,
     medium: 2,
     high: 3,
+    critical: 4,
 };
 
 export function getConfig(): CraftAuditConfig {
@@ -30,6 +31,7 @@ export function getConfig(): CraftAuditConfig {
         runOnSave: config.get('runOnSave', true),
         runOnOpen: config.get('runOnOpen', true),
         severity: config.get('severity', {
+            critical: 'Error',
             high: 'Error',
             medium: 'Warning',
             low: 'Information',

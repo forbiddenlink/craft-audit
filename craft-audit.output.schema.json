@@ -45,8 +45,9 @@
     },
     "Summary": {
       "type": "object",
-      "required": ["high", "medium", "low", "info", "total"],
+      "required": ["critical", "high", "medium", "low", "info", "total"],
       "properties": {
+        "critical": { "type": "integer", "minimum": 0 },
         "high": { "type": "integer", "minimum": 0 },
         "medium": { "type": "integer", "minimum": 0 },
         "low": { "type": "integer", "minimum": 0 },
@@ -58,7 +59,7 @@
       "type": "object",
       "required": ["severity", "category", "message"],
       "properties": {
-        "severity": { "type": "string", "enum": ["high", "medium", "low", "info"] },
+        "severity": { "type": "string", "enum": ["critical", "high", "medium", "low", "info"] },
         "category": { "type": "string", "enum": ["template", "system", "security", "visual"] },
         "ruleId": { "type": "string" },
         "file": { "type": "string" },

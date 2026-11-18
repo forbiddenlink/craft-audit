@@ -6,6 +6,7 @@ import { summarizeIssues } from '../core/summary.js';
 // ── Severity display helpers ───────────────────────────
 
 const SEVERITY_ICON: Record<AuditIssue['severity'], string> = {
+  critical: '‼',
   high: '✖',
   medium: '⚠',
   low: 'ℹ',
@@ -15,6 +16,8 @@ const SEVERITY_ICON: Record<AuditIssue['severity'], string> = {
 function severityLabel(severity: AuditIssue['severity']): string {
   const icon = SEVERITY_ICON[severity];
   switch (severity) {
+    case 'critical':
+      return chalk.bgRed.white(icon);
     case 'high':
       return chalk.red(icon);
     case 'medium':
@@ -242,6 +245,7 @@ export class ConsoleReporter {
   }
 
   colorForSeverity(severity: AuditIssue['severity']): ChalkInstance {
+    if (severity === 'critical') return chalk.bgRed.white.bold;
     if (severity === 'high') return chalk.red.bold;
     if (severity === 'medium') return chalk.yellow.bold;
     if (severity === 'low') return chalk.blue.bold;

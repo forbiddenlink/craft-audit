@@ -40,3 +40,15 @@ test('severity helpers rank and compare', () => {
   assert.equal(isSeverity('bogus'), false);
   assert.equal(severityRank('bogus'), 0);
 });
+
+test('critical ranks above high and counts toward high-or-worse', () => {
+  const { countHighOrWorse, summarizeIssues } = require('../dist/core/summary');
+  const { shouldFailForThreshold } = require('../dist/core/exit-threshold');
+  assert.ok(meetsSeverity('critical', 'high'));
+  const summary = summarizeIssues([{ severity: 'critical' }, { severity: 'low' }]);
+  assert.equal(summary.critical, 1);
+  assert.equal(countHighOrWorse(summary), 1);
+  assert.equal(countHighOrWorse({ high: 2 }), 2);
+  assert.equal(shouldFailForThreshold({ summary }, 'high'), true);
+  assert.equal(shouldFailForThreshold({ summary: { ...summary, critical: 0 } }, 'high'), false);
+});

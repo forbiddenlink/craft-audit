@@ -131,7 +131,7 @@ function addSharedOptions(cmd: Command): Command {
     )
     .option('--rules-dir <path>', 'Load custom rules from directory')
     .option('--quality-gate <name>', 'Use a named quality gate profile (strict, recommended, security-only, relaxed, ci)')
-    .option('--exit-threshold <level>', 'Fail on severity threshold: none|high|medium|low|info', 'high')
+    .option('--exit-threshold <level>', 'Fail on severity threshold: none|critical|high|medium|low|info', 'high')
     .option('--generate-csp', 'Generate a recommended Content-Security-Policy header based on template analysis')
     .option('--craft5-migration', 'Check for Craft 4→5 migration issues')
     .option('--log-level <level>', 'Set log level (debug, info, warn, error, silent)', 'info')
