@@ -58,20 +58,25 @@ function isInsideWorkTree(projectPath: string): boolean {
 /**
  * The audited repository is untrusted. Its .git/config can name programs that
  * read-only git commands would otherwise run: an fsmonitor hook on any index
- * read, clean/smudge/process filters when diffing the working tree, and a
- * gpg program when a log shows signatures. Every git call here overrides
- * those keys. Callers producing patch output must also pass --no-textconv
- * and --no-ext-diff.
+ * read, clean/smudge/process filters when diffing the working tree, a gpg
+ * program when a log shows signatures, and remote helpers if a partial clone
+ * lazily fetches a missing object. Every git call here overrides those keys.
+ * Callers producing patch output must also pass --no-textconv and
+ * --no-ext-diff.
+ *
+ * Overrides travel as GIT_CONFIG_COUNT/KEY/VALUE environment pairs rather
+ * than `-c key=value`: a key carries the repo-chosen filter driver name, and
+ * `-c` splits at the first "=", so a driver named "x=y" would escape the
+ * override. Driver names are re-read before every call, never cached.
  */
-const FIXED_OVERRIDES = [
-  'core.fsmonitor=false',
-  'log.showSignature=false',
-  'gpg.program=false',
-  'gpg.ssh.program=false',
-  'gpg.x509.program=false',
+const FIXED_OVERRIDES: ReadonlyArray<readonly [string, string]> = [
+  ['core.fsmonitor', 'false'],
+  ['log.showSignature', 'false'],
+  ['gpg.program', 'false'],
+  ['gpg.ssh.program', 'false'],
+  ['gpg.x509.program', 'false'],
+  ['protocol.allow', 'never'],
 ];
-
-const overridesByRepo = new Map<string, string[]>();
 
 /** Names of filter drivers the repository configures. Reading config runs nothing. */
 function configuredFilterDrivers(projectPath: string): string[] {
@@ -91,23 +96,25 @@ function configuredFilterDrivers(projectPath: string): string[] {
   }
 }
 
-function untrustedRepoConfig(projectPath: string): string[] {
-  let args = overridesByRepo.get(projectPath);
-  if (!args) {
-    const overrides = [...FIXED_OVERRIDES];
-    for (const name of configuredFilterDrivers(projectPath)) {
-      overrides.push(`filter.${name}.clean=`, `filter.${name}.smudge=`, `filter.${name}.process=`, `filter.${name}.required=false`);
-    }
-    args = overrides.flatMap((override) => ['-c', override]);
-    overridesByRepo.set(projectPath, args);
+function untrustedRepoEnv(projectPath: string): NodeJS.ProcessEnv {
+  const overrides: Array<readonly [string, string]> = [...FIXED_OVERRIDES];
+  for (const name of configuredFilterDrivers(projectPath)) {
+    for (const key of ['clean', 'smudge', 'process']) overrides.push([`filter.${name}.${key}`, '']);
+    overrides.push([`filter.${name}.required`, 'false']);
   }
-  return args;
+  const env: NodeJS.ProcessEnv = { ...process.env, GIT_NO_LAZY_FETCH: '1', GIT_CONFIG_COUNT: String(overrides.length) };
+  overrides.forEach(([key, value], index) => {
+    env[`GIT_CONFIG_KEY_${index}`] = key;
+    env[`GIT_CONFIG_VALUE_${index}`] = value;
+  });
+  return env;
 }
 
 function runGitDiff(projectPath: string, args: string[]): string[] {
   try {
-    const stdout = execFileSync('git', [...untrustedRepoConfig(projectPath), ...args], {
+    const stdout = execFileSync('git', args, {
       cwd: projectPath,
+      env: untrustedRepoEnv(projectPath),
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
@@ -134,8 +141,9 @@ export function gitOutputLines(projectPath: string, args: string[]): string[] {
 
 function runGitValue(projectPath: string, args: string[]): string | undefined {
   try {
-    const stdout = execFileSync('git', [...untrustedRepoConfig(projectPath), ...args], {
+    const stdout = execFileSync('git', args, {
       cwd: projectPath,
+      env: untrustedRepoEnv(projectPath),
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
@@ -148,8 +156,9 @@ function runGitValue(projectPath: string, args: string[]): string | undefined {
 
 function refExists(projectPath: string, ref: string): boolean {
   try {
-    execFileSync('git', [...untrustedRepoConfig(projectPath), 'rev-parse', '--verify', '--quiet', ref], {
+    execFileSync('git', ['rev-parse', '--verify', '--quiet', ref], {
       cwd: projectPath,
+      env: untrustedRepoEnv(projectPath),
       stdio: ['ignore', 'ignore', 'ignore'],
     });
     return true;

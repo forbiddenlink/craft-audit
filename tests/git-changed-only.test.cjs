@@ -217,7 +217,7 @@ test('changed-only helper does not run clean filters from the audited repo', { s
   const marker = path.join(repoRoot, 'pwned');
   const script = path.join(repoRoot, 'filter.sh');
   fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\ncat\n`, { mode: 0o755 });
-  for (const key of ['clean', 'smudge']) {
+  for (const key of ['clean', 'smudge', 'process']) {
     execFileSync('git', ['config', `filter.evil.${key}`, script], { cwd: repoRoot, stdio: 'ignore' });
   }
   fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "changed" }}\n', 'utf8');
@@ -226,3 +226,25 @@ test('changed-only helper does not run clean filters from the audited repo', { s
   assert.equal(fs.existsSync(marker), false, 'the repository clean filter ran');
   assert.ok(changed.has('a.twig'), 'the modified template is still reported');
 });
+
+test('changed-only helper neutralizes filter drivers whose names contain "="', { skip: !hasGit() }, () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-filter-eq-'));
+  const templatesDir = path.join(repoRoot, 'templates');
+  fs.mkdirSync(templatesDir, { recursive: true });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
+  fs.writeFileSync(path.join(repoRoot, '.gitattributes'), '*.twig filter=x=y\n', 'utf8');
+
+  initTestRepo(repoRoot);
+  execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
+
+  const marker = path.join(repoRoot, 'pwned');
+  const script = path.join(repoRoot, 'filter.sh');
+  fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\ncat\n`, { mode: 0o755 });
+  execFileSync('git', ['config', 'filter.x=y.clean', script], { cwd: repoRoot, stdio: 'ignore' });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "changed" }}\n', 'utf8');
+
+  getChangedTemplateIssuePaths(repoRoot, templatesDir);
+  assert.equal(fs.existsSync(marker), false, 'a filter driver named with "=" ran');
+});
+
