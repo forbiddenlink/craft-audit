@@ -182,3 +182,23 @@ test('isValidGitRef accepts relative refs with tilde and caret', () => {
   assert.equal(isValidGitRef('HEAD..main'), false);
   assert.equal(isValidGitRef('ref\x00bad'), false);
 });
+
+test('changed-only helper does not run an fsmonitor command from the audited repo', { skip: !hasGit() }, () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-fsmonitor-'));
+  const templatesDir = path.join(repoRoot, 'templates');
+  fs.mkdirSync(templatesDir, { recursive: true });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
+
+  initTestRepo(repoRoot);
+  execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
+
+  const marker = path.join(repoRoot, 'pwned');
+  const script = path.join(repoRoot, 'fsmonitor.sh');
+  fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\n`, { mode: 0o755 });
+  execFileSync('git', ['config', 'core.fsmonitor', script], { cwd: repoRoot, stdio: 'ignore' });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "changed" }}\n', 'utf8');
+
+  getChangedTemplateIssuePaths(repoRoot, templatesDir);
+  assert.equal(fs.existsSync(marker), false, 'the repository fsmonitor command ran');
+});

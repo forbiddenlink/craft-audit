@@ -55,9 +55,16 @@ function isInsideWorkTree(projectPath: string): boolean {
   return value === 'true';
 }
 
+/**
+ * The audited repository is untrusted: its .git/config can name an fsmonitor
+ * command, which git runs on any index read (ls-files, diff against the
+ * working tree). Every git call here switches that off.
+ */
+const UNTRUSTED_REPO_CONFIG = ['-c', 'core.fsmonitor=false'];
+
 function runGitDiff(projectPath: string, args: string[]): string[] {
   try {
-    const stdout = execFileSync('git', args, {
+    const stdout = execFileSync('git', [...UNTRUSTED_REPO_CONFIG, ...args], {
       cwd: projectPath,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
@@ -76,19 +83,16 @@ function runGitDiff(projectPath: string, args: string[]): string[] {
  * Output lines of a read-only git command run in `projectPath`, or [] when
  * git is missing or the path is not inside a work tree.
  *
- * The audited repository is untrusted: its .git/config can name an fsmonitor
- * command, which git runs on index reads such as ls-files. That hook is
- * switched off here. Callers that produce diffs must also pass
- * --no-textconv and --no-ext-diff.
+ * Callers that produce patch output must pass --no-textconv and --no-ext-diff.
  */
 export function gitOutputLines(projectPath: string, args: string[]): string[] {
   if (!canRunGit(projectPath) || !isInsideWorkTree(projectPath)) return [];
-  return runGitDiff(projectPath, ['-c', 'core.fsmonitor=false', ...args]);
+  return runGitDiff(projectPath, args);
 }
 
 function runGitValue(projectPath: string, args: string[]): string | undefined {
   try {
-    const stdout = execFileSync('git', args, {
+    const stdout = execFileSync('git', [...UNTRUSTED_REPO_CONFIG, ...args], {
       cwd: projectPath,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
