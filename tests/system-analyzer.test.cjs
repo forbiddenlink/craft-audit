@@ -181,8 +181,56 @@ test('buildIssues reports legacy version for Craft 3.x', () => {
 test('buildIssues reports upgrade candidate for Craft 4.x', () => {
   const composer = { require: { 'craftcms/cms': '^4.5' } };
   const craftInfo = { version: '^4.5', edition: 'unknown', phpVersion: '8.1', dbDriver: 'unknown' };
-  const issues = buildIssues('/fake/path', composer, craftInfo);
+  // Before Craft 4 security support ended on 2026-04-30.
+  const issues = buildIssues('/fake/path', composer, craftInfo, new Date('2025-06-01T00:00:00Z'));
   assert.ok(issues.some((i) => i.ruleId === 'system/craft-major-upgrade-candidate'));
+});
+
+test('buildIssues reports Craft 4.x as end of life after 2026-04-30', () => {
+  const composer = { require: { 'craftcms/cms': '^4.5' } };
+  const craftInfo = { version: '^4.5', edition: 'unknown', phpVersion: '8.2', dbDriver: 'unknown' };
+  const issues = buildIssues('/fake/path', composer, craftInfo, new Date('2026-11-18T00:00:00Z'));
+  const eol = issues.find((i) => i.ruleId === 'system/craft-eol');
+  assert.ok(eol);
+  assert.equal(eol.severity, 'high');
+  assert.match(eol.message, /2026-04-30/);
+  assert.ok(!issues.some((i) => i.ruleId === 'system/craft-major-upgrade-candidate'));
+});
+
+test('buildIssues names the Craft 3 end-of-life date', () => {
+  const composer = { require: { 'craftcms/cms': '^3.8' } };
+  const craftInfo = { version: '^3.8', edition: 'unknown', phpVersion: '8.0', dbDriver: 'unknown' };
+  const legacy = buildIssues('/fake/path', composer, craftInfo).find((i) => i.ruleId === 'system/craft-version-legacy');
+  assert.match(legacy.message, /Security support ended 2024-04-30/);
+});
+
+test('buildIssues flags an end-of-life config.platform.php', () => {
+  const composer = { require: { 'craftcms/cms': '^5.2' }, config: { platform: { php: '8.1.27' } } };
+  const craftInfo = { version: '^5.2', edition: 'unknown', phpVersion: '8.1.27', dbDriver: 'unknown' };
+  const issues = buildIssues('/fake/path', composer, craftInfo, new Date('2026-11-18T00:00:00Z'));
+  const eol = issues.find((i) => i.ruleId === 'system/php-platform-eol');
+  assert.ok(eol);
+  assert.equal(eol.severity, 'high');
+  assert.match(eol.message, /PHP 8\.1.*2025-12-31/);
+  assert.equal(eol.evidence.details, 'composer.json config.platform.php = 8.1.27');
+});
+
+test('buildIssues warns when config.platform.php support ends within a year', () => {
+  const composer = { require: { 'craftcms/cms': '^5.2' }, config: { platform: { php: '8.2' } } };
+  const craftInfo = { version: '^5.2', edition: 'unknown', phpVersion: '8.2', dbDriver: 'unknown' };
+  const soon = buildIssues('/fake/path', composer, craftInfo, new Date('2026-11-18T00:00:00Z'));
+  assert.equal(soon.find((i) => i.ruleId === 'system/php-platform-eol-soon').severity, 'medium');
+  const later = buildIssues('/fake/path', composer, craftInfo, new Date('2025-06-01T00:00:00Z'));
+  assert.ok(!later.some((i) => i.ruleId.startsWith('system/php-platform')));
+});
+
+test('buildIssues ignores a supported or unparseable config.platform.php', () => {
+  const craftInfo = { version: '^5.2', edition: 'unknown', phpVersion: '8.3', dbDriver: 'unknown' };
+  for (const php of ['8.4.1', 'not-a-version']) {
+    const composer = { require: { 'craftcms/cms': '^5.2' }, config: { platform: { php } } };
+    const issues = buildIssues('/fake/path', composer, craftInfo, new Date('2026-11-18T00:00:00Z'));
+    assert.equal(issues.length, 0, php);
+  }
 });
 
 test('buildIssues reports old PHP version', () => {

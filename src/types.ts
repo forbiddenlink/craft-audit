@@ -44,6 +44,7 @@ export interface SystemIssue extends AuditIssue {
   type:
     | 'update-available'
     | 'craft5-incompatible'
+    | 'craft-eol'
     | 'deprecated-plugin'
     | 'php-version'
     | 'composer-missing'

@@ -113,6 +113,21 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'Craft CMS major version appears to be 3.x or lower.',
     helpUri: 'https://craftcms.com/docs/5.x/upgrade',
   },
+  'system/craft-eol': {
+    title: 'Craft CMS version past end of life',
+    description: 'The installed Craft CMS major version no longer receives security fixes.',
+    helpUri: 'https://craftcms.com/knowledge-base/supported-versions',
+  },
+  'system/php-platform-eol': {
+    title: 'composer.json targets end-of-life PHP',
+    description: 'config.platform.php names a PHP version that no longer receives security fixes.',
+    helpUri: 'https://www.php.net/supported-versions.php',
+  },
+  'system/php-platform-eol-soon': {
+    title: 'composer.json targets PHP nearing end of life',
+    description: 'config.platform.php names a PHP version whose security support ends within a year.',
+    helpUri: 'https://www.php.net/supported-versions.php',
+  },
   'system/craft-major-upgrade-candidate': {
     title: 'Craft CMS major upgrade available',
     description: 'Craft CMS appears to be on a 4.x release and can be upgraded to 5.x.',
@@ -467,12 +482,12 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
   },
   'security/php-eol-live': {
     title: 'Live site runs end-of-life PHP',
-    description: 'The site reports PHP 8.1 or older, which no longer receives security fixes.',
+    description: 'The site reports a PHP version that no longer receives security fixes.',
     helpUri: 'https://www.php.net/supported-versions.php',
   },
   'security/php-eol-soon': {
     title: 'Live site PHP nearing end of life',
-    description: 'The site reports PHP 8.2, whose security support ends 2026-12-31.',
+    description: 'The site reports a PHP version whose security support ends within a year.',
     helpUri: 'https://www.php.net/supported-versions.php',
   },
 };
@@ -799,6 +814,24 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     category: 'system',
     fixGuidance: 'Plan migration to Craft 4 or 5.',
   },
+  'system/craft-eol': {
+    ...RULE_METADATA['system/craft-eol'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Upgrade to Craft 5: https://craftcms.com/docs/5.x/upgrade',
+  },
+  'system/php-platform-eol': {
+    ...RULE_METADATA['system/php-platform-eol'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Upgrade production PHP, then set config.platform.php to the new version.',
+  },
+  'system/php-platform-eol-soon': {
+    ...RULE_METADATA['system/php-platform-eol-soon'],
+    severity: 'medium',
+    category: 'system',
+    fixGuidance: 'Schedule the PHP upgrade before security support ends.',
+  },
   'system/craft-major-upgrade-candidate': {
     ...RULE_METADATA['system/craft-major-upgrade-candidate'],
     severity: 'info',
@@ -1077,7 +1110,7 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     ...RULE_METADATA['security/php-eol-soon'],
     severity: 'medium',
     category: 'security',
-    fixGuidance: 'Plan the upgrade to PHP 8.3 or newer before 2026-12-31.',
+    fixGuidance: 'Plan the PHP upgrade before security support ends.',
   },
 };
 
