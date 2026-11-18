@@ -178,13 +178,10 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
   for (const p of [PATHS.composerLock, PATHS.composerJson]) {
     const res = ok(p);
     if (!res) continue;
-    try {
-      const parsed: unknown = JSON.parse(res.body);
-      if (parsed && typeof parsed === 'object' && ('packages' in parsed || 'require' in parsed)) {
-        composerHits.push(p);
-      }
-    } catch {
-      // not JSON
+    // The body is capped at MAX_BODY_BYTES and a real composer.lock is far larger, so match the
+    // opening of the document instead of parsing it whole.
+    if (/^\s*\{[\s\S]*?"(?:packages|require|content-hash)"\s*:/.test(res.body)) {
+      composerHits.push(p);
     }
   }
   if (composerHits.length > 0) {

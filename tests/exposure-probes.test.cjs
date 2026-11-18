@@ -73,6 +73,12 @@ test('composer files produce one issue listing files', async () => {
   assert.match(issues[0].message, /composer\.json/);
 });
 
+test('a composer.lock larger than the read cap is still recognized', async () => {
+  const big = '{\n    "_readme": ["x"],\n    "content-hash": "abc",\n    "packages": [' + '{"name":"a/b"},'.repeat(10000) + '{}]}';
+  const issues = await run({ '/composer.lock': { status: 200, body: big } });
+  assert.deepEqual(ids(issues), ['security/exposed-composer-files']);
+});
+
 test('non-JSON composer body is ignored', async () => {
   const issues = await run({ '/composer.json': { status: 200, body: 'nope' } });
   assert.deepEqual(issues, []);
