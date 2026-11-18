@@ -63,26 +63,47 @@ function ensureObject(value: JsonValue | undefined): Record<string, JsonValue> |
   return value as Record<string, JsonValue>;
 }
 
-function parseComposerValidateOutput(stdout: string): {
+/**
+ * Parse `composer validate` text output. Composer has no JSON format for
+ * validate: findings are "- " lines under "# ... errors" and "# ... warnings"
+ * headers, and a composer.json that fails the schema or is not JSON aborts
+ * with an exception message instead.
+ */
+function parseComposerValidateOutput(output: string): {
   errorCount: number;
   warningCount: number;
   details: string;
 } {
-  const parsed = ensureObject(safeJsonParse(stdout));
-  if (!parsed) {
-    return { errorCount: 0, warningCount: 0, details: '' };
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  let bucket: string[] | undefined;
+  for (const raw of output.split('\n')) {
+    const line = raw.trim();
+    const header = /^#\s.*\b(errors|warnings)$/i.exec(line);
+    if (header) {
+      bucket = header[1].toLowerCase() === 'errors' ? errors : warnings;
+    } else if (line.startsWith('# ')) {
+      bucket = undefined;
+    } else if (bucket && line.startsWith('- ')) {
+      bucket.push(line.slice(2));
+    }
   }
 
-  const errors = Array.isArray(parsed.errors) ? parsed.errors : [];
-  const warnings = Array.isArray(parsed.warnings) ? parsed.warnings : [];
-  const detailLines = [...errors, ...warnings]
-    .map((entry) => (typeof entry === 'string' ? entry : JSON.stringify(entry)))
-    .slice(0, 6);
+  if (/does not match the expected JSON schema/.test(output)) {
+    const schemaErrors = output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => /^- \S+ : /.test(line))
+      .map((line) => line.slice(2));
+    errors.push(...(schemaErrors.length > 0 ? schemaErrors : ['composer.json does not match the expected JSON schema']));
+  } else if (/does not contain valid JSON/.test(output)) {
+    errors.push('composer.json does not contain valid JSON');
+  }
 
   return {
     errorCount: errors.length,
     warningCount: warnings.length,
-    details: detailLines.join('\n'),
+    details: [...errors, ...warnings].slice(0, 6).join('\n'),
   };
 }
 
@@ -199,17 +220,14 @@ export async function collectComposerSystemIssues(
 ): Promise<SystemIssue[]> {
   const issues: SystemIssue[] = [];
 
-  const validateResult = await runComposer(projectPath, [
-    'validate',
-    '--no-check-publish',
-    '--format=json',
-  ]);
+  const validateResult = await runComposer(projectPath, ['validate', '--no-check-publish']);
   if (validateResult.missingCommand) {
     issues.push(missingComposerIssue(projectPath));
     return issues;
   }
 
-  const validateParsed = parseComposerValidateOutput(validateResult.stdout);
+  // Composer writes validate findings to stderr.
+  const validateParsed = parseComposerValidateOutput(`${validateResult.stdout}\n${validateResult.stderr}`);
   if (validateParsed.errorCount > 0) {
     issues.push({
       severity: 'high',
@@ -220,7 +238,7 @@ export async function collectComposerSystemIssues(
       suggestion: 'Fix composer.json schema/errors before release and CI deployment.',
       confidence: 0.95,
       docsUrl: 'https://getcomposer.org/doc/03-cli.md#validate',
-      evidence: { command: 'composer validate --no-check-publish --format=json', details: validateParsed.details },
+      evidence: { command: 'composer validate --no-check-publish', details: validateParsed.details },
       fingerprint: `system/composer-validate-errors:${projectPath}:${validateParsed.errorCount}`,
     });
   }
@@ -234,7 +252,7 @@ export async function collectComposerSystemIssues(
       suggestion: 'Resolve warnings to keep dependency metadata clean and deterministic.',
       confidence: 0.9,
       docsUrl: 'https://getcomposer.org/doc/03-cli.md#validate',
-      evidence: { command: 'composer validate --no-check-publish --format=json', details: validateParsed.details },
+      evidence: { command: 'composer validate --no-check-publish', details: validateParsed.details },
       fingerprint: `system/composer-validate-warnings:${projectPath}:${validateParsed.warningCount}`,
     });
   }
