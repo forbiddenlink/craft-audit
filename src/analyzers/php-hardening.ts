@@ -233,7 +233,7 @@ function checkSettings(settings: Settings, file: string): SecurityIssue[] {
 }
 
 /** PHP base images and the capture group order (major, minor) of their version tag. */
-const PHP_BASE_IMAGE = /^(?:docker\.io\/)?(?:(?:library\/)?php|craftcms\/(?:nginx|php-fpm|cli)):(\d+)\.(\d+)/i;
+export const PHP_BASE_IMAGE = /^(?:docker\.io\/)?(?:(?:library\/)?php|craftcms\/(?:nginx|php-fpm|cli)):(\d+)\.(\d+)/i;
 
 /** Base images whose own Dockerfile ends with an unprivileged USER, which a child stage inherits. */
 const NON_ROOT_BASE_IMAGE = /^(?:docker\.io\/)?craftcms\/(?:nginx|php-fpm|cli):/i;

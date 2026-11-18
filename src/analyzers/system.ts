@@ -1,13 +1,10 @@
-import { execFile } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { promisify } from 'node:util';
 
 import { CraftInfo, PluginInfo, SystemIssue } from '../types';
 import { collectComposerSystemIssues } from './composer-checks';
+import { PHP_BASE_IMAGE } from './php-hardening';
 import { craftSupport, phpSupport } from '../core/eol';
-
-const execFileAsync = promisify(execFile);
 
 interface ComposerJson {
   require?: Record<string, string>;
@@ -53,16 +50,40 @@ function pluginHandleFromPackage(name: string): string {
   return (parts[1] ?? parts[0]).replace(/[^a-zA-Z0-9_-]/g, '-').toLowerCase();
 }
 
-async function detectPhpVersion(): Promise<string | undefined> {
+function readProjectFile(projectPath: string, relativePath: string): string | undefined {
   try {
-    const { stdout } = await execFileAsync('php', ['-r', 'echo PHP_VERSION;'], {
-      maxBuffer: 1024 * 1024,
-    });
-    const value = stdout.trim();
-    return value.length > 0 ? value : undefined;
+    return fs.readFileSync(path.join(projectPath, relativePath), 'utf8');
   } catch {
     return undefined;
   }
+}
+
+/**
+ * The PHP version the project pins for its own runtime: DDEV config, a .php-version file, or
+ * the PHP base image in a Dockerfile or compose file (the last one wins, as in a multi-stage
+ * build). Undefined when nothing pins it; the auditor's own PHP says nothing about the site.
+ */
+function detectProjectPhpVersion(projectPath: string): string | undefined {
+  const ddev = readProjectFile(projectPath, '.ddev/config.yaml');
+  const ddevVersion = ddev && /^php_version:\s*["']?(\d+\.\d+)/m.exec(ddev);
+  if (ddevVersion) return ddevVersion[1];
+
+  const pinned = readProjectFile(projectPath, '.php-version');
+  const pinnedVersion = pinned && /^\s*(\d+\.\d+(?:\.\d+)?)/.exec(pinned);
+  if (pinnedVersion) return pinnedVersion[1];
+
+  const imageFiles = ['Dockerfile', 'docker-compose.yml', 'docker-compose.yaml', 'compose.yml', 'compose.yaml'];
+  for (const file of imageFiles) {
+    const text = readProjectFile(projectPath, file);
+    if (!text) continue;
+    let version: string | undefined;
+    for (const ref of text.matchAll(/^\s*(?:FROM\s+(?:--\S+\s+)*|image:\s*["']?)(\S+?)["']?\s*(?:\s(?:AS|as)\s+\S+)?$/gm)) {
+      const image = PHP_BASE_IMAGE.exec(ref[1]);
+      if (image) version = `${image[1]}.${image[2]}`;
+    }
+    if (version) return version;
+  }
+  return undefined;
 }
 
 function tryReadJson<T>(filePath: string): T | undefined {
@@ -272,6 +293,7 @@ function platformPhpIssues(composer: ComposerJson, today: Date): SystemIssue[] {
 }
 
 export const __testUtils = {
+  detectProjectPhpVersion,
   parseMajorVersion,
   pluginHandleFromPackage,
   findPlugins,
@@ -290,7 +312,7 @@ export async function collectSystemInfo(
 
   const composer = tryReadJson<ComposerJson>(composerPath);
   const lock = tryReadJson<ComposerLock>(lockPath);
-  const phpVersion = await detectPhpVersion();
+  const phpVersion = detectProjectPhpVersion(projectPath);
 
   const craft = composer ? buildCraftInfo(composer, phpVersion) : undefined;
   const plugins = composer ? findPlugins(composer, lock) : [];

@@ -12,6 +12,7 @@ const {
   buildCraftInfo,
   buildIssues,
   tryReadJson,
+  detectProjectPhpVersion,
 } = __testUtils;
 
 // ── parseMajorVersion ───────────────────────────────────────────────────
@@ -272,4 +273,26 @@ test('tryReadJson returns undefined for malformed JSON', () => {
   assert.equal(tryReadJson(filePath), undefined);
 
   fs.rmSync(tmpDir, { recursive: true, force: true });
+});
+
+test('detectProjectPhpVersion reads the PHP version the project pins, never the local runtime', () => {
+  const make = (files) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-phpver-'));
+    for (const [rel, body] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true });
+      fs.writeFileSync(path.join(dir, rel), body, 'utf8');
+    }
+    return dir;
+  };
+  assert.equal(detectProjectPhpVersion(make({ '.ddev/config.yaml': 'name: site\nphp_version: "8.3"\n' })), '8.3');
+  assert.equal(detectProjectPhpVersion(make({ '.php-version': '8.1.27\n' })), '8.1.27');
+  assert.equal(
+    detectProjectPhpVersion(make({ Dockerfile: 'FROM php:8.3-cli AS build\nFROM craftcms/nginx:8.2\n' })),
+    '8.2'
+  );
+  assert.equal(
+    detectProjectPhpVersion(make({ 'docker-compose.yml': 'services:\n  web:\n    image: "php:8.0-apache"\n  db:\n    image: mysql:8.0\n' })),
+    '8.0'
+  );
+  assert.equal(detectProjectPhpVersion(make({ Dockerfile: 'FROM node:20\n', 'README.md': 'php 7.4' })), undefined);
 });
