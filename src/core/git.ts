@@ -75,10 +75,15 @@ function runGitDiff(projectPath: string, args: string[]): string[] {
 /**
  * Output lines of a read-only git command run in `projectPath`, or [] when
  * git is missing or the path is not inside a work tree.
+ *
+ * The audited repository is untrusted: its .git/config can name an fsmonitor
+ * command, which git runs on index reads such as ls-files. That hook is
+ * switched off here. Callers that produce diffs must also pass
+ * --no-textconv and --no-ext-diff.
  */
 export function gitOutputLines(projectPath: string, args: string[]): string[] {
   if (!canRunGit(projectPath) || !isInsideWorkTree(projectPath)) return [];
-  return runGitDiff(projectPath, args);
+  return runGitDiff(projectPath, ['-c', 'core.fsmonitor=false', ...args]);
 }
 
 function runGitValue(projectPath: string, args: string[]): string | undefined {

@@ -91,6 +91,8 @@ function historyKeyIssues(projectPath: string, currentlyReported: Set<string>): 
   // Commits that added a CRAFT_SECURITY_KEY / SECURITY_KEY line to an env file.
   const lines = gitOutputLines(projectPath, [
     'log', '--all', '--format=commit %h', '-p', '--no-color', '--unified=0',
+    // The repository is untrusted: never run its textconv or external diff drivers.
+    '--no-textconv', '--no-ext-diff',
     '-G', 'SECURITY_KEY *=', '--', ...ENV_PATHSPECS,
   ]);
   const found = new Map<string, string>();

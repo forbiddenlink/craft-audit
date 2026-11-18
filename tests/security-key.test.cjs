@@ -94,3 +94,17 @@ test('reports nothing for an untracked env file outside git', async () => {
   fs.writeFileSync(path.join(dir, '.env'), `CRAFT_SECURITY_KEY=${KEY_A}\n`);
   assert.deepEqual(await checkSecurityKeys(dir), []);
 });
+
+test('does not run commands the audited repository configures', async () => {
+  const dir = repo({ '.env': `CRAFT_SECURITY_KEY=${KEY_A}\n`, '.gitattributes': '.env diff=evil\n' });
+  const marker = path.join(dir, 'pwned');
+  const script = path.join(dir, 'evil.sh');
+  fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\ncat "$1"\n`, { mode: 0o755 });
+  git(dir, 'config', 'diff.evil.textconv', script);
+  git(dir, 'config', 'core.fsmonitor', script);
+  git(dir, 'add', '-f', '.env', '.gitattributes');
+  commit(dir, 'init');
+  fs.rmSync(marker, { force: true });
+  await checkSecurityKeys(dir);
+  assert.equal(fs.existsSync(marker), false, 'a repository-configured command ran');
+});
