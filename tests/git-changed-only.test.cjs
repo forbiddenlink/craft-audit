@@ -248,3 +248,13 @@ test('changed-only helper neutralizes filter drivers whose names contain "="', {
   assert.equal(fs.existsSync(marker), false, 'a filter driver named with "=" ran');
 });
 
+
+test('git older than 2.31 counts as unavailable, since it ignores the override environment', () => {
+  const { supportsConfigEnv } = __testUtils;
+  assert.equal(supportsConfigEnv('git version 2.56.1'), true);
+  assert.equal(supportsConfigEnv('git version 2.31.0.windows.1'), true);
+  assert.equal(supportsConfigEnv('git version 3.0.0'), true);
+  assert.equal(supportsConfigEnv('git version 2.30.9'), false);
+  assert.equal(supportsConfigEnv('git version 1.9.5'), false);
+  assert.equal(supportsConfigEnv('not git'), false);
+});

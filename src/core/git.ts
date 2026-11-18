@@ -41,10 +41,26 @@ function isSafeRelativePath(filePath: string): boolean {
   return true;
 }
 
+/**
+ * The untrusted-repo overrides below travel as GIT_CONFIG_COUNT pairs, which
+ * git reads from 2.31 on. Older git ignores them, so it counts as unavailable
+ * rather than running with the repository's own config.
+ */
+function supportsConfigEnv(versionOutput: string): boolean {
+  const match = /git version (\d+)\.(\d+)/.exec(versionOutput);
+  if (!match) return false;
+  const [major, minor] = [Number(match[1]), Number(match[2])];
+  return major > 2 || (major === 2 && minor >= 31);
+}
+
 function canRunGit(projectPath: string): boolean {
   try {
-    execFileSync('git', ['--version'], { cwd: projectPath, stdio: ['ignore', 'ignore', 'ignore'] });
-    return true;
+    const version = execFileSync('git', ['--version'], {
+      cwd: projectPath,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return supportsConfigEnv(version);
   } catch {
     return false;
   }
@@ -295,4 +311,5 @@ export function getChangedTemplateIssuePathsWithStatus(
 export const __testUtils = {
   isValidGitRef,
   isSafeRelativePath,
+  supportsConfigEnv,
 };
