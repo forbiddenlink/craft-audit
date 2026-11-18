@@ -81,7 +81,11 @@ export function checkNginxImages(content: string, file: string): SecurityIssue[]
 
 export type AlpnProbe = (siteUrl: string, timeoutMs: number) => Promise<string | null>;
 
-/** The protocol the server picks when offered h2 and http/1.1, or null when the TLS handshake fails. */
+/**
+ * The protocol the server picks when offered h2 and http/1.1, or null when the TLS
+ * handshake fails (including an invalid certificate). Only the negotiated
+ * protocol is read; no request is sent over this connection.
+ */
 export const probeAlpn: AlpnProbe = (siteUrl, timeoutMs) =>
   new Promise((resolve) => {
     const url = new URL(siteUrl);
@@ -94,8 +98,6 @@ export const probeAlpn: AlpnProbe = (siteUrl, timeoutMs) =>
       port: url.port ? Number(url.port) : 443,
       servername: url.hostname,
       ALPNProtocols: ['h2', 'http/1.1'],
-      // Only the negotiated protocol is read; no request is sent over this connection.
-      rejectUnauthorized: false,
     });
     const done = (value: string | null): void => {
       clearTimeout(timer);
