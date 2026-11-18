@@ -94,6 +94,21 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'Two env files hold the same Craft security key.',
     helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
   },
+  'security/twig-callable-injection': {
+    title: 'Template injection payload in Twig',
+    description: 'A filter receives a PHP function name as a string, or the template reaches into the Twig environment.',
+    helpUri: 'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/18-Testing_for_Server-side_Template_Injection',
+  },
+  'security/open-redirect': {
+    title: 'Open redirect from request data',
+    description: 'A template redirects to a URL taken from the request.',
+    helpUri: 'https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html',
+  },
+  'security/raw-sql-in-template': {
+    title: 'Raw database access in a template',
+    description: 'A template uses the database connection or createCommand() directly.',
+    helpUri: 'https://craftcms.com/docs/5.x/development/element-queries',
+  },
   'security/hardcoded-security-key': {
     title: 'Hardcoded security key in config',
     description: 'The security key appears to be hardcoded rather than loaded from an environment variable.',
@@ -628,6 +643,24 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     category: 'security',
     examples: ['{{ dump(entry) }}', '<?php dd($variable); ?>'],
     fixGuidance: 'Remove dump(), dd(), and var_dump() calls before deploying to production.',
+  },
+  'security/twig-callable-injection': {
+    ...RULE_METADATA['security/twig-callable-injection'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Replace string callables with arrow functions; if the line is unexpected, investigate the template for tampering.',
+  },
+  'security/open-redirect': {
+    ...RULE_METADATA['security/open-redirect'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Redirect only to relative paths or allowlisted hosts.',
+  },
+  'security/raw-sql-in-template': {
+    ...RULE_METADATA['security/raw-sql-in-template'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Use element queries or craft.query() with bound parameters.',
   },
   'security/security-key-committed': {
     ...RULE_METADATA['security/security-key-committed'],

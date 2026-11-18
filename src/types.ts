@@ -36,7 +36,7 @@ export interface AuditIssue {
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf' | 'img-missing-alt' | 'input-missing-label' | 'empty-link' | 'missing-lang';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'twig-callable-injection' | 'open-redirect' | 'raw-sql-in-template' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf' | 'img-missing-alt' | 'input-missing-label' | 'empty-link' | 'missing-lang';
 }
 
 export interface SystemIssue extends AuditIssue {

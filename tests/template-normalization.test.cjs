@@ -246,3 +246,17 @@ test('detects missing .status() filter on .all() queries', { skip: !hasPhpRuntim
   );
   assert.equal(suppressed.length, 0, 'suppressed missing-status-filter should not be flagged');
 });
+
+test('detects template injection payloads, open redirects and raw SQL', { skip: !hasPhpRuntime() }, async () => {
+  const issues = await analyzeTwigTemplates(FIXTURES_DIR);
+  const found = issues
+    .filter((issue) => issue.file === 'twig-injection.twig')
+    .map((issue) => `${issue.line}:${issue.ruleId}:${issue.severity}`)
+    .sort();
+  assert.deepEqual(found, [
+    '2:security/twig-callable-injection:high',
+    '3:security/twig-callable-injection:high',
+    '5:security/open-redirect:high',
+    '8:security/raw-sql-in-template:medium',
+  ]);
+});

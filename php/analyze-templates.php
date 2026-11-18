@@ -109,6 +109,28 @@ $SSTI_PATTERNS = [
     ],
 ];
 
+// Template injection payloads. Craft rejects string callables in these
+// filters, so a string here is either broken code or an exploit attempt
+// such as {{ ['id']|map('system') }}.
+$CALLABLE_INJECTION_PATTERNS = [
+    [
+        'pattern' => '/\|\s*(?:map|filter|reduce|sort|group)\s*\(\s*[\'"][A-Za-z_\\\\]+[\'"]/',
+        'message' => 'Filter called with a PHP function name as a string, a known template injection payload',
+        'suggestion' => 'Use an arrow function. If nobody on the team wrote this line, treat the template as tampered with.',
+    ],
+    [
+        'pattern' => '/_self\.env\b|registerUndefined(?:Filter|Function)Callback|\.env\.getFilter\s*\(/',
+        'message' => 'Template reaches into the Twig environment, a known sandbox escape technique',
+        'suggestion' => 'Remove it. Templates have no reason to touch the Twig environment; investigate how it got there.',
+    ],
+];
+
+// {% redirect %} to a URL taken straight from the request
+$OPEN_REDIRECT_PATTERN = '/\bredirect\s*[\s(][^%}]*craft\.(?:app\.)?request\./';
+
+// Raw database access from a template
+$RAW_SQL_PATTERN = '/craft\.app\.(?:db\b|getDb\s*\()|\bcreateCommand\s*\(/';
+
 // Accessibility patterns
 $ACCESSIBILITY_PATTERNS = [
     // <img> without alt attribute
@@ -213,7 +235,7 @@ $DEPRECATED_PATTERNS = [
 ];
 
 function analyzeFile(string $filePath, string $basePath): array {
-    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS, $DEBUG_PATTERNS, $INCLUDE_TAG_PATTERN, $ACCESSIBILITY_PATTERNS;
+    global $QUERY_PATTERNS, $MISSING_LIMIT_QUERY_PATTERNS, $NARROWING_QUERY_METHODS, $RELATION_FIELD_METHODS, $DEPRECATED_PATTERNS, $XSS_HIGH_PATTERNS, $XSS_RAW_PATTERN, $XSS_SAFE_PREFIXES, $SSTI_PATTERNS, $CALLABLE_INJECTION_PATTERNS, $OPEN_REDIRECT_PATTERN, $RAW_SQL_PATTERN, $DEBUG_PATTERNS, $INCLUDE_TAG_PATTERN, $ACCESSIBILITY_PATTERNS;
 
     $issues = [];
     $content = file_get_contents($filePath);
@@ -549,6 +571,50 @@ function analyzeFile(string $filePath, string $basePath): array {
                     ];
                 }
             }
+        }
+
+        if (!$isSuppressed($lineNumber, 'twig-callable-injection')) {
+            foreach ($CALLABLE_INJECTION_PATTERNS as $injection) {
+                if (preg_match($injection['pattern'], $line)) {
+                    $issues[] = [
+                        'severity' => 'high',
+                        'category' => 'template',
+                        'pattern' => 'twig-callable-injection',
+                        'file' => $relativePath,
+                        'line' => $lineNumber,
+                        'message' => $injection['message'],
+                        'suggestion' => $injection['suggestion'],
+                        'code' => trim($line),
+                    ];
+                    break;
+                }
+            }
+        }
+
+        if (!$isSuppressed($lineNumber, 'open-redirect') && preg_match($OPEN_REDIRECT_PATTERN, $line)) {
+            $issues[] = [
+                'severity' => 'high',
+                'category' => 'template',
+                'pattern' => 'open-redirect',
+                'file' => $relativePath,
+                'line' => $lineNumber,
+                'message' => 'Redirect target comes from the request (open redirect)',
+                'suggestion' => 'Redirect only to relative paths or an allowlist of hosts; never to a raw request parameter.',
+                'code' => trim($line),
+            ];
+        }
+
+        if (!$isSuppressed($lineNumber, 'raw-sql-in-template') && preg_match($RAW_SQL_PATTERN, $line)) {
+            $issues[] = [
+                'severity' => 'medium',
+                'category' => 'template',
+                'pattern' => 'raw-sql-in-template',
+                'file' => $relativePath,
+                'line' => $lineNumber,
+                'message' => 'Template runs database commands directly',
+                'suggestion' => 'Use element queries or craft.query() with bound parameters, or move the query into a module.',
+                'code' => trim($line),
+            ];
         }
 
         // Check for debug output (dump/dd calls)
