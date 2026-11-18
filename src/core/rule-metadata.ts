@@ -505,6 +505,16 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'The control panel responds at the default /admin path.',
     helpUri: 'https://craftcms.com/docs/5.x/reference/config/general.html#cptrigger',
   },
+  'security/nginx-vulnerable': {
+    title: 'nginx release with known vulnerabilities',
+    description: 'The live Server header or a Docker image tag shows an nginx release affected by a bundled server advisory, such as NGINX2Root (CVE-2026-123007).',
+    helpUri: 'https://nginx2root.com/',
+  },
+  'security/nginx-version-hidden': {
+    title: 'nginx with HTTP/2 and a hidden version',
+    description: 'The live site runs nginx with HTTP/2 on and hides its version, so the audit cannot confirm it has current security fixes.',
+    helpUri: 'https://nginx.org/en/security_advisories.html',
+  },
   'security/php-eol-live': {
     title: 'Live site runs end-of-life PHP',
     description: 'The site reports a PHP version that no longer receives security fixes.',
@@ -1154,6 +1164,18 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     severity: 'info',
     category: 'security',
     fixGuidance: 'Restrict the control panel by IP, or set a non-default cpTrigger.',
+  },
+  'security/nginx-vulnerable': {
+    ...RULE_METADATA['security/nginx-vulnerable'],
+    severity: 'critical',
+    category: 'security',
+    fixGuidance: 'Upgrade nginx to a fixed release (1.30.7 stable or 1.31.9 mainline for NGINX2Root), then restart it.',
+  },
+  'security/nginx-version-hidden': {
+    ...RULE_METADATA['security/nginx-version-hidden'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Run "nginx -v" on the server and upgrade if the release is affected.',
   },
   'security/php-eol-live': {
     ...RULE_METADATA['security/php-eol-live'],

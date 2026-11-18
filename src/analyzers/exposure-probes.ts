@@ -9,6 +9,16 @@
 import { SecurityIssue } from '../types';
 import { logger } from '../core/logger.js';
 import { phpSupport } from '../core/eol';
+import {
+  AlpnProbe,
+  describeNginxHit,
+  isNginxServerHeader,
+  nginxAdvisories,
+  nginxFixedVersions,
+  nginxRestartNote,
+  nginxVersionFromServerHeader,
+  probeAlpn,
+} from './server-software';
 
 export type ProbeFetch = (
   url: string,
@@ -19,6 +29,7 @@ export interface ProbeOptions {
   fetchImpl?: ProbeFetch;
   timeoutMs?: number;
   concurrency?: number;
+  alpnImpl?: AlpnProbe;
 }
 
 interface ProbeResponse {
@@ -277,6 +288,39 @@ export async function probeExposure(siteUrl: string, options: ProbeOptions = {})
             ruleId: 'security/php-eol-soon',
             message: `The live site runs PHP ${version}, whose security support ends ${support.endsOn}.`,
             suggestion: 'Plan an upgrade to a newer PHP version before security support ends.',
+          })
+        );
+      }
+    }
+  }
+
+  // 9. nginx version from the Server header (security/server-header-exposed reports the header itself).
+  const server = home?.headers.get('server') ?? '';
+  if (isNginxServerHeader(server)) {
+    const version = nginxVersionFromServerHeader(server);
+    if (version) {
+      const hits = nginxAdvisories(version);
+      if (hits.length > 0) {
+        issues.push(
+          issue(siteUrl, PATHS.home, {
+            severity: 'critical',
+            ruleId: 'security/nginx-vulnerable',
+            message: `The live site runs nginx ${version}, which is affected by ${hits.map(describeNginxHit).join('; ')}.`,
+            suggestion: `Upgrade nginx to ${nginxFixedVersions(hits)} or later on the server. ${nginxRestartNote()}`,
+          })
+        );
+      }
+    } else {
+      // Version hidden (server_tokens off). HTTP/2 is the remote attack path, so only flag when it is on.
+      const alpn = await (options.alpnImpl ?? probeAlpn)(siteUrl, timeoutMs);
+      if (alpn === 'h2') {
+        issues.push(
+          issue(siteUrl, PATHS.home, {
+            severity: 'medium',
+            ruleId: 'security/nginx-version-hidden',
+            message:
+              'The live site runs nginx with HTTP/2 on, but hides its version, so this audit cannot tell whether it has the NGINX2Root fixes (CVE-2026-123007, fixed in 1.30.7 and 1.31.9).',
+            suggestion: `Check on the server with "nginx -v" and upgrade if older than 1.30.7 (stable) or 1.31.9 (mainline). ${nginxRestartNote()}`,
           })
         );
       }

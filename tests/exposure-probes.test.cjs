@@ -163,3 +163,29 @@ test('redirects are not followed and only GET/manual is used', async () => {
   assert.ok(calls.length < 20);
   assert.ok(calls.every((c) => c.init.redirect === 'manual' && ['GET', 'HEAD'].includes(c.init.method)));
 });
+
+test('nginx version in Server header below the NGINX2Root fix is critical', async () => {
+  const home = (server) => ({ '/': { status: 200, body: '<html>home</html>', headers: { 'content-type': 'text/html', server } } });
+  for (const server of ['nginx/1.24.0', 'nginx/1.30.6 (Ubuntu)', 'nginx/1.31.8']) {
+    const issues = await run(home(server), { alpnImpl: async () => { throw new Error('ALPN must not run when the version is visible'); } });
+    assert.deepEqual(ids(issues), ['security/nginx-vulnerable'], server);
+    assert.equal(issues[0].severity, 'critical');
+    assert.match(issues[0].message, /CVE-2026-123007/);
+    assert.match(issues[0].suggestion, /1\.30\.7 or 1\.31\.9/);
+    assert.match(issues[0].suggestion, /[Rr]estart/);
+  }
+  for (const server of ['nginx/1.30.7', 'nginx/1.31.9', 'nginx/1.9.4', 'Apache/2.4.62', 'cloudflare']) {
+    assert.deepEqual(await run(home(server)), [], server);
+  }
+});
+
+test('nginx with a hidden version is flagged only when HTTP/2 is negotiated', async () => {
+  const map = { '/': { status: 200, body: '<html>home</html>', headers: { 'content-type': 'text/html', server: 'nginx' } } };
+  const seen = [];
+  const h2 = await run(map, { alpnImpl: async (url) => { seen.push(url); return 'h2'; } });
+  assert.deepEqual(ids(h2), ['security/nginx-version-hidden']);
+  assert.equal(h2[0].severity, 'medium');
+  assert.deepEqual(seen, [SITE]);
+  assert.deepEqual(await run(map, { alpnImpl: async () => 'http/1.1' }), []);
+  assert.deepEqual(await run(map, { alpnImpl: async () => null }), []);
+});

@@ -268,6 +268,8 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/ioc-scan-truncated` | Compromise scan truncated |
 | `security/ioc-twig-template-injection` | Twig template injection payload |
 | `security/ioc-webshell-pattern` | Webshell pattern in a PHP file |
+| `security/nginx-version-hidden` | nginx with HTTP/2 and a hidden version |
+| `security/nginx-vulnerable` | nginx release with known vulnerabilities |
 | `security/php-allow-url-include` | allow_url_include enabled |
 | `security/php-dangerous-functions-unrestricted` | disable_functions explicitly empty |
 | `security/php-display-errors` | display_errors enabled |

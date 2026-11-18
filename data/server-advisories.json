@@ -1,0 +1,20 @@
+[
+  {
+    "id": "CVE-2026-123007",
+    "ghsa": "",
+    "package": "nginx",
+    "title": "NGINX2Root: HTTP/2 flow-control integer overflow lets an unauthenticated attacker run code as the nginx worker. The same releases fix CVE-2026-123634, CVE-2026-123633, CVE-2026-121810 and CVE-2026-113425",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 1.9.5, < 1.30.7",
+        "fixedIn": "1.30.7"
+      },
+      {
+        "vulnerable": ">= 1.31.0, < 1.31.9",
+        "fixedIn": "1.31.9"
+      }
+    ],
+    "url": "https://nginx2root.com/"
+  }
+]
