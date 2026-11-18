@@ -110,17 +110,17 @@ test('control panel public: 200 and 302 to login', async () => {
   assert.deepEqual(issues, []);
 });
 
-test('version disclosure with PHP EOL rules', async () => {
+test('PHP EOL rules from X-Powered-By; the header itself is left to the header check', async () => {
   let issues = await run({ '/': { status: 200, body: 'x', headers: { 'x-powered-by': 'Craft CMS' } } });
-  assert.deepEqual(ids(issues), ['security/version-disclosure']);
+  assert.deepEqual(issues, []);
   issues = await run({ '/': { status: 200, body: 'x', headers: { 'x-powered-by': 'PHP/8.1.27' } } });
-  assert.deepEqual(ids(issues), ['security/php-eol-live', 'security/version-disclosure']);
+  assert.deepEqual(ids(issues), ['security/php-eol-live']);
   assert.equal(issues.find((i) => i.ruleId === 'security/php-eol-live').severity, 'high');
   issues = await run({ '/': { status: 200, body: 'x', headers: { 'x-powered-by': 'PHP/8.2.5' } } });
-  assert.deepEqual(ids(issues), ['security/php-eol-soon', 'security/version-disclosure']);
+  assert.deepEqual(ids(issues), ['security/php-eol-soon']);
   assert.equal(issues.find((i) => i.ruleId === 'security/php-eol-soon').severity, 'medium');
   issues = await run({ '/': { status: 200, body: 'x', headers: { 'x-powered-by': 'PHP/8.4.1' } } });
-  assert.deepEqual(ids(issues), ['security/version-disclosure']);
+  assert.deepEqual(issues, []);
 });
 
 test('soft-404 site yields zero issues', async () => {
