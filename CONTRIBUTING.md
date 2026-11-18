@@ -89,8 +89,7 @@ src/
     └── utils.ts            #   Shared integration helpers
 
 data/                       # External data files
-├── known-cves.json         #   Craft CMS core CVEs
-└── known-plugin-cves.json  #   Plugin CVEs
+└── advisories.json         #   Core, plugin and dependency advisories
 
 examples/rules/             # Example custom rules
 php/                        # PHP helper for template analysis
@@ -236,12 +235,7 @@ pnpm run test:watch
 
 ## CVE Database
 
-Craft Audit ships two CVE data files:
-
-| File | Contents |
-|------|----------|
-| `data/known-cves.json` | Craft CMS core vulnerabilities |
-| `data/known-plugin-cves.json` | Plugin vulnerabilities |
+Craft Audit ships one advisory data file, `data/advisories.json`. It holds one entry per advisory and package: Craft CMS core, every Craft plugin on Packagist, and the libraries listed in `CORE_DEPENDENCIES` in `src/commands/update-cves.ts`. Entries on the CISA Known Exploited Vulnerabilities catalog carry `"kev": true` and report as critical.
 
 ### Updating from GitHub Advisory Database
 
@@ -249,11 +243,11 @@ Craft Audit ships two CVE data files:
 pnpm run build && node dist/cli.js update-cves
 ```
 
-This fetches the latest advisories from the GitHub Advisory Database and merges them into the local JSON files.
+This rebuilds `data/advisories.json` from the GitHub Advisory Database and the CISA KEV catalog. Set `GITHUB_TOKEN` to lift the unauthenticated rate limit. The command refuses to write a result with no Craft core advisories or with less than half the previous entries, since that means a query broke.
 
 ### Manually Adding a CVE
 
-Add an entry to the appropriate JSON file following the existing schema (id, affected version range, severity, description, URL).
+Prefer fixing the upstream advisory: the next `update-cves` run rewrites the file. To add a package to the tracked set, add it to `CORE_DEPENDENCIES`.
 
 ---
 

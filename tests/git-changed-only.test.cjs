@@ -182,3 +182,79 @@ test('isValidGitRef accepts relative refs with tilde and caret', () => {
   assert.equal(isValidGitRef('HEAD..main'), false);
   assert.equal(isValidGitRef('ref\x00bad'), false);
 });
+
+test('changed-only helper does not run an fsmonitor command from the audited repo', { skip: !hasGit() }, () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-fsmonitor-'));
+  const templatesDir = path.join(repoRoot, 'templates');
+  fs.mkdirSync(templatesDir, { recursive: true });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
+
+  initTestRepo(repoRoot);
+  execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
+
+  const marker = path.join(repoRoot, 'pwned');
+  const script = path.join(repoRoot, 'fsmonitor.sh');
+  fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\n`, { mode: 0o755 });
+  execFileSync('git', ['config', 'core.fsmonitor', script], { cwd: repoRoot, stdio: 'ignore' });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "changed" }}\n', 'utf8');
+
+  getChangedTemplateIssuePaths(repoRoot, templatesDir);
+  assert.equal(fs.existsSync(marker), false, 'the repository fsmonitor command ran');
+});
+
+test('changed-only helper does not run clean filters from the audited repo', { skip: !hasGit() }, () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-filter-'));
+  const templatesDir = path.join(repoRoot, 'templates');
+  fs.mkdirSync(templatesDir, { recursive: true });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
+  fs.writeFileSync(path.join(repoRoot, '.gitattributes'), '*.twig filter=evil\n', 'utf8');
+
+  initTestRepo(repoRoot);
+  execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
+
+  const marker = path.join(repoRoot, 'pwned');
+  const script = path.join(repoRoot, 'filter.sh');
+  fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\ncat\n`, { mode: 0o755 });
+  for (const key of ['clean', 'smudge', 'process']) {
+    execFileSync('git', ['config', `filter.evil.${key}`, script], { cwd: repoRoot, stdio: 'ignore' });
+  }
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "changed" }}\n', 'utf8');
+
+  const changed = getChangedTemplateIssuePaths(repoRoot, templatesDir);
+  assert.equal(fs.existsSync(marker), false, 'the repository clean filter ran');
+  assert.ok(changed.has('a.twig'), 'the modified template is still reported');
+});
+
+test('changed-only helper neutralizes filter drivers whose names contain "="', { skip: !hasGit() }, () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-git-filter-eq-'));
+  const templatesDir = path.join(repoRoot, 'templates');
+  fs.mkdirSync(templatesDir, { recursive: true });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "a" }}\n', 'utf8');
+  fs.writeFileSync(path.join(repoRoot, '.gitattributes'), '*.twig filter=x=y\n', 'utf8');
+
+  initTestRepo(repoRoot);
+  execFileSync('git', ['add', '.'], { cwd: repoRoot, stdio: 'ignore' });
+  execFileSync('git', ['commit', '-m', 'init'], { cwd: repoRoot, stdio: 'ignore' });
+
+  const marker = path.join(repoRoot, 'pwned');
+  const script = path.join(repoRoot, 'filter.sh');
+  fs.writeFileSync(script, `#!/bin/sh\ntouch "${marker}"\ncat\n`, { mode: 0o755 });
+  execFileSync('git', ['config', 'filter.x=y.clean', script], { cwd: repoRoot, stdio: 'ignore' });
+  fs.writeFileSync(path.join(templatesDir, 'a.twig'), '{{ "changed" }}\n', 'utf8');
+
+  getChangedTemplateIssuePaths(repoRoot, templatesDir);
+  assert.equal(fs.existsSync(marker), false, 'a filter driver named with "=" ran');
+});
+
+
+test('git older than 2.31 counts as unavailable, since it ignores the override environment', () => {
+  const { supportsConfigEnv } = __testUtils;
+  assert.equal(supportsConfigEnv('git version 2.56.1'), true);
+  assert.equal(supportsConfigEnv('git version 2.31.0.windows.1'), true);
+  assert.equal(supportsConfigEnv('git version 3.0.0'), true);
+  assert.equal(supportsConfigEnv('git version 2.30.9'), false);
+  assert.equal(supportsConfigEnv('git version 1.9.5'), false);
+  assert.equal(supportsConfigEnv('not git'), false);
+});

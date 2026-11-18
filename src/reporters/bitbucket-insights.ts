@@ -1,3 +1,4 @@
+import { countHighOrWorse } from '../core/summary';
 import { AuditIssue, AuditResult } from '../types';
 
 type BitbucketReportResult = 'PASSED' | 'FAILED';
@@ -62,7 +63,7 @@ function truncate(value: string, max = 300): string {
 }
 
 function mapReportType(result: AuditResult): BitbucketReportType {
-  if (result.summary.high > 0 && result.issues.some((issue) => issue.category === 'security')) return 'SECURITY';
+  if (countHighOrWorse(result.summary) > 0 && result.issues.some((issue) => issue.category === 'security')) return 'SECURITY';
   return 'BUG';
 }
 
@@ -77,7 +78,7 @@ function mapAnnotationType(issue: AuditIssue): BitbucketAnnotationType {
 }
 
 function mapAnnotationSeverity(issue: AuditIssue): BitbucketAnnotationSeverity {
-  if (issue.severity === 'high') return 'CRITICAL';
+  if (issue.severity === 'critical' || issue.severity === 'high') return 'CRITICAL';
   if (issue.severity === 'medium') return 'HIGH';
   if (issue.severity === 'low') return 'MEDIUM';
   return 'LOW';
@@ -121,13 +122,14 @@ export class BitbucketInsightsReporter {
     const report: BitbucketReportPayload = {
       title: `Craft Audit (${result.summary.total} findings)`,
       details:
-        `High: ${result.summary.high}, Medium: ${result.summary.medium}, Low: ${result.summary.low}, Info: ${result.summary.info}`,
+        `Critical: ${result.summary.critical}, High: ${result.summary.high}, Medium: ${result.summary.medium}, Low: ${result.summary.low}, Info: ${result.summary.info}`,
       report_type: mapReportType(result),
       result: mapReportResult(result),
       reporter: 'craft-audit',
       link: options?.reportLink,
       data: [
         { title: 'Total Findings', type: 'NUMBER', value: result.summary.total },
+        { title: 'Critical', type: 'NUMBER', value: result.summary.critical },
         { title: 'High', type: 'NUMBER', value: result.summary.high },
         { title: 'Medium', type: 'NUMBER', value: result.summary.medium },
         { title: 'Low', type: 'NUMBER', value: result.summary.low },

@@ -1,0 +1,6367 @@
+[
+  {
+    "id": "CVE-2020-11056",
+    "ghsa": "GHSA-px8v-hxxx-2rgh",
+    "package": "barrelstrength/sprout-forms",
+    "title": "Potential Code Injection in Sprout Forms",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 3.9.0",
+        "fixedIn": "3.9.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-px8v-hxxx-2rgh"
+  },
+  {
+    "id": "CVE-2024-5658",
+    "ghsa": "GHSA-96qm-hwhp-2rm8",
+    "package": "born05/craft-twofactorauthentication",
+    "title": "Improper Authentication in CraftCMS two factor authentication plugin",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.3.4",
+        "fixedIn": "3.3.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-96qm-hwhp-2rm8"
+  },
+  {
+    "id": "CVE-2024-5657",
+    "ghsa": "GHSA-3p4x-grpm-xw58",
+    "package": "born05/craft-twofactorauthentication",
+    "title": "Password hash exposed in CraftCMS two factor authentication plugin",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.3.1, < 3.3.4",
+        "fixedIn": "3.3.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3p4x-grpm-xw58"
+  },
+  {
+    "id": "CVE-2026-84361",
+    "ghsa": "GHSA-rvx4-ffvw-m9q3",
+    "package": "composer/composer",
+    "title": "Composer arbitrary command execution via a malicious package's Perforce source URL",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.10.3",
+        "fixedIn": "2.10.3"
+      },
+      {
+        "vulnerable": ">= 1.0, < 2.2.30",
+        "fixedIn": "2.2.30"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-rvx4-ffvw-m9q3"
+  },
+  {
+    "id": "CVE-2026-59948",
+    "ghsa": "GHSA-499r-g7pc-vmp9",
+    "package": "composer/composer",
+    "title": "Composer: Arbitrary file write outside vendor via malicious transitive package name",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.10.2",
+        "fixedIn": "2.10.2"
+      },
+      {
+        "vulnerable": ">= 1.0.0, < 2.2.29",
+        "fixedIn": "2.2.29"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-499r-g7pc-vmp9"
+  },
+  {
+    "id": "CVE-2026-59947",
+    "ghsa": "GHSA-g6xq-892h-64w3",
+    "package": "composer/composer",
+    "title": "Composer: URL-embedded HTTP-Basic username leaks to verbose logs (GitHub PAT exposure)",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.10.2",
+        "fixedIn": "2.10.2"
+      },
+      {
+        "vulnerable": ">= 1.0.0, < 2.2.29",
+        "fixedIn": "2.2.29"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-g6xq-892h-64w3"
+  },
+  {
+    "id": "CVE-2026-59946",
+    "ghsa": "GHSA-gjfg-22fp-rrxx",
+    "package": "composer/composer",
+    "title": "Composer: Path traversal in package bin field lets dependencies chmod arbitrary host files",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.10.2",
+        "fixedIn": "2.10.2"
+      },
+      {
+        "vulnerable": ">= 1.0.0, < 2.2.29",
+        "fixedIn": "2.2.29"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-gjfg-22fp-rrxx"
+  },
+  {
+    "id": "CVE-2026-59944",
+    "ghsa": "GHSA-96h3-5x6v-m776",
+    "package": "composer/composer",
+    "title": "Composer: GHSA-gjfg-22fp-rrxx fix bypass via symlinked package bin path",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.10.3",
+        "fixedIn": "2.10.3"
+      },
+      {
+        "vulnerable": ">= 1.0, < 2.2.30",
+        "fixedIn": "2.2.30"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-96h3-5x6v-m776"
+  },
+  {
+    "id": "CVE-2026-45793",
+    "ghsa": "GHSA-f9f8-rm49-7jv2",
+    "package": "composer/composer",
+    "title": "Github Actions issued GITHUB_TOKEN disclosure in GitHub Actions logs",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.9.8",
+        "fixedIn": "2.9.8"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.2.28",
+        "fixedIn": "2.2.28"
+      },
+      {
+        "vulnerable": ">= 1.0, < 1.10.28",
+        "fixedIn": "1.10.28"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f9f8-rm49-7jv2"
+  },
+  {
+    "id": "CVE-2026-40261",
+    "ghsa": "GHSA-gqw4-4w2p-838q",
+    "package": "composer/composer",
+    "title": "Composer has a command injection via malicious perforce reference",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.9.6",
+        "fixedIn": "2.9.6"
+      },
+      {
+        "vulnerable": ">= 1.0.0, < 2.2.27",
+        "fixedIn": "2.2.27"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-gqw4-4w2p-838q"
+  },
+  {
+    "id": "CVE-2026-40176",
+    "ghsa": "GHSA-wg36-wvj6-r67p",
+    "package": "composer/composer",
+    "title": "Composer has a command injection via malicious perforce repository",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.0, < 2.9.6",
+        "fixedIn": "2.9.6"
+      },
+      {
+        "vulnerable": ">= 1.0.0, < 2.2.27",
+        "fixedIn": "2.2.27"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wg36-wvj6-r67p"
+  },
+  {
+    "id": "CVE-2025-67746",
+    "ghsa": "GHSA-59pp-r3rg-353g",
+    "package": "composer/composer",
+    "title": "Composer is vulnerable to ANSI sequence injection",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.2.26",
+        "fixedIn": "2.2.26"
+      },
+      {
+        "vulnerable": ">= 2.3.0, < 2.9.3",
+        "fixedIn": "2.9.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-59pp-r3rg-353g"
+  },
+  {
+    "id": "CVE-2024-35242",
+    "ghsa": "GHSA-v9qv-c7wm-wgmf",
+    "package": "composer/composer",
+    "title": "Composer has multiple command injections via malicious git/hg branch names",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0, < 2.2.24",
+        "fixedIn": "2.2.24"
+      },
+      {
+        "vulnerable": ">= 2.3, < 2.7.7",
+        "fixedIn": "2.7.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v9qv-c7wm-wgmf"
+  },
+  {
+    "id": "CVE-2024-35241",
+    "ghsa": "GHSA-47f6-5gq3-vx9c",
+    "package": "composer/composer",
+    "title": "Composer has a command injection via malicious git branch name",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0, < 2.2.24",
+        "fixedIn": "2.2.24"
+      },
+      {
+        "vulnerable": ">= 2.3, < 2.7.7",
+        "fixedIn": "2.7.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-47f6-5gq3-vx9c"
+  },
+  {
+    "id": "CVE-2024-24821",
+    "ghsa": "GHSA-7c6p-848j-wh5h",
+    "package": "composer/composer",
+    "title": "Composer code execution and possible privilege escalation via compromised InstalledVersions.php or installed.php",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0-alpha1, < 2.2.23",
+        "fixedIn": "2.2.23"
+      },
+      {
+        "vulnerable": ">= 2.3.0-rc1, < 2.7.0",
+        "fixedIn": "2.7.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7c6p-848j-wh5h"
+  },
+  {
+    "id": "CVE-2023-43655",
+    "ghsa": "GHSA-jm6m-4632-36hf",
+    "package": "composer/composer",
+    "title": "Composer Remote Code Execution vulnerability via web-accessible composer.phar",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.10.27",
+        "fixedIn": "1.10.27"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.2.22",
+        "fixedIn": "2.2.22"
+      },
+      {
+        "vulnerable": ">= 2.3.0, < 2.6.4",
+        "fixedIn": "2.6.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jm6m-4632-36hf"
+  },
+  {
+    "id": "CVE-2022-24828",
+    "ghsa": "GHSA-x7cr-6qr6-2hh6",
+    "package": "composer/composer",
+    "title": "Missing input validation can lead to command execution in composer",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.10.26",
+        "fixedIn": "1.10.26"
+      },
+      {
+        "vulnerable": ">= 2.0, < 2.2.12",
+        "fixedIn": "2.2.12"
+      },
+      {
+        "vulnerable": ">= 2.3, < 2.3.5",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x7cr-6qr6-2hh6"
+  },
+  {
+    "id": "CVE-2021-41116",
+    "ghsa": "GHSA-frqg-7g38-6gcf",
+    "package": "composer/composer",
+    "title": "Improper escaping of command arguments on Windows leading to command injection",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.10.23",
+        "fixedIn": "1.10.23"
+      },
+      {
+        "vulnerable": ">= 2.0.0-alpha1, < 2.1.9",
+        "fixedIn": "2.1.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-frqg-7g38-6gcf"
+  },
+  {
+    "id": "CVE-2021-29472",
+    "ghsa": "GHSA-h5h8-pc6h-jvvx",
+    "package": "composer/composer",
+    "title": "Composer's missing argument delimiter can lead to code execution via VCS repository URLs or source download URLs on systems with Mercurial",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.10.22",
+        "fixedIn": "1.10.22"
+      },
+      {
+        "vulnerable": ">= 2.0.0-alpha1, < 2.0.13",
+        "fixedIn": "2.0.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h5h8-pc6h-jvvx"
+  },
+  {
+    "id": "CVE-2015-8371",
+    "ghsa": "GHSA-725m-w832-q973",
+    "package": "composer/composer",
+    "title": "Composer allows cache poisoning from other projects built on the same host",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 1.0.0-alpha11",
+        "fixedIn": "1.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-725m-w832-q973"
+  },
+  {
+    "id": "CVE-2026-32265",
+    "ghsa": "GHSA-hwj7-4vgc-j3v9",
+    "package": "craftcms/aws-s3",
+    "title": "Amazon S3 for Craft CMS has an Information Disclosure vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.2, <= 2.2.4",
+        "fixedIn": "2.2.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-hwj7-4vgc-j3v9"
+  },
+  {
+    "id": "CVE-2026-32268",
+    "ghsa": "GHSA-q6fm-p73f-x862",
+    "package": "craftcms/azure-blob",
+    "title": "Azure Blob Storage for Craft CMS Potential Sensitive Information Disclosure vulnerability",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0-beta.1, <= 2.1.0",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q6fm-p73f-x862"
+  },
+  {
+    "id": "GHSA-wg23-69c2-gjc8",
+    "ghsa": "GHSA-wg23-69c2-gjc8",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Passkey login accepts replayed WebAuthn assertions",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.5",
+        "fixedIn": "5.10.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wg23-69c2-gjc8"
+  },
+  {
+    "id": "GHSA-wf98-vxv9-jqfv",
+    "ghsa": "GHSA-wf98-vxv9-jqfv",
+    "package": "craftcms/cms",
+    "title": "XSS Injection Vulnerability",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 3.7.29",
+        "fixedIn": "3.7.29"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wf98-vxv9-jqfv"
+  },
+  {
+    "id": "GHSA-p8x7-9vfw-p7vc",
+    "ghsa": "GHSA-p8x7-9vfw-p7vc",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Arbitrary user password reset leading to administrator account takeover",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.8",
+        "fixedIn": "5.10.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-p8x7-9vfw-p7vc"
+  },
+  {
+    "id": "GHSA-2rp4-x2j7-qmcc",
+    "ghsa": "GHSA-2rp4-x2j7-qmcc",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Stored XSS in the control panel via unescaped draft name",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.8",
+        "fixedIn": "5.10.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2rp4-x2j7-qmcc"
+  },
+  {
+    "id": "CVE-2026-72785",
+    "ghsa": "GHSA-xxpx-f366-4xpq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authorization bypass: view-only Categories user can modify category structure via structures/move-element",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.6",
+        "fixedIn": "5.10.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xxpx-f366-4xpq"
+  },
+  {
+    "id": "CVE-2026-72783",
+    "ghsa": "GHSA-7hxc-f267-h5q7",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Incorrect path validation could potentially lead to path traversal",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.6",
+        "fixedIn": "5.10.6"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.2",
+        "fixedIn": "4.18.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7hxc-f267-h5q7"
+  },
+  {
+    "id": "CVE-2026-72782",
+    "ghsa": "GHSA-596p-6jv8-775v",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authenticated leak of secret environment variables",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.6",
+        "fixedIn": "5.10.6"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.2",
+        "fixedIn": "4.18.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-596p-6jv8-775v"
+  },
+  {
+    "id": "CVE-2026-72781",
+    "ghsa": "GHSA-f5wm-88jv-g5hx",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authenticated RCE through Twig sandbox escape",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.7",
+        "fixedIn": "5.10.7"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.3",
+        "fixedIn": "4.18.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f5wm-88jv-g5hx"
+  },
+  {
+    "id": "CVE-2026-72779",
+    "ghsa": "GHSA-957r-qf9p-67xw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Arbitrary file read via SplFileObject in non-sandboxed template contexts",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.6",
+        "fixedIn": "5.10.6"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.2",
+        "fixedIn": "4.18.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-957r-qf9p-67xw"
+  },
+  {
+    "id": "CVE-2026-72778",
+    "ghsa": "GHSA-265m-7826-wjqm",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authenticated RCE via `condition.config` JSON cleanse bypass",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.6",
+        "fixedIn": "5.10.6"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.2",
+        "fixedIn": "4.18.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-265m-7826-wjqm"
+  },
+  {
+    "id": "CVE-2026-56394",
+    "ghsa": "GHSA-c43v-4cr8-6mvp",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has authenticated path traversal in `assets/icon`, allowing local `.svg` file read",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.6",
+        "fixedIn": "4.17.7"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.12",
+        "fixedIn": "5.9.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-c43v-4cr8-6mvp"
+  },
+  {
+    "id": "CVE-2026-56393",
+    "ghsa": "GHSA-4mgv-366x-qxvx",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Stored XSS in Settings Names and Field Options",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4mgv-366x-qxvx"
+  },
+  {
+    "id": "CVE-2026-56385",
+    "ghsa": "GHSA-44px-qjjc-xrhq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authorized asset \"preview file\" requests bypass allows users without asset access to retrieve private preview metadata",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.7",
+        "fixedIn": "4.17.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-44px-qjjc-xrhq"
+  },
+  {
+    "id": "CVE-2026-56384",
+    "ghsa": "GHSA-x76w-8c62-48mg",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authenticated \"assets/preview-thumb\" discloses signed fallback transform preview link to CP users without asset-view permission",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.7",
+        "fixedIn": "4.17.8"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x76w-8c62-48mg"
+  },
+  {
+    "id": "CVE-2026-56383",
+    "ghsa": "GHSA-6j87-m5qx-9fqp",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has Stored XSS in Table Field in its \"Row Heading\" Column Type",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.5.0-beta.1, <= 4.16.18",
+        "fixedIn": "4.16.19"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.22",
+        "fixedIn": "5.8.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6j87-m5qx-9fqp"
+  },
+  {
+    "id": "CVE-2026-56382",
+    "ghsa": "GHSA-86vw-x4ww-x467",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: RCE via missing cleanseConfig in FieldsController::actionRenderCardPreview",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.5.0, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-86vw-x4ww-x467"
+  },
+  {
+    "id": "CVE-2026-56381",
+    "ghsa": "GHSA-g3hp-vvqf-8vw6",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Stored XSS via User Group Name in User Permissions Page",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-g3hp-vvqf-8vw6"
+  },
+  {
+    "id": "CVE-2026-55794",
+    "ghsa": "GHSA-f74w-488g-8x5r",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Potential authenticated Remote Code Execution via referrer redirect",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.9.0, < 5.10.0",
+        "fixedIn": "5.10.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f74w-488g-8x5r"
+  },
+  {
+    "id": "CVE-2026-55793",
+    "ghsa": "GHSA-xrqc-p465-2xvg",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Stored XSS via Structure entry title in table view",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.22",
+        "fixedIn": "5.9.53"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xrqc-p465-2xvg"
+  },
+  {
+    "id": "CVE-2026-55792",
+    "ghsa": "GHSA-287w-mxq6-x2cp",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Sensitive File Disclosure / Server-Side File Read",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.0",
+        "fixedIn": "4.18.0"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.0",
+        "fixedIn": "5.10.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-287w-mxq6-x2cp"
+  },
+  {
+    "id": "CVE-2026-55791",
+    "ghsa": "GHSA-c55v-343g-5xff",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Blind SSRF and Arbitrary JavaScript Injection via Host Header Poisoning in actionResourceJs",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10",
+        "fixedIn": "5.10"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18",
+        "fixedIn": "4.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-c55v-343g-5xff"
+  },
+  {
+    "id": "CVE-2026-55790",
+    "ghsa": "GHSA-24x4-j6x9-rfw5",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: DOM XSS via GitHub issue title in CraftSupport widget",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.22",
+        "fixedIn": "5.9.23"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.15",
+        "fixedIn": "4.17.16"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-24x4-j6x9-rfw5"
+  },
+  {
+    "id": "CVE-2026-50284",
+    "ghsa": "GHSA-7h62-6v23-v8fm",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Missing peer-permission check in `AssetsController::actionDeleteFolder` allows deletion of other users' assets",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.22",
+        "fixedIn": "5.9.22"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.15",
+        "fixedIn": "4.17.15"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7h62-6v23-v8fm"
+  },
+  {
+    "id": "CVE-2026-50283",
+    "ghsa": "GHSA-qh45-9g5p-m2v4",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Unauthorized Deletion of Source Assets During File Replacement",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.21",
+        "fixedIn": "5.9.21"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.14",
+        "fixedIn": "4.17.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qh45-9g5p-m2v4"
+  },
+  {
+    "id": "CVE-2026-50282",
+    "ghsa": "GHSA-3w32-23wj-rxg3",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Unauthorized Deletion of Destination Folders During Forced Moves",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.21",
+        "fixedIn": "5.9.21"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.14",
+        "fixedIn": "4.17.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3w32-23wj-rxg3"
+  },
+  {
+    "id": "CVE-2026-50281",
+    "ghsa": "GHSA-x5m4-g2cq-52pq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS's mass assignment via id in newAttributes during bulk duplicate overwrites existing elements",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.7.0, < 5.9.21",
+        "fixedIn": "5.9.21"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x5m4-g2cq-52pq"
+  },
+  {
+    "id": "CVE-2026-50280",
+    "ghsa": "GHSA-43cq-c2gq-pfpw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authorization bypass in `entries/move-to-section` via missing target-section save check",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.21",
+        "fixedIn": "5.9.21"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-43cq-c2gq-pfpw"
+  },
+  {
+    "id": "CVE-2026-50279",
+    "ghsa": "GHSA-qq2c-2q8j-jh27",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Authorship spoofing in `entries/save-entry` via pre-check/post-mutation authorization gap",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.21",
+        "fixedIn": "5.9.21"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qq2c-2q8j-jh27"
+  },
+  {
+    "id": "CVE-2026-44012",
+    "ghsa": "GHSA-33m5-hqp9-97pw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS's Missing Volume Permission Check in AssetsController::actionShowInFolder Allows Information Disclosure",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.18",
+        "fixedIn": "5.9.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-33m5-hqp9-97pw"
+  },
+  {
+    "id": "CVE-2026-44011",
+    "ghsa": "GHSA-qrgm-p9w5-rrfw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has Potential Authenticated Remote Code Execution via Malicious Attached Behavior",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, < 4.17.12",
+        "fixedIn": "4.17.12"
+      },
+      {
+        "vulnerable": ">= 5.0.0, < 5.9.18",
+        "fixedIn": "5.9.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qrgm-p9w5-rrfw"
+  },
+  {
+    "id": "CVE-2026-44010",
+    "ghsa": "GHSA-gj2p-p9m4-c8gw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS's Missing Authorization in GraphQL Address Resolver Allows Cross-Scope PII Disclosure",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, < 5.9.18",
+        "fixedIn": "5.9.18"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.17.12",
+        "fixedIn": "4.17.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-gj2p-p9m4-c8gw"
+  },
+  {
+    "id": "CVE-2026-41130",
+    "ghsa": "GHSA-95wr-3f2v-v2wh",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has a host header injection leading to SSRF via resource-js endpoint",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.14",
+        "fixedIn": "5.9.15"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.8",
+        "fixedIn": "4.17.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-95wr-3f2v-v2wh"
+  },
+  {
+    "id": "CVE-2026-41129",
+    "ghsa": "GHSA-3m9m-24vh-39wx",
+    "package": "craftcms/cms",
+    "title": "Server-Side Request Forgery (SSRF) in Craft CMS with Asset Uploads Mutations",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.14",
+        "fixedIn": "5.9.15"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.8",
+        "fixedIn": "4.17.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3m9m-24vh-39wx"
+  },
+  {
+    "id": "CVE-2026-41128",
+    "ghsa": "GHSA-jq2f-59pj-p3m3",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has a Missing Authorization Check on User Group Removal via save-permissions Action",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.6.0, < 5.9.15",
+        "fixedIn": "5.9.15"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jq2f-59pj-p3m3"
+  },
+  {
+    "id": "CVE-2026-33162",
+    "ghsa": "GHSA-f582-6gf6-gx4g",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has an authorization bypass which allows any control panel user to move entries without permissions",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.3.0, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f582-6gf6-gx4g"
+  },
+  {
+    "id": "CVE-2026-33161",
+    "ghsa": "GHSA-vgjg-248p-rfm2",
+    "package": "craftcms/cms",
+    "title": "Craft CMS' anonymous \"assets/image-editor\" calls return private asset editor metadata to unauthorized users",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.7",
+        "fixedIn": "4.17.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vgjg-248p-rfm2"
+  },
+  {
+    "id": "CVE-2026-33160",
+    "ghsa": "GHSA-5pgf-h923-m958",
+    "package": "craftcms/cms",
+    "title": "Craft CMS may expose private assets through anonymous \"generate transform\" calls via transform URL",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.7",
+        "fixedIn": "4.17.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5pgf-h923-m958"
+  },
+  {
+    "id": "CVE-2026-33159",
+    "ghsa": "GHSA-6mrr-q3pj-h53w",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Unauthenticated Users Can Perform Restricted Project Config Sync Operations",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.7",
+        "fixedIn": "4.17.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6mrr-q3pj-h53w"
+  },
+  {
+    "id": "CVE-2026-33158",
+    "ghsa": "GHSA-3pvf-vxrv-hh9c",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Low-privilege users could read private asset contents when editing an asset (IDOR)",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.7",
+        "fixedIn": "4.17.8"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.13",
+        "fixedIn": "5.9.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3pvf-vxrv-hh9c"
+  },
+  {
+    "id": "CVE-2026-33157",
+    "ghsa": "GHSA-2fph-6v5w-89hh",
+    "package": "craftcms/cms",
+    "title": "Craft CMS is Vulnerable to Authenticated Remote Code Execution via Malicious Attached Behavior",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.6.0, <= 5.9.12",
+        "fixedIn": "5.9.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2fph-6v5w-89hh"
+  },
+  {
+    "id": "CVE-2026-33051",
+    "ghsa": "GHSA-3x4w-mxpf-fhqq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Stored XSS in Revision Context Menu",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.9.0-beta.1, <= 5.9.10",
+        "fixedIn": "5.9.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3x4w-mxpf-fhqq"
+  },
+  {
+    "id": "CVE-2026-32267",
+    "ghsa": "GHSA-cc7p-2j3x-x7xf",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Privilege Escalation/Bypass through UsersController->actionImpersonateWithToken()",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.5",
+        "fixedIn": "4.17.6"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.11",
+        "fixedIn": "5.9.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cc7p-2j3x-x7xf"
+  },
+  {
+    "id": "CVE-2026-32264",
+    "ghsa": "GHSA-4484-8v2f-5748",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to behavior injection RCE ElementIndexesController and FieldsController",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.4",
+        "fixedIn": "4.17.5"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.10",
+        "fixedIn": "5.9.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4484-8v2f-5748"
+  },
+  {
+    "id": "CVE-2026-32263",
+    "ghsa": "GHSA-qx2q-q59v-wf3j",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to behavior injection RCE via EntryTypesController",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.6.0, <= 5.9.10",
+        "fixedIn": "5.9.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qx2q-q59v-wf3j"
+  },
+  {
+    "id": "CVE-2026-32262",
+    "ghsa": "GHSA-472v-j2g4-g9h2",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has a Path Traversal Vulnerability in AssetsController",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.17.4",
+        "fixedIn": "4.17.5"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.10",
+        "fixedIn": "5.9.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-472v-j2g4-g9h2"
+  },
+  {
+    "id": "CVE-2026-31859",
+    "ghsa": "GHSA-fvwq-45qv-xvhv",
+    "package": "craftcms/cms",
+    "title": "CraftCMS vulnerable to reflective XSS via incomplete return URL sanitization",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.15.3, <= 4.17.2",
+        "fixedIn": "4.17.3"
+      },
+      {
+        "vulnerable": ">= 5.7.5, <= 5.9.6",
+        "fixedIn": "5.9.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fvwq-45qv-xvhv"
+  },
+  {
+    "id": "CVE-2026-31858",
+    "ghsa": "GHSA-g7j6-fmwx-7vp8",
+    "package": "craftcms/cms",
+    "title": "CraftCMS's `ElementSearchController` Affected by Blind SQL Injection",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.8",
+        "fixedIn": "5.9.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-g7j6-fmwx-7vp8"
+  },
+  {
+    "id": "CVE-2026-31857",
+    "ghsa": "GHSA-fp5j-j7j4-mcxc",
+    "package": "craftcms/cms",
+    "title": "CraftCMS has an RCE vulnerability via relational conditionals in the control panel",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.9.8",
+        "fixedIn": "5.9.9"
+      },
+      {
+        "vulnerable": ">= 4.0.0-beta.1, <= 4.17.3",
+        "fixedIn": "4.17.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fp5j-j7j4-mcxc"
+  },
+  {
+    "id": "CVE-2026-29113",
+    "ghsa": "GHSA-vg3j-hpm9-8v5v",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has a potential information disclosure vulnerability in preview tokens",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.3",
+        "fixedIn": "4.17.3"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.7",
+        "fixedIn": "5.9.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vg3j-hpm9-8v5v"
+  },
+  {
+    "id": "CVE-2026-29069",
+    "ghsa": "GHSA-234q-vvw3-mrfq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has unauthenticated activation email trigger with potential user enumeration",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.2",
+        "fixedIn": "5.9.0-beta.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.2",
+        "fixedIn": "4.17.0-beta.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-234q-vvw3-mrfq"
+  },
+  {
+    "id": "CVE-2026-28784",
+    "ghsa": "GHSA-qc86-q28f-ggww",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has potential authenticated Remote Code Execution via Twig SSTI",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qc86-q28f-ggww"
+  },
+  {
+    "id": "CVE-2026-28783",
+    "ghsa": "GHSA-5fvc-7894-ghp4",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has Twig Function Blocklist Bypass",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5fvc-7894-ghp4"
+  },
+  {
+    "id": "CVE-2026-28782",
+    "ghsa": "GHSA-jxm3-pmm2-9gf6",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has Permission Bypass and IDOR in Duplicate Entry Action",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jxm3-pmm2-9gf6"
+  },
+  {
+    "id": "CVE-2026-28781",
+    "ghsa": "GHSA-2xfc-g69j-x2mp",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Entries Authorship Spoofing via Mass Assignment",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2xfc-g69j-x2mp"
+  },
+  {
+    "id": "CVE-2026-28697",
+    "ghsa": "GHSA-v47q-jxvr-p68x",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Authenticated RCE via \"craft.app.fs.write()\" in Twig Templates",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v47q-jxvr-p68x"
+  },
+  {
+    "id": "CVE-2026-28696",
+    "ghsa": "GHSA-7x43-mpfg-r9wj",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has IDOR via GraphQL @parseRefs",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7x43-mpfg-r9wj"
+  },
+  {
+    "id": "CVE-2026-28695",
+    "ghsa": "GHSA-94rc-cqvm-m4pw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Authenticated RCE via Twig SSTI - create() function + Symfony Process gadget",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.8.7, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-94rc-cqvm-m4pw"
+  },
+  {
+    "id": "CVE-2026-27129",
+    "ghsa": "GHSA-v2gc-rm6g-wrw9",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Cloud Metadata SSRF Protection Bypass via IPv6 Resolution",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.22",
+        "fixedIn": "5.8.23"
+      },
+      {
+        "vulnerable": ">= 3.5.0, <= 4.16.18",
+        "fixedIn": "4.16.19"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v2gc-rm6g-wrw9"
+  },
+  {
+    "id": "CVE-2026-27128",
+    "ghsa": "GHSA-6fx5-5cw5-4897",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Race condition in Token Service potentially allows for token usage greater than the token limit",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.5.0-RC1, <= 4.16.18",
+        "fixedIn": "4.16.19"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.22",
+        "fixedIn": "5.8.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6fx5-5cw5-4897"
+  },
+  {
+    "id": "CVE-2026-27127",
+    "ghsa": "GHSA-gp2f-7wcm-5fhx",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has Cloud Metadata SSRF Protection Bypass via DNS Rebinding",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.22",
+        "fixedIn": "5.8.23"
+      },
+      {
+        "vulnerable": ">= 3.5.0, <= 4.16.18",
+        "fixedIn": "4.16.19"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-gp2f-7wcm-5fhx"
+  },
+  {
+    "id": "CVE-2026-27126",
+    "ghsa": "GHSA-3jh3-prx3-w6wc",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has Stored XSS in Table Field via \"HTML\" Column Type",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.5.0-RC1, <= 4.16.18",
+        "fixedIn": "4.16.19"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.22",
+        "fixedIn": "5.8.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3jh3-prx3-w6wc"
+  },
+  {
+    "id": "CVE-2026-25498",
+    "ghsa": "GHSA-7jx7-3846-m7w7",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to potential authenticated Remote Code Execution via malicious attached Behavior",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.17",
+        "fixedIn": "4.16.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7jx7-3846-m7w7"
+  },
+  {
+    "id": "CVE-2026-25497",
+    "ghsa": "GHSA-fxp3-g6gw-4r4v",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: GraphQL Asset Mutation Privilege Escalation",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.9.0-beta.1",
+        "fixedIn": "5.9.0-beta.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.17.0-beta.1",
+        "fixedIn": "4.17.0-beta.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fxp3-g6gw-4r4v"
+  },
+  {
+    "id": "CVE-2026-25496",
+    "ghsa": "GHSA-9f5h-mmq6-2x78",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Stored XSS in Number Prefix & Suffix Fields",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.17",
+        "fixedIn": "4.16.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9f5h-mmq6-2x78"
+  },
+  {
+    "id": "CVE-2026-25495",
+    "ghsa": "GHSA-2453-mppf-46cj",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to SQL Injection in Element Indexes via `criteria[orderBy]`",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.17",
+        "fixedIn": "4.16.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2453-mppf-46cj"
+  },
+  {
+    "id": "CVE-2026-25494",
+    "ghsa": "GHSA-m5r2-8p9x-hp5m",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to SSRF in GraphQL Asset Mutation via Alternative IP Notation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.17",
+        "fixedIn": "4.16.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m5r2-8p9x-hp5m"
+  },
+  {
+    "id": "CVE-2026-25493",
+    "ghsa": "GHSA-8jr8-7hr4-vhfx",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to SSRF in GraphQL Asset Mutation via HTTP Redirect",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.17",
+        "fixedIn": "4.16.18"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8jr8-7hr4-vhfx"
+  },
+  {
+    "id": "CVE-2026-25491",
+    "ghsa": "GHSA-7pr4-wx9w-mqwr",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Stored XSS in Entry Types Name",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.21",
+        "fixedIn": "5.8.22"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7pr4-wx9w-mqwr"
+  },
+  {
+    "id": "CVE-2026-14794",
+    "ghsa": "GHSA-rvmm-v933-jgxq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Missing authorization check allows non-admin control panel users access to user registration metrics",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.1",
+        "fixedIn": "4.18.1"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.3",
+        "fixedIn": "5.10.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-rvmm-v933-jgxq"
+  },
+  {
+    "id": "CVE-2026-14793",
+    "ghsa": "GHSA-9p7c-v5x3-rfx8",
+    "package": "craftcms/cms",
+    "title": "Craft CMS: Missing authorization check allows non-admin control panel users to reorder Global Sets",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.18.1",
+        "fixedIn": "4.18.1"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.10.3",
+        "fixedIn": "5.10.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9p7c-v5x3-rfx8"
+  },
+  {
+    "id": "CVE-2025-68456",
+    "ghsa": "GHSA-v64r-7wg9-23pr",
+    "package": "craftcms/cms",
+    "title": "Unauthenticated Craft CMS users can trigger a database backup",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.20",
+        "fixedIn": "5.8.21"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 4.16.16",
+        "fixedIn": "4.16.17"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v64r-7wg9-23pr"
+  },
+  {
+    "id": "CVE-2025-68455",
+    "ghsa": "GHSA-255j-qw47-wjh5",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to potential authenticated Remote Code Execution via malicious attached Behavior",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.20",
+        "fixedIn": "5.8.21"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.16",
+        "fixedIn": "4.16.17"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-255j-qw47-wjh5"
+  },
+  {
+    "id": "CVE-2025-68454",
+    "ghsa": "GHSA-742x-x762-7383",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to potential authenticated Remote Code Execution via Twig SSTI",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.20",
+        "fixedIn": "5.8.21"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.16",
+        "fixedIn": "4.16.17"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-742x-x762-7383"
+  },
+  {
+    "id": "CVE-2025-68437",
+    "ghsa": "GHSA-x27p-wfqw-hfcc",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to Server-Side Request Forgery (SSRF) via GraphQL Asset Upload Mutation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.20",
+        "fixedIn": "5.8.21"
+      },
+      {
+        "vulnerable": ">= 3.5.0, <= 4.16.16",
+        "fixedIn": "4.16.17"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x27p-wfqw-hfcc"
+  },
+  {
+    "id": "CVE-2025-68436",
+    "ghsa": "GHSA-53vf-c43h-j2x9",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to potential information disclosure via unchecked asset relocation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.20",
+        "fixedIn": "5.8.21"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.16",
+        "fixedIn": "4.16.17"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-53vf-c43h-j2x9"
+  },
+  {
+    "id": "CVE-2025-57811",
+    "ghsa": "GHSA-crcq-738g-pqvc",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Potential Remote Code Execution via Twig SSTI",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.16.5",
+        "fixedIn": "4.16.6"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.8.6",
+        "fixedIn": "5.8.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-crcq-738g-pqvc"
+  },
+  {
+    "id": "CVE-2025-54417",
+    "ghsa": "GHSA-2vcf-qxv3-2mgw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has a theoretical bypass for CVE-2025-23209",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.13.8, < 4.16.3",
+        "fixedIn": "4.16.3"
+      },
+      {
+        "vulnerable": ">= 5.5.8, < 5.8.4",
+        "fixedIn": "5.8.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2vcf-qxv3-2mgw"
+  },
+  {
+    "id": "CVE-2025-46731",
+    "ghsa": "GHSA-7c58-g782-9j38",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Contains a Potential Remote Code Execution Vulnerability via Twig SSTI",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.14.12",
+        "fixedIn": "4.14.13"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.6.14",
+        "fixedIn": "5.6.15"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7c58-g782-9j38"
+  },
+  {
+    "id": "CVE-2025-35939",
+    "ghsa": "GHSA-7vrx-9684-xrf2",
+    "package": "craftcms/cms",
+    "title": "Craft CMS stores arbitrary content provided by unauthenticated users in session files",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-alpha.1, < 5.7.5",
+        "fixedIn": "5.7.5"
+      },
+      {
+        "vulnerable": "< 4.15.3",
+        "fixedIn": "4.15.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7vrx-9684-xrf2",
+    "kev": true
+  },
+  {
+    "id": "CVE-2025-32432",
+    "ghsa": "GHSA-f3gw-9ww9-jmc3",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Allows Remote Code Execution",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0-RC1, <= 3.9.14",
+        "fixedIn": "3.9.15"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.14.14",
+        "fixedIn": "4.14.15"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.6.16",
+        "fixedIn": "5.6.17"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f3gw-9ww9-jmc3",
+    "kev": true
+  },
+  {
+    "id": "CVE-2025-23209",
+    "ghsa": "GHSA-x684-96hh-833x",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has a potential RCE with a compromised security key",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.5.5",
+        "fixedIn": "5.5.8"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.13.8",
+        "fixedIn": "4.13.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x684-96hh-833x",
+    "kev": true
+  },
+  {
+    "id": "CVE-2024-56145",
+    "ghsa": "GHSA-2p6p-9rc9-62j9",
+    "package": "craftcms/cms",
+    "title": "Craft CMS has potential RCE when PHP `register_argc_argv` config setting is enabled",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, < 5.5.2",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.13.2",
+        "fixedIn": "4.13.2"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.9.14",
+        "fixedIn": "3.9.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2p6p-9rc9-62j9",
+    "kev": true
+  },
+  {
+    "id": "CVE-2024-52293",
+    "ghsa": "GHSA-f3cw-hg6r-chfv",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to Potential Remote Code Execution via missing path normalization & Twig SSTI",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.12.1",
+        "fixedIn": "4.12.2"
+      },
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.4.2",
+        "fixedIn": "5.4.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f3cw-hg6r-chfv"
+  },
+  {
+    "id": "CVE-2024-52292",
+    "ghsa": "GHSA-cw6g-qmjq-6w2w",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Arbitrary System File Read",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-alpha.1, <= 5.4.7.1",
+        "fixedIn": "5.4.9"
+      },
+      {
+        "vulnerable": ">= 3.5.13, <= 4.12.6.1",
+        "fixedIn": "4.12.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cw6g-qmjq-6w2w"
+  },
+  {
+    "id": "CVE-2024-52291",
+    "ghsa": "GHSA-jrh5-vhr9-qh7q",
+    "package": "craftcms/cms",
+    "title": "Local File System Validation Bypass Leading to File Overwrite, Sensitive File Access, and Potential Code Execution",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.4.5.1",
+        "fixedIn": "5.4.6"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.12.4.1",
+        "fixedIn": "4.12.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jrh5-vhr9-qh7q"
+  },
+  {
+    "id": "CVE-2024-45406",
+    "ghsa": "GHSA-28h4-788g-rh42",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to stored XSS in breadcrumb list and title fields",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, < 5.1.2",
+        "fixedIn": "5.1.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-28h4-788g-rh42"
+  },
+  {
+    "id": "CVE-2024-41800",
+    "ghsa": "GHSA-wmx7-pw49-88jx",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Allows TOTP Token To Stay Valid After Use",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-beta.1, <= 5.2.2",
+        "fixedIn": "5.2.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wmx7-pw49-88jx"
+  },
+  {
+    "id": "CVE-2024-37843",
+    "ghsa": "GHSA-hq4f-mv3q-8wcv",
+    "package": "craftcms/cms",
+    "title": "Craft CMS SQL injection vulnerability via the GraphQL API endpoint",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.7.31",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-hq4f-mv3q-8wcv"
+  },
+  {
+    "id": "CVE-2024-21622",
+    "ghsa": "GHSA-j5g9-j7r4-6qvx",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.5.10",
+        "fixedIn": "4.5.11"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 3.9.5",
+        "fixedIn": "3.9.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j5g9-j7r4-6qvx"
+  },
+  {
+    "id": "CVE-2023-41892",
+    "ghsa": "GHSA-4w8r-3xrw-v25g",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Remote Code Execution vulnerability",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.4.14",
+        "fixedIn": "4.4.15"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4w8r-3xrw-v25g"
+  },
+  {
+    "id": "CVE-2023-40035",
+    "ghsa": "GHSA-44wr-rmwq-3phw",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to Remote Code Execution via validatePath bypass",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.4.14",
+        "fixedIn": "4.4.15"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 3.8.14",
+        "fixedIn": "3.8.15"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-44wr-rmwq-3phw"
+  },
+  {
+    "id": "CVE-2023-36260",
+    "ghsa": "GHSA-6p78-f7h9-6838",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Feed-Me",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 4.6.2",
+        "fixedIn": "4.6.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6p78-f7h9-6838"
+  },
+  {
+    "id": "CVE-2023-33495",
+    "ghsa": "GHSA-m3v5-gjj9-rg24",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to HTML injection",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 4.4.9",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m3v5-gjj9-rg24"
+  },
+  {
+    "id": "CVE-2023-33197",
+    "ghsa": "GHSA-6qjx-787v-6pxr",
+    "package": "craftcms/cms",
+    "title": "Craft CMS stored XSS in indexedVolumes",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.4.5",
+        "fixedIn": "4.4.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6qjx-787v-6pxr"
+  },
+  {
+    "id": "CVE-2023-33196",
+    "ghsa": "GHSA-cjmm-x9x9-m2w5",
+    "package": "craftcms/cms",
+    "title": "Craft CMS stored XSS in review volume",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.4.6",
+        "fixedIn": "4.4.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cjmm-x9x9-m2w5"
+  },
+  {
+    "id": "CVE-2023-33195",
+    "ghsa": "GHSA-qpgm-gjgf-8c2x",
+    "package": "craftcms/cms",
+    "title": "Craft CMS XSS in RSS widget feed",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.3.0, <= 4.4.5",
+        "fixedIn": "4.4.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qpgm-gjgf-8c2x"
+  },
+  {
+    "id": "CVE-2023-33194",
+    "ghsa": "GHSA-3wxg-w96j-8hq9",
+    "package": "craftcms/cms",
+    "title": "CraftCMS stored XSS in Quick Post widget error message",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.4.6",
+        "fixedIn": "4.4.6"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 3.8.5",
+        "fixedIn": "3.8.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3wxg-w96j-8hq9"
+  },
+  {
+    "id": "CVE-2023-32679",
+    "ghsa": "GHSA-vqxf-r9ph-cc9c",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to Remote Code Execution via unrestricted file extension ",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, < 4.4.6",
+        "fixedIn": "4.4.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vqxf-r9ph-cc9c"
+  },
+  {
+    "id": "CVE-2023-31144",
+    "ghsa": "GHSA-j4mx-98hw-6rv6",
+    "package": "craftcms/cms",
+    "title": "craftcms/cms vulnerable to cross site scripting in RSS feed widget",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, <= 3.8.3",
+        "fixedIn": "3.8.4"
+      },
+      {
+        "vulnerable": ">= 4.0.0, <= 4.4.3",
+        "fixedIn": "4.4.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j4mx-98hw-6rv6"
+  },
+  {
+    "id": "CVE-2023-30177",
+    "ghsa": "GHSA-wv7j-rc2q-9j67",
+    "package": "craftcms/cms",
+    "title": "Cross Site Scripting in CraftCMS",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.7.68",
+        "fixedIn": "3.7.68"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wv7j-rc2q-9j67"
+  },
+  {
+    "id": "CVE-2023-30130",
+    "ghsa": "GHSA-fjx5-xm7q-whvj",
+    "package": "craftcms/cms",
+    "title": "CraftCMS allows remote attacker to execute arbitrary code via crafted script to Section parameter",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.8.1",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fjx5-xm7q-whvj"
+  },
+  {
+    "id": "CVE-2023-2817",
+    "ghsa": "GHSA-7x94-jx75-3gh6",
+    "package": "craftcms/cms",
+    "title": "Stored cross site scripting in Craft CMS",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.4.12",
+        "fixedIn": "4.4.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7x94-jx75-3gh6"
+  },
+  {
+    "id": "CVE-2023-23927",
+    "ghsa": "GHSA-qcrj-6ffc-v7hq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Stored Cross-site Scripting Injection Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.3.7",
+        "fixedIn": "4.3.7"
+      },
+      {
+        "vulnerable": ">= 3.7.24, < 3.7.64",
+        "fixedIn": "3.7.64"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qcrj-6ffc-v7hq"
+  },
+  {
+    "id": "CVE-2022-37783",
+    "ghsa": "GHSA-h972-v458-m892",
+    "package": "craftcms/cms",
+    "title": "Craft CMS discloses password hashes",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, <= 3.7.32",
+        "fixedIn": "3.7.33"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h972-v458-m892"
+  },
+  {
+    "id": "CVE-2022-37251",
+    "ghsa": "GHSA-mw37-wx8p-gp45",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to Cross-site Scripting via entry revisions and drafts",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.7.0-beta.1, < 3.7.55.2",
+        "fixedIn": "3.7.55.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.2.1",
+        "fixedIn": "4.2.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-mw37-wx8p-gp45"
+  },
+  {
+    "id": "CVE-2022-37250",
+    "ghsa": "GHSA-8r89-x93x-mjq2",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Stored Cross-site Scripting in User Addresses Title",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.2.1",
+        "fixedIn": "4.2.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8r89-x93x-mjq2"
+  },
+  {
+    "id": "CVE-2022-37248",
+    "ghsa": "GHSA-wxvf-839f-jqmh",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Cross site Scripting vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.2.1",
+        "fixedIn": "4.2.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wxvf-839f-jqmh"
+  },
+  {
+    "id": "CVE-2022-37247",
+    "ghsa": "GHSA-3cvm-7wrh-qrf9",
+    "package": "craftcms/cms",
+    "title": "Craft CMS vulnerable to stored Cross-site Scripting via /admin/settings/fields page",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.2.1",
+        "fixedIn": "4.2.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3cvm-7wrh-qrf9"
+  },
+  {
+    "id": "CVE-2022-37246",
+    "ghsa": "GHSA-f546-v666-559x",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Cross-site Scripting vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0-RC1, < 4.2.1",
+        "fixedIn": "4.2.1"
+      },
+      {
+        "vulnerable": ">= 3.7.39, < 3.7.51",
+        "fixedIn": "3.7.51"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f546-v666-559x"
+  },
+  {
+    "id": "CVE-2022-29933",
+    "ghsa": "GHSA-5cjr-78cq-3wrg",
+    "package": "craftcms/cms",
+    "title": "Improper account password reset in Craft CMS",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 3.7.36",
+        "fixedIn": "3.7.36"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5cjr-78cq-3wrg"
+  },
+  {
+    "id": "CVE-2022-28378",
+    "ghsa": "GHSA-7xj5-fwqr-5378",
+    "package": "craftcms/cms",
+    "title": "Cross-site Scripting in craftcms/cms",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.7.29",
+        "fixedIn": "3.7.29"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7xj5-fwqr-5378"
+  },
+  {
+    "id": "CVE-2021-41824",
+    "ghsa": "GHSA-h7vq-5qgw-jwwq",
+    "package": "craftcms/cms",
+    "title": "CSV Injection Vulnerability",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.4.0, < 3.7.14",
+        "fixedIn": "3.7.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h7vq-5qgw-jwwq"
+  },
+  {
+    "id": "CVE-2021-32470",
+    "ghsa": "GHSA-h2rj-8wgg-mm43",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.6.13",
+        "fixedIn": "3.6.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h2rj-8wgg-mm43"
+  },
+  {
+    "id": "CVE-2021-27903",
+    "ghsa": "GHSA-x2j7-6hxm-87p3",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Remote Code Injection",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 3.6.7",
+        "fixedIn": "3.6.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x2j7-6hxm-87p3"
+  },
+  {
+    "id": "CVE-2021-27902",
+    "ghsa": "GHSA-3jxh-789f-p7m6",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.6.0",
+        "fixedIn": "3.6.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3jxh-789f-p7m6"
+  },
+  {
+    "id": "CVE-2020-19626",
+    "ghsa": "GHSA-33jj-92px-m4g7",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.1.33",
+        "fixedIn": "3.1.33"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-33jj-92px-m4g7"
+  },
+  {
+    "id": "CVE-2019-17496",
+    "ghsa": "GHSA-f3xr-q258-h7m9",
+    "package": "craftcms/cms",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.3.8",
+        "fixedIn": "3.3.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f3xr-q258-h7m9"
+  },
+  {
+    "id": "CVE-2019-15929",
+    "ghsa": "GHSA-wvr4-w6cw-4px8",
+    "package": "craftcms/cms",
+    "title": "Craft CMS possibility of brute force attempts",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 3.1.7",
+        "fixedIn": "3.1.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wvr4-w6cw-4px8"
+  },
+  {
+    "id": "CVE-2019-12823",
+    "ghsa": "GHSA-w5q4-q7wp-qww6",
+    "package": "craftcms/cms",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.1.31",
+        "fixedIn": "3.1.31"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-w5q4-q7wp-qww6"
+  },
+  {
+    "id": "CVE-2018-3814",
+    "ghsa": "GHSA-r342-vjc4-wrmj",
+    "package": "craftcms/cms",
+    "title": "Craft CMS PHP Code Injection Vulnerability",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 2.6.3000",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r342-vjc4-wrmj"
+  },
+  {
+    "id": "CVE-2018-20465",
+    "ghsa": "GHSA-j7fx-v37j-v3w7",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Vulnerable to Server-Side Template Injection",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.0.34",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j7fx-v37j-v3w7"
+  },
+  {
+    "id": "CVE-2018-20418",
+    "ghsa": "GHSA-72pf-cvwq-vgqg",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Cross-site Scripting (XSS) Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.0.25",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-72pf-cvwq-vgqg"
+  },
+  {
+    "id": "CVE-2017-9516",
+    "ghsa": "GHSA-6pvw-hh48-jx7p",
+    "package": "craftcms/cms",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.6.2982",
+        "fixedIn": "2.6.2982"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6pvw-hh48-jx7p"
+  },
+  {
+    "id": "CVE-2017-8385",
+    "ghsa": "GHSA-j27g-r58q-624w",
+    "package": "craftcms/cms",
+    "title": "Craft CMS subject to URL forgery",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.6.2976",
+        "fixedIn": "2.6.2976"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j27g-r58q-624w"
+  },
+  {
+    "id": "CVE-2017-8384",
+    "ghsa": "GHSA-9mcw-mwxv-grwj",
+    "package": "craftcms/cms",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.6.2976",
+        "fixedIn": "2.6.2976"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9mcw-mwxv-grwj"
+  },
+  {
+    "id": "CVE-2017-8383",
+    "ghsa": "GHSA-7qq6-fgpw-xw45",
+    "package": "craftcms/cms",
+    "title": "Craft CMS Unauthorized View",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.6.2976",
+        "fixedIn": "2.6.2976"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7qq6-fgpw-xw45"
+  },
+  {
+    "id": "CVE-2017-8052",
+    "ghsa": "GHSA-xv5f-2997-qhrq",
+    "package": "craftcms/cms",
+    "title": "Craft CMS XSS Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.6.2974",
+        "fixedIn": "2.6.2974"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xv5f-2997-qhrq"
+  },
+  {
+    "id": "GHSA-78vr-q6cf-c7p6",
+    "ghsa": "GHSA-78vr-q6cf-c7p6",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce: Partial Payment Amount Without Lower Bound Validation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.6.4",
+        "fixedIn": "5.6.5"
+      },
+      {
+        "vulnerable": ">= 4.0.0, <= 4.11.1",
+        "fixedIn": "4.11.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-78vr-q6cf-c7p6"
+  },
+  {
+    "id": "CVE-2026-55795",
+    "ghsa": "GHSA-h5gm-x9wr-vhcm",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce: Coupon Code Brute-Force via Rate Limit Bypass",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.6.4",
+        "fixedIn": "5.6.5"
+      },
+      {
+        "vulnerable": ">= 4.0.0, <= 4.11.1",
+        "fixedIn": "4.11.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h5gm-x9wr-vhcm"
+  },
+  {
+    "id": "CVE-2026-32272",
+    "ghsa": "GHSA-r54v-qq87-px5r",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce hasVariant/hasProduct Blind SQL Injection",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, < 5.6.0",
+        "fixedIn": "5.6.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r54v-qq87-px5r"
+  },
+  {
+    "id": "CVE-2026-32271",
+    "ghsa": "GHSA-875v-7m49-8x88",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has a SQL Injection can lead to Remote Code Execution via TotalRevenue Widget",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 4.10.2",
+        "fixedIn": "4.10.3"
+      },
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.4",
+        "fixedIn": "5.5.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-875v-7m49-8x88"
+  },
+  {
+    "id": "CVE-2026-32270",
+    "ghsa": "GHSA-3vxg-x5f8-f5qf",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has an unauthenticated information disclosure that can leak some customer order data on anonymous payments",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.4",
+        "fixedIn": "5.6.0"
+      },
+      {
+        "vulnerable": ">= 4.0.0, <= 4.10.2",
+        "fixedIn": "4.11.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3vxg-x5f8-f5qf"
+  },
+  {
+    "id": "CVE-2026-31867",
+    "ghsa": "GHSA-vff3-pqq8-4cpq",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce: Potential IDOR in Commerce carts",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, < 5.6.0",
+        "fixedIn": "5.6.0"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.11.0",
+        "fixedIn": "4.11.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vff3-pqq8-4cpq"
+  },
+  {
+    "id": "CVE-2026-29177",
+    "ghsa": "GHSA-mj32-r678-7mvp",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has stored XSS in Craft Commerce Order Details Slideout",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 4.10.1",
+        "fixedIn": "4.10.2"
+      },
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.2",
+        "fixedIn": "5.5.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-mj32-r678-7mvp"
+  },
+  {
+    "id": "CVE-2026-29176",
+    "ghsa": "GHSA-wj89-2385-gpx3",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has stored XSS in Inventory Location Name",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.2",
+        "fixedIn": "5.5.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wj89-2385-gpx3"
+  },
+  {
+    "id": "CVE-2026-29175",
+    "ghsa": "GHSA-cfpv-rmpf-f624",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has multiple Stored XSS in Commerce Inventory Page, Leading to Session Hijacking",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.2",
+        "fixedIn": "5.5.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cfpv-rmpf-f624"
+  },
+  {
+    "id": "CVE-2026-29174",
+    "ghsa": "GHSA-pmgj-gmm4-jh6j",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce is vulnerable to SQL Injection in Commerce Inventory Table Sorting",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.2",
+        "fixedIn": "5.5.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-pmgj-gmm4-jh6j"
+  },
+  {
+    "id": "CVE-2026-29173",
+    "ghsa": "GHSA-mqxf-2998-c6cp",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce is Vulnerable to Stored XSS while updating Order Status from Orders Table",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 4.10.1",
+        "fixedIn": "4.10.2"
+      },
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.2",
+        "fixedIn": "5.5.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-mqxf-2998-c6cp"
+  },
+  {
+    "id": "CVE-2026-29172",
+    "ghsa": "GHSA-j3x5-mghf-xvfw",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce is Vulnerable to SQL Injection in Commerce Purchasables Table Sorting",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 4.10.1",
+        "fixedIn": "4.10.2"
+      },
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.2",
+        "fixedIn": "5.5.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j3x5-mghf-xvfw"
+  },
+  {
+    "id": "CVE-2026-25522",
+    "ghsa": "GHSA-h9r9-2pxg-cx9m",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored XSS in Shipping Zone (Name & Description) Fields Leading to Potential Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h9r9-2pxg-cx9m"
+  },
+  {
+    "id": "CVE-2026-25490",
+    "ghsa": "GHSA-wq2m-r96q-crrf",
+    "package": "craftcms/commerce",
+    "title": " Craft Commerce has Stored XSS in Inventory Location Address Leading to Potential Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wq2m-r96q-crrf"
+  },
+  {
+    "id": "CVE-2026-25489",
+    "ghsa": "GHSA-v585-mf6r-rqrc",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored XSS in Tax Zones (Name & Description) Leading to Potential Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v585-mf6r-rqrc"
+  },
+  {
+    "id": "CVE-2026-25488",
+    "ghsa": "GHSA-p6w8-q63m-72c8",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored XSS in Tax Categories (Name & Description) Fields Leading to Potential Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-p6w8-q63m-72c8"
+  },
+  {
+    "id": "CVE-2026-25487",
+    "ghsa": "GHSA-wqc5-485v-3hqh",
+    "package": "craftcms/commerce",
+    "title": "Craft CMS has Stored XSS in Tax Rates Name Leading to Potential Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wqc5-485v-3hqh"
+  },
+  {
+    "id": "CVE-2026-25486",
+    "ghsa": "GHSA-g92v-wpv7-6w22",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored XSS in Shipping Methods Name Field Leading to Potential Privilege Escalation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0-RC1, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-g92v-wpv7-6w22"
+  },
+  {
+    "id": "CVE-2026-25484",
+    "ghsa": "GHSA-2h2m-v2mg-656c",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored XSS in Product Type Name",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2h2m-v2mg-656c"
+  },
+  {
+    "id": "CVE-2026-25483",
+    "ghsa": "GHSA-8478-rmjg-mjj5",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored XSS via Order Status Message with potential database exfiltration",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8478-rmjg-mjj5"
+  },
+  {
+    "id": "CVE-2026-25482",
+    "ghsa": "GHSA-frj9-9rwc-pw9j",
+    "package": "craftcms/commerce",
+    "title": "Craft Commerce has Stored DOM XSS in Order Status Name (Reflects in \"Recent Orders\" Dashboard Widget)",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.5.1",
+        "fixedIn": "5.5.2"
+      },
+      {
+        "vulnerable": ">= 4.0.0-RC1, <= 4.10.0",
+        "fixedIn": "4.10.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-frj9-9rwc-pw9j"
+  },
+  {
+    "id": "CVE-2026-32266",
+    "ghsa": "GHSA-67cr-jmh8-4jpq",
+    "package": "craftcms/google-cloud",
+    "title": "Google Cloud Storage for Craft CMS has an Information Disclosure Vulnerability",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0-beta.1, <= 2.2.0",
+        "fixedIn": "2.2.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-67cr-jmh8-4jpq"
+  },
+  {
+    "id": "CVE-2026-32261",
+    "ghsa": "GHSA-8wg7-wm29-2rvg",
+    "package": "craftcms/webhooks",
+    "title": "RCE via SSTI for users with permissions to access the Craft CMS Webhooks plugin",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.2.0",
+        "fixedIn": "3.2.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8wg7-wm29-2rvg"
+  },
+  {
+    "id": "CVE-2026-107381",
+    "ghsa": "GHSA-m9xh-6747-9r6f",
+    "package": "enshrined/svg-sanitize",
+    "title": "svg-sanitizer: Mixed-case xlink:HrEf skips the `<use>` nesting-DoS check in Resolver::processReferences",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 0.22.0",
+        "fixedIn": "1.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m9xh-6747-9r6f"
+  },
+  {
+    "id": "CVE-2026-107380",
+    "ghsa": "GHSA-9rjx-3jch-6vjf",
+    "package": "enshrined/svg-sanitize",
+    "title": "enshrined/svg-sanitize: Stored XSS via DTD Entity / HTML5 Named Character Reference Collision",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 0.22.0",
+        "fixedIn": "1.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9rjx-3jch-6vjf"
+  },
+  {
+    "id": "CVE-2026-107379",
+    "ghsa": "GHSA-v383-3rw5-q8rf",
+    "package": "enshrined/svg-sanitize",
+    "title": "enshrined/svg-sanitize: Denial of Service via DTD Attribute Declaration Crash",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 0.22.0",
+        "fixedIn": "1.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v383-3rw5-q8rf"
+  },
+  {
+    "id": "CVE-2025-55166",
+    "ghsa": "GHSA-22wq-q86m-83fh",
+    "package": "enshrined/svg-sanitize",
+    "title": "svg-sanitizer Bypasses Attribute Sanitization",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 0.22.0",
+        "fixedIn": "0.22.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-22wq-q86m-83fh"
+  },
+  {
+    "id": "CVE-2022-23638",
+    "ghsa": "GHSA-fqx8-v33p-4qcc",
+    "package": "enshrined/svg-sanitize",
+    "title": "Cross-site Scripting in enshrined/svg-sanitize",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 0.15.0",
+        "fixedIn": "0.15.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fqx8-v33p-4qcc"
+  },
+  {
+    "id": "CVE-2019-18857",
+    "ghsa": "GHSA-gf8j-v8x5-h9qp",
+    "package": "enshrined/svg-sanitize",
+    "title": "XSS in enshrined/svg-sanitize due to mishandled script and data values in attributes",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 0.12.0",
+        "fixedIn": "0.12.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-gf8j-v8x5-h9qp"
+  },
+  {
+    "id": "CVE-2019-10772",
+    "ghsa": "GHSA-8rc5-hx3v-2jg7",
+    "package": "enshrined/svg-sanitize",
+    "title": "Sanitizer bypass in svg-sanitizer",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 0.13.1",
+        "fixedIn": "0.13.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8rc5-hx3v-2jg7"
+  },
+  {
+    "id": "CVE-2021-32752",
+    "ghsa": "GHSA-fp63-499m-hq6m",
+    "package": "ether/logs",
+    "title": "Files or Directories Accessible to External Parties in ether/logs",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 3.0.4",
+        "fixedIn": "3.0.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fp63-499m-hq6m"
+  },
+  {
+    "id": "GHSA-h533-5v22-8vcp",
+    "ghsa": "GHSA-h533-5v22-8vcp",
+    "package": "firebase/php-jwt",
+    "title": "firebase/php-jwt: \"None\" Algorithm treated as valid on tokens",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.0",
+        "fixedIn": "2.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h533-5v22-8vcp"
+  },
+  {
+    "id": "CVE-2025-45769",
+    "ghsa": "GHSA-2x45-7fc3-mxwq",
+    "package": "firebase/php-jwt",
+    "title": "php-jwt contains weak encryption",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 7.0.0",
+        "fixedIn": "7.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2x45-7fc3-mxwq"
+  },
+  {
+    "id": "CVE-2021-46743",
+    "ghsa": "GHSA-8xf4-w7qw-pjjw",
+    "package": "firebase/php-jwt",
+    "title": "Firebase PHP-JWT key/algorithm type confusion",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 6.0.0",
+        "fixedIn": "6.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8xf4-w7qw-pjjw"
+  },
+  {
+    "id": "CVE-2026-69246",
+    "ghsa": "GHSA-v5mv-p594-2x33",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: Noncanonical host can bypass host-based checks",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 7.15.2",
+        "fixedIn": "7.15.2"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.1",
+        "fixedIn": "8.0.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v5mv-p594-2x33"
+  },
+  {
+    "id": "CVE-2026-69245",
+    "ghsa": "GHSA-f7vp-7xgx-4w4r",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: Noncanonical cookie domain keeps subdomain scope",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.15.2",
+        "fixedIn": "7.15.2"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.1",
+        "fixedIn": "8.0.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f7vp-7xgx-4w4r"
+  },
+  {
+    "id": "CVE-2026-67355",
+    "ghsa": "GHSA-wm3w-8rrp-j577",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: Host-only cookie scope is not preserved",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.15.1",
+        "fixedIn": "7.15.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wm3w-8rrp-j577"
+  },
+  {
+    "id": "CVE-2026-67354",
+    "ghsa": "GHSA-h95v-h523-3mw8",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: URI fragments disclosed in redirect Referer headers",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.15.1",
+        "fixedIn": "7.15.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h95v-h523-3mw8"
+  },
+  {
+    "id": "CVE-2026-67353",
+    "ghsa": "GHSA-f283-ghqc-fg79",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: Unbounded response cookies risk denial of service",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.15.1",
+        "fixedIn": "7.15.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f283-ghqc-fg79"
+  },
+  {
+    "id": "CVE-2026-67339",
+    "ghsa": "GHSA-94pj-82f3-465w",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: Proxy-Authorization headers can be sent to origin servers",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.14.2",
+        "fixedIn": "7.14.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-94pj-82f3-465w"
+  },
+  {
+    "id": "CVE-2026-59883",
+    "ghsa": "GHSA-g446-98w2-8p5w",
+    "package": "guzzlehttp/guzzle",
+    "title": "Guzzle: Cookie Disclosure and Injection via IP-Address Domains",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.12.3",
+        "fixedIn": "7.12.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-g446-98w2-8p5w"
+  },
+  {
+    "id": "CVE-2026-55767",
+    "ghsa": "GHSA-cwxw-98qj-8qjx",
+    "package": "guzzlehttp/guzzle",
+    "title": "guzzlehttp/guzzle: Dot-Only Cookie Domains Match All Hosts",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.12.1",
+        "fixedIn": "7.12.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cwxw-98qj-8qjx"
+  },
+  {
+    "id": "CVE-2026-55568",
+    "ghsa": "GHSA-wpwq-4j6v-78m3",
+    "package": "guzzlehttp/guzzle",
+    "title": "guzzlehttp/guzzle: Silent HTTPS-Proxy Downgrade to Cleartext",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 7.12.1",
+        "fixedIn": "7.12.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wpwq-4j6v-78m3"
+  },
+  {
+    "id": "CVE-2022-31091",
+    "ghsa": "GHSA-q559-8m2m-g699",
+    "package": "guzzlehttp/guzzle",
+    "title": "Change in port should be considered a change in origin",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 6.5.8",
+        "fixedIn": "6.5.8"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.5",
+        "fixedIn": "7.4.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q559-8m2m-g699"
+  },
+  {
+    "id": "CVE-2022-31090",
+    "ghsa": "GHSA-25mq-v84q-4j7r",
+    "package": "guzzlehttp/guzzle",
+    "title": "CURLOPT_HTTPAUTH option not cleared on change of origin",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 6.5.8",
+        "fixedIn": "6.5.8"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.5",
+        "fixedIn": "7.4.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-25mq-v84q-4j7r"
+  },
+  {
+    "id": "CVE-2022-31043",
+    "ghsa": "GHSA-w248-ffj2-4v5q",
+    "package": "guzzlehttp/guzzle",
+    "title": "Fix failure to strip Authorization header on HTTP downgrade",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.4",
+        "fixedIn": "7.4.4"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 6.5.7",
+        "fixedIn": "6.5.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-w248-ffj2-4v5q"
+  },
+  {
+    "id": "CVE-2022-31042",
+    "ghsa": "GHSA-f2wf-25xc-69c9",
+    "package": "guzzlehttp/guzzle",
+    "title": "Failure to strip the Cookie header on change in host or HTTP downgrade",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.4",
+        "fixedIn": "7.4.4"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 6.5.7",
+        "fixedIn": "6.5.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f2wf-25xc-69c9"
+  },
+  {
+    "id": "CVE-2022-29248",
+    "ghsa": "GHSA-cwmx-hcrq-mhc3",
+    "package": "guzzlehttp/guzzle",
+    "title": "Cross-domain cookie leakage in Guzzle",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 6.5.6",
+        "fixedIn": "6.5.6"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.3",
+        "fixedIn": "7.4.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cwmx-hcrq-mhc3"
+  },
+  {
+    "id": "CVE-2016-5385",
+    "ghsa": "GHSA-m6ch-gg5f-wxx3",
+    "package": "guzzlehttp/guzzle",
+    "title": "HTTP Proxy header vulnerability",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 6, < 6.2.1",
+        "fixedIn": "6.2.1"
+      },
+      {
+        "vulnerable": ">= 4.0.0-rc2, < 4.2.4",
+        "fixedIn": "4.2.4"
+      },
+      {
+        "vulnerable": ">= 5, < 5.3.1",
+        "fixedIn": "5.3.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m6ch-gg5f-wxx3"
+  },
+  {
+    "id": "CVE-2026-59882",
+    "ghsa": "GHSA-c2w2-prh8-qm98",
+    "package": "guzzlehttp/psr7",
+    "title": "guzzlehttp/psr7: Host Confusion via Weak URI Host Validation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.12.3",
+        "fixedIn": "2.12.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-c2w2-prh8-qm98"
+  },
+  {
+    "id": "CVE-2026-55766",
+    "ghsa": "GHSA-vm85-hxw5-5432",
+    "package": "guzzlehttp/psr7",
+    "title": "guzzlehttp/psr7: CRLF Injection in HTTP Start-Line Serialization",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.12.1",
+        "fixedIn": "2.12.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vm85-hxw5-5432"
+  },
+  {
+    "id": "CVE-2026-49214",
+    "ghsa": "GHSA-hq7v-mx3g-29hw",
+    "package": "guzzlehttp/psr7",
+    "title": "guzzlehttp/psr7 has CRLF Injection via URI Host Component",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.10.2",
+        "fixedIn": "2.10.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-hq7v-mx3g-29hw"
+  },
+  {
+    "id": "CVE-2026-48998",
+    "ghsa": "GHSA-34xg-wgjx-8xph",
+    "package": "guzzlehttp/psr7",
+    "title": "guzzlehttp/psr7 has Host Confusion via Authority Reinterpretation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.10.2",
+        "fixedIn": "2.10.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-34xg-wgjx-8xph"
+  },
+  {
+    "id": "CVE-2023-29197",
+    "ghsa": "GHSA-wxmh-65f7-jcvw",
+    "package": "guzzlehttp/psr7",
+    "title": "Improper header name validation in guzzlehttp/psr7",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.9.1",
+        "fixedIn": "1.9.1"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.4.5",
+        "fixedIn": "2.4.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wxmh-65f7-jcvw"
+  },
+  {
+    "id": "CVE-2022-24775",
+    "ghsa": "GHSA-q7rv-6hp3-vh96",
+    "package": "guzzlehttp/psr7",
+    "title": "Improper Input Validation in guzzlehttp/psr7",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.8.4",
+        "fixedIn": "1.8.4"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q7rv-6hp3-vh96"
+  },
+  {
+    "id": "CVE-2026-102601",
+    "ghsa": "GHSA-cxf4-7mrp-vvpr",
+    "package": "league/flysystem",
+    "title": "Flysystem: WhitespacePathNormalizer's control-character (CorruptedPathDetected) check is bypassed by malformed UTF-8 in the path, affecting every adapter",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.35.2",
+        "fixedIn": "3.35.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cxf4-7mrp-vvpr"
+  },
+  {
+    "id": "CVE-2021-32708",
+    "ghsa": "GHSA-9f46-5r25-5wfm",
+    "package": "league/flysystem",
+    "title": "Time-of-check Time-of-use (TOCTOU) Race Condition in league/flysystem",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 1.1.4",
+        "fixedIn": "1.1.4"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9f46-5r25-5wfm"
+  },
+  {
+    "id": "CVE-2026-31317",
+    "ghsa": "GHSA-8wmw-prw8-2ggm",
+    "package": "markhuot/craftql",
+    "title": "Craftql vulnerable to Server-Side Request Forgery",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 1.3.7",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8wmw-prw8-2ggm"
+  },
+  {
+    "id": "CVE-2019-10774",
+    "ghsa": "GHSA-c7fv-wv9f-cgjw",
+    "package": "mikehaertl/php-shellcommand",
+    "title": "php-shellcommand command injection vulnerability",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 1.6.1",
+        "fixedIn": "1.6.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-c7fv-wv9f-cgjw"
+  },
+  {
+    "id": "GHSA-f57v-q966-7fh6",
+    "ghsa": "GHSA-f57v-q966-7fh6",
+    "package": "monolog/monolog",
+    "title": "Monolog Header injection in NativeMailerHandler",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 1.8.0, < 1.12.0",
+        "fixedIn": "1.12.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f57v-q966-7fh6"
+  },
+  {
+    "id": "CVE-2021-44618",
+    "ghsa": "GHSA-m3xv-x3ph-mq22",
+    "package": "nystudio107/craft-seomatic",
+    "title": "Server-side Template Injection in nystudio107/craft-seomatic",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 3.4.12",
+        "fixedIn": "3.4.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m3xv-x3ph-mq22"
+  },
+  {
+    "id": "CVE-2021-41750",
+    "ghsa": "GHSA-6hjc-m38h-7jhh",
+    "package": "nystudio107/craft-seomatic",
+    "title": "Cross-site Scripting in SEOmatic plugin",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.4.11",
+        "fixedIn": "3.4.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6hjc-m38h-7jhh"
+  },
+  {
+    "id": "CVE-2021-41749",
+    "ghsa": "GHSA-g7xr-v82w-qggq",
+    "package": "nystudio107/craft-seomatic",
+    "title": "Code Injection in SEOmatic",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 3.4.11",
+        "fixedIn": "3.4.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-g7xr-v82w-qggq"
+  },
+  {
+    "id": "CVE-2020-9757",
+    "ghsa": "GHSA-6q4j-8pjm-5mgc",
+    "package": "nystudio107/craft-seomatic",
+    "title": "SEOmatic for CraftCMS allows Server-Side Template Injection",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 3.3.0",
+        "fixedIn": "3.3.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6q4j-8pjm-5mgc"
+  },
+  {
+    "id": "CVE-2020-12790",
+    "ghsa": "GHSA-23q7-59jj-2pj4",
+    "package": "nystudio107/craft-seomatic",
+    "title": "SEOmatic for CraftCMS allows Server-Side Template Injection",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 3.2.49",
+        "fixedIn": "3.2.49"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-23q7-59jj-2pj4"
+  },
+  {
+    "id": "CVE-2018-14716",
+    "ghsa": "GHSA-6j9m-rp7m-3gfg",
+    "package": "nystudio107/craft-seomatic",
+    "title": "SEOmatic plugin for Craft CMS SSTI Vulnerability",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 3.1.4",
+        "fixedIn": "3.1.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6j9m-rp7m-3gfg"
+  },
+  {
+    "id": "CVE-2026-59933",
+    "ghsa": "GHSA-xh5m-36r6-47m3",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PHPSpreadsheet: XLS/OLE sector-chain self-loop causes memory exhaustion",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.8.0",
+        "fixedIn": "5.8.1"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.6",
+        "fixedIn": "3.10.7"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.6",
+        "fixedIn": "2.4.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.17",
+        "fixedIn": "2.1.18"
+      },
+      {
+        "vulnerable": "<= 1.30.5",
+        "fixedIn": "1.30.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xh5m-36r6-47m3"
+  },
+  {
+    "id": "CVE-2026-59932",
+    "ghsa": "GHSA-2mrg-gjxq-2gvr",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PHPSpreadsheet: Gnumeric reader unbounded gzip expansion causes memory exhaustion",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.8.0",
+        "fixedIn": "5.8.1"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.6",
+        "fixedIn": "3.10.7"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.6",
+        "fixedIn": "2.4.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.17",
+        "fixedIn": "2.1.18"
+      },
+      {
+        "vulnerable": "<= 1.30.5",
+        "fixedIn": "1.30.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2mrg-gjxq-2gvr"
+  },
+  {
+    "id": "CVE-2026-59931",
+    "ghsa": "GHSA-6hq5-7373-42rg",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PHPSpreadsheet: SSRF bypass via HTTP redirect in WEBSERVICE() domain whitelist",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.8.0",
+        "fixedIn": "5.8.1"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.6",
+        "fixedIn": "3.10.7"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.6",
+        "fixedIn": "2.4.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.17",
+        "fixedIn": "2.1.18"
+      },
+      {
+        "vulnerable": "<= 1.30.5",
+        "fixedIn": "1.30.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6hq5-7373-42rg"
+  },
+  {
+    "id": "CVE-2026-45034",
+    "ghsa": "GHSA-87m4-826x-3crx",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PHPSpreadsheet has a patch bypass for CVE-2026-34084 ",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "<= 1.30.4",
+        "fixedIn": "1.30.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-87m4-826x-3crx"
+  },
+  {
+    "id": "CVE-2026-40902",
+    "ghsa": "GHSA-7c6m-4442-2x6m",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has CPU Denial of Service via Unbounded Row Number in XLSX Row Dimensions",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.6.0",
+        "fixedIn": "5.7.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.4",
+        "fixedIn": "3.10.5"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.4",
+        "fixedIn": "2.4.5"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.15",
+        "fixedIn": "2.1.16"
+      },
+      {
+        "vulnerable": "<= 1.30.3",
+        "fixedIn": "1.30.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7c6m-4442-2x6m"
+  },
+  {
+    "id": "CVE-2026-40863",
+    "ghsa": "GHSA-84wq-86v6-x5j6",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has CPU Denial of Service via Unbounded Row Index in SpreadsheetML XML Reader",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.6.0",
+        "fixedIn": "5.7.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.4",
+        "fixedIn": "3.10.5"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.4",
+        "fixedIn": "2.4.5"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.15",
+        "fixedIn": "2.1.16"
+      },
+      {
+        "vulnerable": "<= 1.30.5",
+        "fixedIn": "1.30.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-84wq-86v6-x5j6"
+  },
+  {
+    "id": "CVE-2026-40296",
+    "ghsa": "GHSA-hrmw-qprp-wgmc",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has XSS via number format code with @ text placeholder bypasses htmlspecialchars in HTML writer",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.6.0",
+        "fixedIn": "5.7.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.4",
+        "fixedIn": "3.10.5"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.4",
+        "fixedIn": "2.4.5"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.15",
+        "fixedIn": "2.1.16"
+      },
+      {
+        "vulnerable": "<= 1.30.3",
+        "fixedIn": "1.30.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-hrmw-qprp-wgmc"
+  },
+  {
+    "id": "CVE-2026-35453",
+    "ghsa": "GHSA-6wpp-88cp-7q68",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has XSS via NumberFormat @ Text Substitution in HTML Writer",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.6.0",
+        "fixedIn": "5.7.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.4",
+        "fixedIn": "3.10.5"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.4",
+        "fixedIn": "2.4.5"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.15",
+        "fixedIn": "2.1.16"
+      },
+      {
+        "vulnerable": "<= 1.30.3",
+        "fixedIn": "1.30.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6wpp-88cp-7q68"
+  },
+  {
+    "id": "CVE-2026-34084",
+    "ghsa": "GHSA-q4q6-r8wh-5cgh",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has SSRF/RCE in IOFactory::load when $filename is user controlled",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.5.0",
+        "fixedIn": "5.6.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.3",
+        "fixedIn": "3.10.4"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.3",
+        "fixedIn": "2.4.4"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.14",
+        "fixedIn": "2.1.15"
+      },
+      {
+        "vulnerable": "<= 1.30.2",
+        "fixedIn": "1.30.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q4q6-r8wh-5cgh"
+  },
+  {
+    "id": "CVE-2026-108360",
+    "ghsa": "GHSA-2phh-27fw-q4gc",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet: SSRF whitelist bypass via unre-validated HTTP redirect in Drawing::setPath external image loading",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.9.0",
+        "fixedIn": "5.10.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.7",
+        "fixedIn": "3.10.8"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.7",
+        "fixedIn": "2.4.8"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.18",
+        "fixedIn": "2.1.19"
+      },
+      {
+        "vulnerable": "<= 1.30.6",
+        "fixedIn": "1.30.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2phh-27fw-q4gc"
+  },
+  {
+    "id": "CVE-2026-108359",
+    "ghsa": "GHSA-j2w7-387v-m2rq",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet ODS Reader: Unbounded number-rows-repeated → CPU & Memory Exhaustion (DoS)",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.9.0",
+        "fixedIn": "5.10.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.7",
+        "fixedIn": "3.10.8"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.7",
+        "fixedIn": "2.4.8"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.18",
+        "fixedIn": "2.1.19"
+      },
+      {
+        "vulnerable": "<= 1.30.6",
+        "fixedIn": "1.30.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j2w7-387v-m2rq"
+  },
+  {
+    "id": "CVE-2026-108358",
+    "ghsa": "GHSA-3x94-m842-937c",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet: XmlScanner Bypass via ISO-2022 Escape Sequences Allows XXE and Denial of Service",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.9.0",
+        "fixedIn": "5.10.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.7",
+        "fixedIn": "3.10.8"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.4.7",
+        "fixedIn": "2.4.8"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.18",
+        "fixedIn": "2.1.19"
+      },
+      {
+        "vulnerable": "<= 1.30.6",
+        "fixedIn": "1.30.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3x94-m842-937c"
+  },
+  {
+    "id": "CVE-2026-108357",
+    "ghsa": "GHSA-rxj4-h86g-25gc",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet: XmlScanner Bypass via Double-Encoded unentity() TOCTOU Allows XXE and Denial of Service",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.0.0, <= 5.9.0",
+        "fixedIn": "5.10.0"
+      },
+      {
+        "vulnerable": ">= 3.3.0, <= 3.10.7",
+        "fixedIn": "3.10.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-rxj4-h86g-25gc"
+  },
+  {
+    "id": "CVE-2025-54370",
+    "ghsa": "GHSA-rx7m-68vc-ppxh",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet vulnerable to SSRF when reading and displaying a processed HTML document in the browser",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.30.0",
+        "fixedIn": "1.30.0"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.12",
+        "fixedIn": "2.1.12"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.4.0",
+        "fixedIn": "2.4.0"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.10.0",
+        "fixedIn": "3.10.0"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 5.0.0",
+        "fixedIn": "5.0.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-rx7m-68vc-ppxh"
+  },
+  {
+    "id": "CVE-2025-23210",
+    "ghsa": "GHSA-r57h-547h-w24f",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows bypassing of XSS sanitizer using the javascript protocol and special characters",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.9.0",
+        "fixedIn": "3.9.0"
+      },
+      {
+        "vulnerable": "< 1.29.9",
+        "fixedIn": "1.29.9"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.7",
+        "fixedIn": "2.3.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.8",
+        "fixedIn": "2.1.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r57h-547h-w24f"
+  },
+  {
+    "id": "CVE-2025-22131",
+    "ghsa": "GHSA-79xx-vf93-p7cx",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "Cross-Site Scripting (XSS) vulnerability in generateNavigation() function in PhpSpreadsheet",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.8.0",
+        "fixedIn": "3.8.0"
+      },
+      {
+        "vulnerable": "< 1.29.8",
+        "fixedIn": "1.29.8"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.7",
+        "fixedIn": "2.1.7"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.6",
+        "fixedIn": "2.3.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-79xx-vf93-p7cx"
+  },
+  {
+    "id": "CVE-2024-56412",
+    "ghsa": "GHSA-q9jv-mm3r-j47r",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows bypass XSS sanitizer using the javascript protocol and special characters",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q9jv-mm3r-j47r"
+  },
+  {
+    "id": "CVE-2024-56411",
+    "ghsa": "GHSA-hwcp-2h35-p66w",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has a Cross-Site Scripting (XSS) vulnerability of the hyperlink base in the HTML page header",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-hwcp-2h35-p66w"
+  },
+  {
+    "id": "CVE-2024-56410",
+    "ghsa": "GHSA-wv23-996v-q229",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has a Cross-Site Scripting (XSS) vulnerability in custom properties",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wv23-996v-q229"
+  },
+  {
+    "id": "CVE-2024-56409",
+    "ghsa": "GHSA-j2xg-cjcx-4677",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows unauthorized Reflected XSS in Currency.php file",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-j2xg-cjcx-4677"
+  },
+  {
+    "id": "CVE-2024-56408",
+    "ghsa": "GHSA-x88g-h956-m5xg",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows unauthorized Reflected XSS in `Convert-Online.php` file",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x88g-h956-m5xg"
+  },
+  {
+    "id": "CVE-2024-56366",
+    "ghsa": "GHSA-c6fv-7vh8-2rhr",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows unauthorized Reflected XSS in the Accounting.php file",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-c6fv-7vh8-2rhr"
+  },
+  {
+    "id": "CVE-2024-56365",
+    "ghsa": "GHSA-jmpx-686v-c3wx",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows unauthorized Reflected XSS in the constructor of the Downloader class",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.0",
+        "fixedIn": "3.7.0"
+      },
+      {
+        "vulnerable": "<= 1.29.6",
+        "fixedIn": "1.29.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.1.5",
+        "fixedIn": "2.1.6"
+      },
+      {
+        "vulnerable": ">= 2.2.0, <= 2.3.4",
+        "fixedIn": "2.3.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jmpx-686v-c3wx"
+  },
+  {
+    "id": "CVE-2024-48917",
+    "ghsa": "GHSA-7cc9-j4mv-vcjp",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "XXE in PHPSpreadsheet's XLSX reader",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.29.4",
+        "fixedIn": "1.29.4"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.3",
+        "fixedIn": "2.1.3"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.2",
+        "fixedIn": "2.3.2"
+      },
+      {
+        "vulnerable": ">= 3.3.0, < 3.4.0",
+        "fixedIn": "3.4.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7cc9-j4mv-vcjp"
+  },
+  {
+    "id": "CVE-2024-47873",
+    "ghsa": "GHSA-jw4x-v69f-hh5w",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "XmlScanner bypass leads to XXE",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.29.4",
+        "fixedIn": "1.29.4"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.3",
+        "fixedIn": "2.1.3"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.2",
+        "fixedIn": "2.3.2"
+      },
+      {
+        "vulnerable": ">= 3.3.0, < 3.4.0",
+        "fixedIn": "3.4.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jw4x-v69f-hh5w"
+  },
+  {
+    "id": "CVE-2024-45293",
+    "ghsa": "GHSA-6hwr-6v2f-3m88",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "XXE in PHPSpreadsheet's XLSX reader",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.0",
+        "fixedIn": "2.3.0"
+      },
+      {
+        "vulnerable": "< 1.29.1",
+        "fixedIn": "1.29.1"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6hwr-6v2f-3m88"
+  },
+  {
+    "id": "CVE-2024-45292",
+    "ghsa": "GHSA-r8w8-74ww-j4wh",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet HTML writer is vulnerable to Cross-Site Scripting via JavaScript hyperlinks",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.0",
+        "fixedIn": "2.3.0"
+      },
+      {
+        "vulnerable": "< 1.29.2",
+        "fixedIn": "1.29.2"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r8w8-74ww-j4wh"
+  },
+  {
+    "id": "CVE-2024-45291",
+    "ghsa": "GHSA-w9xv-qf98-ccq4",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows absolute path traversal and Server-Side Request Forgery in HTML writer when embedding images is enabled",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.0",
+        "fixedIn": "2.3.0"
+      },
+      {
+        "vulnerable": "< 1.29.2",
+        "fixedIn": "1.29.2"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-w9xv-qf98-ccq4"
+  },
+  {
+    "id": "CVE-2024-45290",
+    "ghsa": "GHSA-5gpr-w2p5-6m37",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet allows absolute path traversal and Server-Side Request Forgery when opening XLSX file",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.0",
+        "fixedIn": "2.3.0"
+      },
+      {
+        "vulnerable": "< 1.29.2",
+        "fixedIn": "1.29.2"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5gpr-w2p5-6m37"
+  },
+  {
+    "id": "CVE-2024-45060",
+    "ghsa": "GHSA-v66g-p9x6-v98p",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet has an Unauthenticated Cross-Site-Scripting (XSS) in sample file",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.2.0, < 2.3.0",
+        "fixedIn": "2.3.0"
+      },
+      {
+        "vulnerable": "< 1.29.2",
+        "fixedIn": "1.29.2"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v66g-p9x6-v98p"
+  },
+  {
+    "id": "CVE-2024-45048",
+    "ghsa": "GHSA-ghg6-32f9-2jp7",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "XXE in PHPSpreadsheet encoding is returned",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.29.1",
+        "fixedIn": "1.29.1"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.2.1",
+        "fixedIn": "2.2.1"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.1",
+        "fixedIn": "2.1.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-ghg6-32f9-2jp7"
+  },
+  {
+    "id": "CVE-2024-45046",
+    "ghsa": "GHSA-wgmf-q9vr-vww6",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "PhpSpreadsheet HTML writer is vulnerable to Cross-Site Scripting via style information",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.1.0",
+        "fixedIn": "2.1.0"
+      },
+      {
+        "vulnerable": "< 1.29.1",
+        "fixedIn": "1.29.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wgmf-q9vr-vww6"
+  },
+  {
+    "id": "CVE-2020-7776",
+    "ghsa": "GHSA-4mqv-gcr3-pff9",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "Cross-site scripting in phpoffice/phpspreadsheet",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.16.0",
+        "fixedIn": "1.16.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4mqv-gcr3-pff9"
+  },
+  {
+    "id": "CVE-2019-12331",
+    "ghsa": "GHSA-vvwv-h69m-wg6f",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "XXE in PHPSpreadsheet due to incomplete fix for previous encoding issue",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.8.0",
+        "fixedIn": "1.8.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vvwv-h69m-wg6f"
+  },
+  {
+    "id": "CVE-2018-19277",
+    "ghsa": "GHSA-xcrg-29h7-h4cj",
+    "package": "phpoffice/phpspreadsheet",
+    "title": "XXE in PHPSpreadsheet due to encoding issue",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.5.1",
+        "fixedIn": "1.5.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xcrg-29h7-h4cj"
+  },
+  {
+    "id": "CVE-2026-84308",
+    "ghsa": "GHSA-q97c-8qh3-fpc6",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib — non-constant-time X25519 scalar multiplication permits full private-key recovery",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.0.57",
+        "fixedIn": "3.0.57"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.0.1",
+        "fixedIn": "4.0.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q97c-8qh3-fpc6"
+  },
+  {
+    "id": "CVE-2026-55599",
+    "ghsa": "GHSA-m557-wrgg-6rp4",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib: X.509 certificate validation sends attacker-controlled outbound requests (server-side request forgery) via Authority Information Access",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 0.1.1, <= 1.0.29",
+        "fixedIn": "1.0.30"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.0.54",
+        "fixedIn": "2.0.55"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 3.0.53",
+        "fixedIn": "3.0.54"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m557-wrgg-6rp4"
+  },
+  {
+    "id": "CVE-2026-44167",
+    "ghsa": "GHSA-3qpq-r242-jqj7",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib has a CVE-2024-27355 mitigation bypass — OID amplification DoS in ASN1::decodeOID()",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, <= 2.0.53",
+        "fixedIn": "2.0.54"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 3.0.51",
+        "fixedIn": "3.0.52"
+      },
+      {
+        "vulnerable": ">= 0.1.1, <= 1.0.28",
+        "fixedIn": "1.0.29"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3qpq-r242-jqj7"
+  },
+  {
+    "id": "CVE-2026-40194",
+    "ghsa": "GHSA-r854-jrxh-36qx",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib has a variable-time HMAC comparison in SSH2::get_binary_packet() using != instead of hash_equals()",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.53",
+        "fixedIn": "2.0.53"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.0.51",
+        "fixedIn": "3.0.51"
+      },
+      {
+        "vulnerable": ">= 0.1.1, < 1.0.28",
+        "fixedIn": "1.0.28"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r854-jrxh-36qx"
+  },
+  {
+    "id": "CVE-2026-32935",
+    "ghsa": "GHSA-94g3-g5v7-q4jg",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib's AES-CBC unpadding susceptible to padding oracle timing attack",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, <= 3.0.49",
+        "fixedIn": "3.0.50"
+      },
+      {
+        "vulnerable": ">= 2.0.0, <= 2.0.51",
+        "fixedIn": "2.0.52"
+      },
+      {
+        "vulnerable": ">= 0.1.1, <= 1.0.26",
+        "fixedIn": "1.0.27"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-94g3-g5v7-q4jg"
+  },
+  {
+    "id": "CVE-2024-27355",
+    "ghsa": "GHSA-f2qx-66wf-wvvx",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib guardrails needed on OID length",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, <= 2.0.46",
+        "fixedIn": "2.0.47"
+      },
+      {
+        "vulnerable": ">= 3.0.0, <= 3.0.35",
+        "fixedIn": "3.0.36"
+      },
+      {
+        "vulnerable": ">= 0.1.1, <= 1.0.22",
+        "fixedIn": "1.0.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-f2qx-66wf-wvvx"
+  },
+  {
+    "id": "CVE-2024-27354",
+    "ghsa": "GHSA-2528-jw5q-ww88",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib: guardrails needed on isPrime and randomPrime",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 0.1.1, < 1.0.23",
+        "fixedIn": "1.0.23"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.47",
+        "fixedIn": "2.0.47"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.0.36",
+        "fixedIn": "3.0.36"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2528-jw5q-ww88"
+  },
+  {
+    "id": "CVE-2023-52892",
+    "ghsa": "GHSA-ff7q-6vwh-v9m4",
+    "package": "phpseclib/phpseclib",
+    "title": "Name confusion in x509 Subject Alternative Name fields",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.0.22",
+        "fixedIn": "1.0.22"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.46",
+        "fixedIn": "2.0.46"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.0.33",
+        "fixedIn": "3.0.33"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-ff7q-6vwh-v9m4"
+  },
+  {
+    "id": "CVE-2023-49316",
+    "ghsa": "GHSA-2f25-pfq3-c7h8",
+    "package": "phpseclib/phpseclib",
+    "title": "Phpseclib needs guardrails on large binaryfield integers",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.0.34",
+        "fixedIn": "3.0.34"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2f25-pfq3-c7h8"
+  },
+  {
+    "id": "CVE-2023-27560",
+    "ghsa": "GHSA-hm7p-r324-hhf3",
+    "package": "phpseclib/phpseclib",
+    "title": "phpseclib Infinite Loop vulnerability",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.0.19",
+        "fixedIn": "3.0.19"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-hm7p-r324-hhf3"
+  },
+  {
+    "id": "CVE-2021-30130",
+    "ghsa": "GHSA-vf4w-fg7r-5v94",
+    "package": "phpseclib/phpseclib",
+    "title": "Improper Certificate Validation in phpseclib",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.0.7",
+        "fixedIn": "3.0.7"
+      },
+      {
+        "vulnerable": "< 2.0.31",
+        "fixedIn": "2.0.31"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vf4w-fg7r-5v94"
+  },
+  {
+    "id": "CVE-2026-27131",
+    "ghsa": "GHSA-m59h-42jf-cphr",
+    "package": "putyourlightson/craft-sprig",
+    "title": "Sprig Plugin for Craft CMS potentially discloses sensitive information via Sprig Playground",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.15.2",
+        "fixedIn": "2.15.2"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.7.2",
+        "fixedIn": "3.7.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m59h-42jf-cphr"
+  },
+  {
+    "id": "GHSA-rwr8-xrpw-9qf5",
+    "ghsa": "GHSA-rwr8-xrpw-9qf5",
+    "package": "solspace/craft-freeform",
+    "title": "solspace/craft-freeform Exposed to Known Axios Vulnerabilities via Precompiled Assets",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 4.1.22",
+        "fixedIn": "4.1.22"
+      },
+      {
+        "vulnerable": ">= 5.0.0-beta.1, < 5.5.9",
+        "fixedIn": "5.5.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-rwr8-xrpw-9qf5"
+  },
+  {
+    "id": "GHSA-58q2-9x27-h2jm",
+    "ghsa": "GHSA-58q2-9x27-h2jm",
+    "package": "solspace/craft-freeform",
+    "title": "solspace/craft-freeform Has a DoS Vulnerability",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 4.1.29",
+        "fixedIn": "4.1.30"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-58q2-9x27-h2jm"
+  },
+  {
+    "id": "GHSA-44jg-mv3h-wj6g",
+    "ghsa": "GHSA-44jg-mv3h-wj6g",
+    "package": "solspace/craft-freeform",
+    "title": "solspace/craft-freeform Vulnerable to XSS in `PhpSpreadsheet` HTML Writer Due to Unsanitized Styling Data",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 4.1.23",
+        "fixedIn": "4.1.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-44jg-mv3h-wj6g"
+  },
+  {
+    "id": "CVE-2026-73858",
+    "ghsa": "GHSA-gxrg-x694-283w",
+    "package": "solspace/craft-freeform",
+    "title": "Solspace Freeform: Limited Twig template injection via submitted field values",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.10.13",
+        "fixedIn": "5.10.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-gxrg-x694-283w"
+  },
+  {
+    "id": "CVE-2026-26188",
+    "ghsa": "GHSA-jp3q-wwp3-pwv9",
+    "package": "solspace/craft-freeform",
+    "title": "Freeform Craft Plugin CP UI (builder/integrations) has Stored Cross-Site Scripting (XSS) issue",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, <= 5.14.6",
+        "fixedIn": "5.14.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jp3q-wwp3-pwv9"
+  },
+  {
+    "id": "CVE-2025-52122",
+    "ghsa": "GHSA-9hp3-f5g8-rccg",
+    "package": "solspace/craft-freeform",
+    "title": "The Freeform CraftCMS plugin contains an Server-side template injection (SSTI) vulnerability",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, < 5.10.16",
+        "fixedIn": "5.10.16"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9hp3-f5g8-rccg"
+  },
+  {
+    "id": "CVE-2023-36259",
+    "ghsa": "GHSA-v89q-c273-3p42",
+    "package": "superbig/craft-audit",
+    "title": "Craft CMS Audit Plugin Cross Site Scripting vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.0.2",
+        "fixedIn": "3.0.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v89q-c273-3p42"
+  },
+  {
+    "id": "GHSA-vfm6-r2gc-pwww",
+    "ghsa": "GHSA-vfm6-r2gc-pwww",
+    "package": "symfony/http-foundation",
+    "title": "Symfony2 security issue when the trust proxy mode is enabled",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.19",
+        "fixedIn": "2.0.19"
+      },
+      {
+        "vulnerable": ">= 2.1.0, < 2.1.4",
+        "fixedIn": "2.1.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vfm6-r2gc-pwww"
+  },
+  {
+    "id": "CVE-2026-48736",
+    "ghsa": "GHSA-38cx-cq6f-5755",
+    "package": "symfony/http-foundation",
+    "title": "Symfony: IpUtils::PRIVATE_SUBNETS Omits IPv6 Transition Forms (6to4, NAT64, Teredo, IPv4-compatible): SSRF Bypass in NoPrivateNetworkHttpClient",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 6.4.0, < 6.4.41",
+        "fixedIn": "6.4.41"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.13",
+        "fixedIn": "7.4.13"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.13",
+        "fixedIn": "8.0.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-38cx-cq6f-5755"
+  },
+  {
+    "id": "CVE-2026-108082",
+    "ghsa": "GHSA-r925-mgvr-h9cc",
+    "package": "symfony/http-foundation",
+    "title": "Symfony: ReDoS in HeaderUtils::split() Reachable Through the Cache-Control Request Header",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 6.0.1, < 6.4.46",
+        "fixedIn": "6.4.46"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.19",
+        "fixedIn": "7.4.19"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.1.7",
+        "fixedIn": "8.1.7"
+      },
+      {
+        "vulnerable": ">= 4.1.0, < 5.4.54",
+        "fixedIn": "5.4.54"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r925-mgvr-h9cc"
+  },
+  {
+    "id": "CVE-2025-64500",
+    "ghsa": "GHSA-3rg7-wf37-54rm",
+    "package": "symfony/http-foundation",
+    "title": "Symfony's incorrect parsing of PATH_INFO can lead to limited authorization bypass",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.50",
+        "fixedIn": "5.4.50"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.29",
+        "fixedIn": "6.4.29"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.3.7",
+        "fixedIn": "7.3.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3rg7-wf37-54rm"
+  },
+  {
+    "id": "CVE-2024-50345",
+    "ghsa": "GHSA-mrqx-rp3w-jpjp",
+    "package": "symfony/http-foundation",
+    "title": "Symfony vulnerable to open redirect via browser-sanitized URLs",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.46",
+        "fixedIn": "5.4.46"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.14",
+        "fixedIn": "6.4.14"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.1.7",
+        "fixedIn": "7.1.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-mrqx-rp3w-jpjp"
+  },
+  {
+    "id": "CVE-2020-5255",
+    "ghsa": "GHSA-mcx4-f5f5-4859",
+    "package": "symfony/http-foundation",
+    "title": "Prevent cache poisoning via a Response Content-Type header in Symfony",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.4.0, < 4.4.7",
+        "fixedIn": "4.4.7"
+      },
+      {
+        "vulnerable": ">= 5.0.0, < 5.0.7",
+        "fixedIn": "5.0.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-mcx4-f5f5-4859"
+  },
+  {
+    "id": "CVE-2019-18888",
+    "ghsa": "GHSA-xhh6-956q-4q69",
+    "package": "symfony/http-foundation",
+    "title": "Argument injection in a MimeTypeGuesser in Symfony",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.8.52",
+        "fixedIn": "2.8.52"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.4.35",
+        "fixedIn": "3.4.35"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.2.12",
+        "fixedIn": "4.2.12"
+      },
+      {
+        "vulnerable": ">= 4.3.0, < 4.3.8",
+        "fixedIn": "4.3.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xhh6-956q-4q69"
+  },
+  {
+    "id": "CVE-2019-10913",
+    "ghsa": "GHSA-x92h-wmg2-6hp7",
+    "package": "symfony/http-foundation",
+    "title": "Invalid HTTP method overrides allow possible XSS or other attacks in Symfony",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.7.0, < 2.7.51",
+        "fixedIn": "2.7.51"
+      },
+      {
+        "vulnerable": ">= 2.8.0, < 2.8.50",
+        "fixedIn": "2.8.50"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.4.26",
+        "fixedIn": "3.4.26"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.1.12",
+        "fixedIn": "4.1.12"
+      },
+      {
+        "vulnerable": ">= 4.2.0, < 4.2.7",
+        "fixedIn": "4.2.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x92h-wmg2-6hp7"
+  },
+  {
+    "id": "CVE-2018-14773",
+    "ghsa": "GHSA-8wgj-6wx8-h5hq",
+    "package": "symfony/http-foundation",
+    "title": "Symfony HTTP Foundation web cache poisoning",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.7.0, < 2.7.49",
+        "fixedIn": "2.7.49"
+      },
+      {
+        "vulnerable": ">= 2.8.0, < 2.8.44",
+        "fixedIn": "2.8.44"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.3.18",
+        "fixedIn": "3.3.18"
+      },
+      {
+        "vulnerable": ">= 3.4.0, < 3.4.14",
+        "fixedIn": "3.4.14"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.0.14",
+        "fixedIn": "4.0.14"
+      },
+      {
+        "vulnerable": ">= 4.1.0, < 4.1.3",
+        "fixedIn": "4.1.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8wgj-6wx8-h5hq"
+  },
+  {
+    "id": "CVE-2018-11386",
+    "ghsa": "GHSA-r2rq-3h56-fqm4",
+    "package": "symfony/http-foundation",
+    "title": "Symfony DoS",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.7.0, < 2.7.48",
+        "fixedIn": "2.7.48"
+      },
+      {
+        "vulnerable": ">= 2.8.0, < 2.8.41",
+        "fixedIn": "2.8.41"
+      },
+      {
+        "vulnerable": ">= 3.3.0, < 3.3.17",
+        "fixedIn": "3.3.17"
+      },
+      {
+        "vulnerable": ">= 3.4.0, < 3.4.11",
+        "fixedIn": "3.4.11"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.0.11",
+        "fixedIn": "4.0.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r2rq-3h56-fqm4"
+  },
+  {
+    "id": "CVE-2015-2309",
+    "ghsa": "GHSA-p684-f7fh-jv2j",
+    "package": "symfony/http-foundation",
+    "title": "Symfony has unsafe methods in the Request class",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.3.27",
+        "fixedIn": "2.3.27"
+      },
+      {
+        "vulnerable": ">= 2.4.0, < 2.5.11",
+        "fixedIn": "2.5.11"
+      },
+      {
+        "vulnerable": ">= 2.6.0, < 2.6.6",
+        "fixedIn": "2.6.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-p684-f7fh-jv2j"
+  },
+  {
+    "id": "CVE-2014-6061",
+    "ghsa": "GHSA-h7v2-2qwg-h829",
+    "package": "symfony/http-foundation",
+    "title": "Symfony has a security issue when parsing the Authorization header",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.3.19",
+        "fixedIn": "2.3.19"
+      },
+      {
+        "vulnerable": ">= 2.4.0, < 2.4.9",
+        "fixedIn": "2.4.9"
+      },
+      {
+        "vulnerable": ">= 2.5.0, < 2.5.4",
+        "fixedIn": "2.5.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h7v2-2qwg-h829"
+  },
+  {
+    "id": "CVE-2014-5244",
+    "ghsa": "GHSA-v77v-x634-9m56",
+    "package": "symfony/http-foundation",
+    "title": "Symfony vulnerable to denial of service via a malicious HTTP Host header",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.3.19",
+        "fixedIn": "2.3.19"
+      },
+      {
+        "vulnerable": ">= 2.4.0, < 2.4.9",
+        "fixedIn": "2.4.9"
+      },
+      {
+        "vulnerable": ">= 2.5.0, < 2.5.4",
+        "fixedIn": "2.5.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v77v-x634-9m56"
+  },
+  {
+    "id": "CVE-2013-4752",
+    "ghsa": "GHSA-22pv-7v9j-hqxp",
+    "package": "symfony/http-foundation",
+    "title": "Symfony Host Header Injection vulnerability in the HttpFoundation component",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.24",
+        "fixedIn": "2.0.24"
+      },
+      {
+        "vulnerable": ">= 2.1.0, < 2.1.12",
+        "fixedIn": "2.1.12"
+      },
+      {
+        "vulnerable": ">= 2.2.0, < 2.2.5",
+        "fixedIn": "2.2.5"
+      },
+      {
+        "vulnerable": ">= 2.3.0, < 2.3.3",
+        "fixedIn": "2.3.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-22pv-7v9j-hqxp"
+  },
+  {
+    "id": "CVE-2012-6431",
+    "ghsa": "GHSA-83c3-qx27-2rwr",
+    "package": "symfony/http-foundation",
+    "title": "Symfony Allows URI Restrictions Bypass Via Double-Encoded String",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.19",
+        "fixedIn": "2.0.19"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-83c3-qx27-2rwr"
+  },
+  {
+    "id": "CVE-2026-45075",
+    "ghsa": "GHSA-6439-2f28-8p8q",
+    "package": "symfony/http-kernel",
+    "title": "Symfony's HEAD Request Bypasses methods: ['GET'] Filter in #[IsGranted] / #[IsSignatureValid] / #[IsCsrfTokenValid]",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 7.4.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6439-2f28-8p8q"
+  },
+  {
+    "id": "CVE-2022-24894",
+    "ghsa": "GHSA-h7vf-5wrv-9fhv",
+    "package": "symfony/http-kernel",
+    "title": "Symfony storing cookie headers in HttpCache",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 4.4.50",
+        "fixedIn": "4.4.50"
+      },
+      {
+        "vulnerable": ">= 5.0.0, < 5.4.20",
+        "fixedIn": "5.4.20"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.0.20",
+        "fixedIn": "6.0.20"
+      },
+      {
+        "vulnerable": ">= 6.1.0, < 6.1.12",
+        "fixedIn": "6.1.12"
+      },
+      {
+        "vulnerable": ">= 6.2.0, < 6.2.6",
+        "fixedIn": "6.2.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h7vf-5wrv-9fhv"
+  },
+  {
+    "id": "CVE-2021-41267",
+    "ghsa": "GHSA-q3j3-w37x-hq2q",
+    "package": "symfony/http-kernel",
+    "title": "Webcache Poisoning in symfony/http-kernel",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.2.0, < 5.3.12",
+        "fixedIn": "5.3.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q3j3-w37x-hq2q"
+  },
+  {
+    "id": "CVE-2020-15094",
+    "ghsa": "GHSA-754h-5r27-7x3r",
+    "package": "symfony/http-kernel",
+    "title": "RCE in Symfony",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 5.0.0, < 5.1.5",
+        "fixedIn": "5.1.5"
+      },
+      {
+        "vulnerable": ">= 4.3.0, < 4.4.13",
+        "fixedIn": "4.4.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-754h-5r27-7x3r"
+  },
+  {
+    "id": "CVE-2019-18887",
+    "ghsa": "GHSA-q8hg-pf8v-cxrv",
+    "package": "symfony/http-kernel",
+    "title": "Symfony Http-Kernel has non-constant time comparison in UriSigner",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.2.0, < 2.8.52",
+        "fixedIn": "2.8.52"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.4.35",
+        "fixedIn": "3.4.35"
+      },
+      {
+        "vulnerable": ">= 4.0.0, < 4.2.12",
+        "fixedIn": "4.2.12"
+      },
+      {
+        "vulnerable": ">= 4.3.0, < 4.3.8",
+        "fixedIn": "4.3.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-q8hg-pf8v-cxrv"
+  },
+  {
+    "id": "CVE-2015-4050",
+    "ghsa": "GHSA-qmqw-mpqp-mr54",
+    "package": "symfony/http-kernel",
+    "title": "Symfony Incorrect Access Control",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.3.19, < 2.3.29",
+        "fixedIn": "2.3.29"
+      },
+      {
+        "vulnerable": ">= 2.5.4, < 2.5.12",
+        "fixedIn": "2.5.12"
+      },
+      {
+        "vulnerable": ">= 2.6.0, < 2.6.8",
+        "fixedIn": "2.6.8"
+      },
+      {
+        "vulnerable": ">= 2.4.9, <= 2.4.10",
+        "fixedIn": null
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qmqw-mpqp-mr54"
+  },
+  {
+    "id": "CVE-2015-2308",
+    "ghsa": "GHSA-5c58-w9xc-qcj9",
+    "package": "symfony/http-kernel",
+    "title": "Symfony Vulnerable to PHP Eval Injection",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.3.27",
+        "fixedIn": "2.3.27"
+      },
+      {
+        "vulnerable": ">= 2.4.0, < 2.5.11",
+        "fixedIn": "2.5.11"
+      },
+      {
+        "vulnerable": ">= 2.6.0, < 2.6.6",
+        "fixedIn": "2.6.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5c58-w9xc-qcj9"
+  },
+  {
+    "id": "CVE-2014-5245",
+    "ghsa": "GHSA-wvjv-p5rr-mmqm",
+    "package": "symfony/http-kernel",
+    "title": "Symfony allows direct access of ESI URLs behind a trusted proxy",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.3.19",
+        "fixedIn": "2.3.19"
+      },
+      {
+        "vulnerable": ">= 2.4.0, < 2.4.9",
+        "fixedIn": "2.4.9"
+      },
+      {
+        "vulnerable": ">= 2.5.0, < 2.5.4",
+        "fixedIn": "2.5.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wvjv-p5rr-mmqm"
+  },
+  {
+    "id": "CVE-2026-45068",
+    "ghsa": "GHSA-xx3c-qf5g-hc39",
+    "package": "symfony/mailer",
+    "title": "Symfony has an Argument Injection in SendmailTransport via Dash-Prefixed Recipient Address",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.52",
+        "fixedIn": "5.4.52"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.40",
+        "fixedIn": "6.4.40"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xx3c-qf5g-hc39"
+  },
+  {
+    "id": "CVE-2026-45070",
+    "ghsa": "GHSA-vqc8-7275-q272",
+    "package": "symfony/mime",
+    "title": "Symfony has Email Header Injection via Non-Token Characters in Mime Parameter Names",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.52",
+        "fixedIn": "5.4.52"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.40",
+        "fixedIn": "6.4.40"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vqc8-7275-q272"
+  },
+  {
+    "id": "CVE-2026-45067",
+    "ghsa": "GHSA-qpmx-3rfj-7rhv",
+    "package": "symfony/mime",
+    "title": "Symfony has Email Header / SMTP Command Injection via CRLF in Symfony\\Component\\Mime\\Address",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.52",
+        "fixedIn": "5.4.52"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.40",
+        "fixedIn": "6.4.40"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qpmx-3rfj-7rhv"
+  },
+  {
+    "id": "CVE-2019-18888",
+    "ghsa": "GHSA-xhh6-956q-4q69",
+    "package": "symfony/mime",
+    "title": "Argument injection in a MimeTypeGuesser in Symfony",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 4.3.0, < 4.3.8",
+        "fixedIn": "4.3.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xhh6-956q-4q69"
+  },
+  {
+    "id": "CVE-2026-24739",
+    "ghsa": "GHSA-r39x-jcww-82v6",
+    "package": "symfony/process",
+    "title": "Symfony's incorrect argument escaping under MSYS2/Git Bash can lead to destructive file operations on Windows",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.51",
+        "fixedIn": "5.4.51"
+      },
+      {
+        "vulnerable": ">= 6.4, < 6.4.33",
+        "fixedIn": "6.4.33"
+      },
+      {
+        "vulnerable": ">= 7.3, < 7.3.11",
+        "fixedIn": "7.3.11"
+      },
+      {
+        "vulnerable": ">= 7.4, < 7.4.5",
+        "fixedIn": "7.4.5"
+      },
+      {
+        "vulnerable": ">= 8.0, < 8.0.5",
+        "fixedIn": "8.0.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r39x-jcww-82v6"
+  },
+  {
+    "id": "CVE-2024-51736",
+    "ghsa": "GHSA-qq5c-677p-737q",
+    "package": "symfony/process",
+    "title": "Symfony vulnerable to command execution hijack on Windows with Process class",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.46",
+        "fixedIn": "5.4.46"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.14",
+        "fixedIn": "6.4.14"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.1.7",
+        "fixedIn": "7.1.7"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qq5c-677p-737q"
+  },
+  {
+    "id": "CVE-2026-45305",
+    "ghsa": "GHSA-9frc-8383-795m",
+    "package": "symfony/yaml",
+    "title": "Symfony's YAML Parser has a ReDoS via Catastrophic Backtracking in Parser::cleanup() Regex",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.52",
+        "fixedIn": "5.4.52"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.40",
+        "fixedIn": "6.4.40"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9frc-8383-795m"
+  },
+  {
+    "id": "CVE-2026-45304",
+    "ghsa": "GHSA-4qpc-3hr4-r2p4",
+    "package": "symfony/yaml",
+    "title": "Symfony's YAML Parser Vulnerable to Exponential Memory Allocation via Recursive Collection-Alias Expansion (\"Billion Laughs\")",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.52",
+        "fixedIn": "5.4.52"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.40",
+        "fixedIn": "6.4.40"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4qpc-3hr4-r2p4"
+  },
+  {
+    "id": "CVE-2026-45133",
+    "ghsa": "GHSA-c2p3-7m5p-cv8x",
+    "package": "symfony/yaml",
+    "title": "Symfony hardened the parser when handling untrusted input",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 5.4.52",
+        "fixedIn": "5.4.52"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.40",
+        "fixedIn": "6.4.40"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.12",
+        "fixedIn": "7.4.12"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.0.12",
+        "fixedIn": "8.0.12"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-c2p3-7m5p-cv8x"
+  },
+  {
+    "id": "CVE-2026-109413",
+    "ghsa": "GHSA-2v3c-qxhr-7vpv",
+    "package": "symfony/yaml",
+    "title": "Symfony: Unbounded Recursion in the YAML Inline Lexer Lets a Single Document Crash the Process",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 5.4.54",
+        "fixedIn": "5.4.54"
+      },
+      {
+        "vulnerable": ">= 6.0.0, < 6.4.45",
+        "fixedIn": "6.4.45"
+      },
+      {
+        "vulnerable": ">= 7.0.0, < 7.4.18",
+        "fixedIn": "7.4.18"
+      },
+      {
+        "vulnerable": ">= 8.0.0, < 8.1.6",
+        "fixedIn": "8.1.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2v3c-qxhr-7vpv"
+  },
+  {
+    "id": "CVE-2013-1397",
+    "ghsa": "GHSA-7w53-hfpw-rg3g",
+    "package": "symfony/yaml",
+    "title": "Symfony Arbitrary PHP code Execution",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.22",
+        "fixedIn": "2.0.22"
+      },
+      {
+        "vulnerable": ">= 2.1.0, < 2.1.7",
+        "fixedIn": "2.1.7"
+      },
+      {
+        "vulnerable": ">= 2.2.0-BETA1, < 2.2.0-BETA2",
+        "fixedIn": "2.2.0-BETA2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7w53-hfpw-rg3g"
+  },
+  {
+    "id": "CVE-2013-1348",
+    "ghsa": "GHSA-2r5h-6r7v-5m7c",
+    "package": "symfony/yaml",
+    "title": "Symphony Vulnerable to PHP Code Injection via YAML Parsing",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.22",
+        "fixedIn": "2.0.22"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2r5h-6r7v-5m7c"
+  },
+  {
+    "id": "GHSA-7cvr-xhm5-x998",
+    "ghsa": "GHSA-7cvr-xhm5-x998",
+    "package": "twig/twig",
+    "title": "Twig Path Traversal vulnerability in the filesystem loader",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 1.0.0, < 1.12.3",
+        "fixedIn": "1.12.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7cvr-xhm5-x998"
+  },
+  {
+    "id": "CVE-2026-49981",
+    "ghsa": "GHSA-529h-vh3j-85hq",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox filter, tag and function allow-list bypass when sandbox state changes between renders for a cached `Template`",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.26.0",
+        "fixedIn": "3.27.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-529h-vh3j-85hq"
+  },
+  {
+    "id": "CVE-2026-48808",
+    "ghsa": "GHSA-h8vq-8gpg-mhcg",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox property allowlist bypass via the `column` filter under `SourcePolicyInterface`",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.26.0",
+        "fixedIn": "3.27.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-h8vq-8gpg-mhcg"
+  },
+  {
+    "id": "CVE-2026-48807",
+    "ghsa": "GHSA-8x9c-rmqh-456c",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox `__toString()` policy bypass via `Traversable` in `join` and `replace` filters",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.26.0",
+        "fixedIn": "3.27.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8x9c-rmqh-456c"
+  },
+  {
+    "id": "CVE-2026-48806",
+    "ghsa": "GHSA-5v5v-ww74-355v",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox `__toString()` policy bypass via dynamic mapping keys",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.26.0",
+        "fixedIn": "3.27.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5v5v-ww74-355v"
+  },
+  {
+    "id": "CVE-2026-48805",
+    "ghsa": "GHSA-p42q-9prx-q5wq",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox state regression in deprecated internal wrappers in `src/Resources/core.php`",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.26.0",
+        "fixedIn": "3.27.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-p42q-9prx-q5wq"
+  },
+  {
+    "id": "CVE-2026-47732",
+    "ghsa": "GHSA-pr2w-4gpj-cpq4",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox: multiple `__toString()` policy bypasses via unguarded string coercion points",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 3.25.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-pr2w-4gpj-cpq4"
+  },
+  {
+    "id": "CVE-2026-47730",
+    "ghsa": "GHSA-2g2g-8p8h-fgwm",
+    "package": "twig/twig",
+    "title": "Twig: XSS in profiler HtmlDumper via unescaped template and profile names",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2g2g-8p8h-fgwm"
+  },
+  {
+    "id": "CVE-2026-46640",
+    "ghsa": "GHSA-45vw-wh46-2vx8",
+    "package": "twig/twig",
+    "title": "Twig: Arbitrary PHP code execution via `_self.(<string>)` macro-reference compilation",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.15.0, < 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-45vw-wh46-2vx8"
+  },
+  {
+    "id": "CVE-2026-46639",
+    "ghsa": "GHSA-mm6w-gr99-p3jj",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox property and method bypass via object-destructuring assignment",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.24.0, < 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-mm6w-gr99-p3jj"
+  },
+  {
+    "id": "CVE-2026-46638",
+    "ghsa": "GHSA-7fxw-r6jv-74c8",
+    "package": "twig/twig",
+    "title": "Twig: `{% sandbox %}{% include %}` skips checkSecurity() on cached templates (incomplete fix for CVE-2024-45411)",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7fxw-r6jv-74c8"
+  },
+  {
+    "id": "CVE-2026-46635",
+    "ghsa": "GHSA-vcc8-phrv-43wj",
+    "package": "twig/twig",
+    "title": "Twig: Sandbox property allowlist bypass via the `column` filter (array_column on objects)",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vcc8-phrv-43wj"
+  },
+  {
+    "id": "CVE-2026-46634",
+    "ghsa": "GHSA-24x9-r6q4-q93w",
+    "package": "twig/twig",
+    "title": "Twig: `template_from_string()` escapes a SourcePolicy-driven sandbox via synthesized template name",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.9.0, < 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-24x9-r6q4-q93w"
+  },
+  {
+    "id": "CVE-2026-46633",
+    "ghsa": "GHSA-7p85-w9px-jpjp",
+    "package": "twig/twig",
+    "title": "Twig: PHP code injection via `{% use %}` template name",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 1.15.1, < 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7p85-w9px-jpjp"
+  },
+  {
+    "id": "CVE-2026-46628",
+    "ghsa": "GHSA-4j38-f5cw-54h7",
+    "package": "twig/twig",
+    "title": "Twig: The `spaceless` filter implicitly marks its output as safe",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4j38-f5cw-54h7"
+  },
+  {
+    "id": "CVE-2026-24425",
+    "ghsa": "GHSA-2q52-x2ff-qgfr",
+    "package": "twig/twig",
+    "title": "Twig: Possible sandbox bypass when using a source policy",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.16.0, <= 2.16.1",
+        "fixedIn": null
+      },
+      {
+        "vulnerable": ">= 3.9.0, < 3.26.0",
+        "fixedIn": "3.26.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2q52-x2ff-qgfr"
+  },
+  {
+    "id": "CVE-2025-24374",
+    "ghsa": "GHSA-3xg3-cgvq-2xwr",
+    "package": "twig/twig",
+    "title": "Twig security issue where escaping was missing when using null coalesce operator",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.16.0, < 3.19.0",
+        "fixedIn": "3.19.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-3xg3-cgvq-2xwr"
+  },
+  {
+    "id": "CVE-2024-51755",
+    "ghsa": "GHSA-jjxq-ff2g-95vh",
+    "package": "twig/twig",
+    "title": "Twig has unguarded calls to `__isset()` and to array-accesses when the sandbox is enabled",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 3.11.2",
+        "fixedIn": "3.11.2"
+      },
+      {
+        "vulnerable": ">= 3.12, < 3.14.1",
+        "fixedIn": "3.14.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jjxq-ff2g-95vh"
+  },
+  {
+    "id": "CVE-2024-51754",
+    "ghsa": "GHSA-6377-hfv9-hqf6",
+    "package": "twig/twig",
+    "title": "Twig has unguarded calls to `__toString()` when nesting an object into an array",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 3.11.2",
+        "fixedIn": "3.11.2"
+      },
+      {
+        "vulnerable": ">= 3.12, < 3.14.1",
+        "fixedIn": "3.14.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6377-hfv9-hqf6"
+  },
+  {
+    "id": "CVE-2024-45411",
+    "ghsa": "GHSA-6j75-5wfj-gh66",
+    "package": "twig/twig",
+    "title": "Twig has a possible sandbox bypass",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 1.0.0, < 1.44.8",
+        "fixedIn": "1.44.8"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.16.1",
+        "fixedIn": "2.16.1"
+      },
+      {
+        "vulnerable": ">= 3.12.0, < 3.14.0",
+        "fixedIn": "3.14.0"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.11.1",
+        "fixedIn": "3.11.1"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-6j75-5wfj-gh66"
+  },
+  {
+    "id": "CVE-2022-39261",
+    "ghsa": "GHSA-52m2-vc4m-jj33",
+    "package": "twig/twig",
+    "title": "Twig may load a template outside a configured directory when using the filesystem loader",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 1.0.0, < 1.44.7",
+        "fixedIn": "1.44.7"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.15.3",
+        "fixedIn": "2.15.3"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.4.3",
+        "fixedIn": "3.4.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-52m2-vc4m-jj33"
+  },
+  {
+    "id": "CVE-2022-23614",
+    "ghsa": "GHSA-5mv2-rx3q-4w2v",
+    "package": "twig/twig",
+    "title": "Code injection in Twig",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.14.11",
+        "fixedIn": "2.14.11"
+      },
+      {
+        "vulnerable": ">= 3.0.0, < 3.3.8",
+        "fixedIn": "3.3.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5mv2-rx3q-4w2v"
+  },
+  {
+    "id": "CVE-2019-9942",
+    "ghsa": "GHSA-vxrc-68xx-x48g",
+    "package": "twig/twig",
+    "title": "Twig Sandbox Information Disclosure",
+    "severity": "low",
+    "ranges": [
+      {
+        "vulnerable": "< 1.38.0",
+        "fixedIn": "1.38.0"
+      },
+      {
+        "vulnerable": ">= 2.0.0, < 2.7.0",
+        "fixedIn": "2.7.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-vxrc-68xx-x48g"
+  },
+  {
+    "id": "CVE-2015-7809",
+    "ghsa": "GHSA-xw83-pwrm-9j74",
+    "package": "twig/twig",
+    "title": "Twig remote code execution in templates",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 1.20.0",
+        "fixedIn": "1.20.0"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-xw83-pwrm-9j74"
+  },
+  {
+    "id": "CVE-2020-13870",
+    "ghsa": "GHSA-69ww-wv3j-mhg4",
+    "package": "verbb/comments",
+    "title": "Comments plugin stored Cross-site Scripting (XSS) via an asset volume name",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.5.5",
+        "fixedIn": "1.5.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-69ww-wv3j-mhg4"
+  },
+  {
+    "id": "CVE-2020-13869",
+    "ghsa": "GHSA-jhhf-c849-3rh2",
+    "package": "verbb/comments",
+    "title": "Comments plugin stored Cross-site Scripting via a guest name",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.5.5",
+        "fixedIn": "1.5.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-jhhf-c849-3rh2"
+  },
+  {
+    "id": "CVE-2020-13868",
+    "ghsa": "GHSA-4r8c-pj7x-m5jx",
+    "package": "verbb/comments",
+    "title": "Comments plugin Cross-Site Request Forgery (CSRF)",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.5.5",
+        "fixedIn": "1.5.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4r8c-pj7x-m5jx"
+  },
+  {
+    "id": "GHSA-cvpc-hccg-wmw4",
+    "ghsa": "GHSA-cvpc-hccg-wmw4",
+    "package": "verbb/formie",
+    "title": "Formie: Missing authorization in administrative settings allows low-privileged CP users to modify plugin configuration",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 3.1.28",
+        "fixedIn": "3.1.28"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cvpc-hccg-wmw4"
+  },
+  {
+    "id": "CVE-2026-76089",
+    "ghsa": "GHSA-9rg8-2wvr-fgjh",
+    "package": "verbb/formie",
+    "title": "Formie: Missing authorization on sent notification resend modal exposes submission PII",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.1.31",
+        "fixedIn": "3.1.31"
+      },
+      {
+        "vulnerable": "< 2.2.23",
+        "fixedIn": "2.2.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-9rg8-2wvr-fgjh"
+  },
+  {
+    "id": "CVE-2026-76087",
+    "ghsa": "GHSA-584p-f93j-wpgc",
+    "package": "verbb/formie",
+    "title": "Formie: Unauthenticated users can overwrite incomplete submissions via submit action",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.1.31",
+        "fixedIn": "3.1.31"
+      },
+      {
+        "vulnerable": "< 2.2.23",
+        "fixedIn": "2.2.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-584p-f93j-wpgc"
+  },
+  {
+    "id": "CVE-2026-76086",
+    "ghsa": "GHSA-v3f3-cmj4-cvj9",
+    "package": "verbb/formie",
+    "title": "Formie: Integration form-settings action allows SSRF and exfiltration of stored integration credentials",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.1.31",
+        "fixedIn": "3.1.31"
+      },
+      {
+        "vulnerable": "< 2.2.23",
+        "fixedIn": "2.2.23"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v3f3-cmj4-cvj9"
+  },
+  {
+    "id": "CVE-2026-52889",
+    "ghsa": "GHSA-565m-g33j-jq96",
+    "package": "verbb/formie",
+    "title": "Formie Hidden field defaults vulnerable to Server-Side Template Injection",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 3.1.27",
+        "fixedIn": "3.1.27"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-565m-g33j-jq96"
+  },
+  {
+    "id": "CVE-2026-47266",
+    "ghsa": "GHSA-pgxq-p76c-x9cg",
+    "package": "verbb/formie",
+    "title": "formie's unauthenticated front-end submission editing can overwrite existing submissions",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0, < 3.1.26",
+        "fixedIn": "3.1.26"
+      },
+      {
+        "vulnerable": "< 2.2.21",
+        "fixedIn": "2.2.21"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-pgxq-p76c-x9cg"
+  },
+  {
+    "id": "CVE-2026-45697",
+    "ghsa": "GHSA-x7m9-mwc2-g6w2",
+    "package": "verbb/formie",
+    "title": "Formie: Pre-authenticated server-side template injection in Hidden fields",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 3.0.0-beta.1, < 3.1.24",
+        "fixedIn": "3.1.24"
+      },
+      {
+        "vulnerable": "< 2.2.20",
+        "fixedIn": "2.2.20"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-x7m9-mwc2-g6w2"
+  },
+  {
+    "id": "CVE-2025-32427",
+    "ghsa": "GHSA-p9hh-mh5x-wvx3",
+    "package": "verbb/formie",
+    "title": "Formie has XSS vulnerability for importing forms",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 2.1.43",
+        "fixedIn": "2.1.44"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-p9hh-mh5x-wvx3"
+  },
+  {
+    "id": "CVE-2025-32426",
+    "ghsa": "GHSA-2xm2-23ff-p8ww",
+    "package": "verbb/formie",
+    "title": "Formie has XSS vulnerability for email notification content for preview",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 2.1.43",
+        "fixedIn": "2.1.44"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-2xm2-23ff-p8ww"
+  },
+  {
+    "id": "CVE-2024-35191",
+    "ghsa": "GHSA-v45m-hxqp-fwf5",
+    "package": "verbb/formie",
+    "title": "verbb/formie Server-Side Template Injection for variable-enabled settings",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.1.6",
+        "fixedIn": "2.1.6"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-v45m-hxqp-fwf5"
+  },
+  {
+    "id": "CVE-2020-13459",
+    "ghsa": "GHSA-p7rm-gh9g-5fr8",
+    "package": "verbb/image-resizer",
+    "title": "Image Resizer Cross-site Scripting (XSS) in the Bulk Resize action",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.9",
+        "fixedIn": "2.0.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-p7rm-gh9g-5fr8"
+  },
+  {
+    "id": "CVE-2020-13458",
+    "ghsa": "GHSA-5v5q-3m7m-97j7",
+    "package": "verbb/image-resizer",
+    "title": "Image Resizer Cross-Site Request Forgery (CSRF)",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.9",
+        "fixedIn": "2.0.9"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5v5q-3m7m-97j7"
+  },
+  {
+    "id": "CVE-2020-13486",
+    "ghsa": "GHSA-m69r-4h68-xq7j",
+    "package": "verbb/knock-knock",
+    "title": "Knock Knock plugin Open redirection vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 1.2.8",
+        "fixedIn": "1.2.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-m69r-4h68-xq7j"
+  },
+  {
+    "id": "CVE-2020-13485",
+    "ghsa": "GHSA-wxvr-qqm7-6h65",
+    "package": "verbb/knock-knock",
+    "title": "Knock Knock plugin IP Whitelist bypass via an X-Forwarded-For HTTP header",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 1.2.8",
+        "fixedIn": "1.2.8"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-wxvr-qqm7-6h65"
+  },
+  {
+    "id": "GHSA-r7cg-qjjm-xhqq",
+    "ghsa": "GHSA-r7cg-qjjm-xhqq",
+    "package": "webonyx/graphql-php",
+    "title": "webonyx/graphql-php has unbounded recursion in parser that causes stack overflow on crafted nested input",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "<= 15.32.2",
+        "fixedIn": "15.32.3"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-r7cg-qjjm-xhqq"
+  },
+  {
+    "id": "GHSA-fc86-6rv6-2jpm",
+    "ghsa": "GHSA-fc86-6rv6-2jpm",
+    "package": "webonyx/graphql-php",
+    "title": "webonyx/graphql-php has quadratic validation cost in OverlappingFieldsCanBeMerged via inline fragments",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 15.32.2",
+        "fixedIn": "15.32.2"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-fc86-6rv6-2jpm"
+  },
+  {
+    "id": "CVE-2026-40476",
+    "ghsa": "GHSA-68jq-c3rv-pcrr",
+    "package": "webonyx/graphql-php",
+    "title": "graphql-php is affected by a Denial of Service via quadratic complexity in OverlappingFieldsCanBeMerged validation",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "<= 15.31.4",
+        "fixedIn": "15.31.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-68jq-c3rv-pcrr"
+  },
+  {
+    "id": "CVE-2026-39850",
+    "ghsa": "GHSA-5vpg-rj7q-qpw2",
+    "package": "yiisoft/yii2",
+    "title": "Yii 2: Local file inclusion via view parameter name collision",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.55",
+        "fixedIn": "2.0.55"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-5vpg-rj7q-qpw2"
+  },
+  {
+    "id": "CVE-2024-58136",
+    "ghsa": "GHSA-ggwg-cmwp-46r5",
+    "package": "yiisoft/yii2",
+    "title": "yiisoft/yii2 Mishandles the Attaching of Behavior Defined by a `__class` Array Key",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.52",
+        "fixedIn": "2.0.52"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-ggwg-cmwp-46r5",
+    "kev": true
+  },
+  {
+    "id": "CVE-2024-4990",
+    "ghsa": "GHSA-cjcc-p67m-7qxm",
+    "package": "yiisoft/yii2",
+    "title": "Unsafe Reflection in base Component class in yiisoft/yii2",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.49.4",
+        "fixedIn": "2.0.49.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cjcc-p67m-7qxm"
+  },
+  {
+    "id": "CVE-2024-32877",
+    "ghsa": "GHSA-qg5r-95m4-mjgj",
+    "package": "yiisoft/yii2",
+    "title": "Reflected Cross-site Scripting in yiisoft/yii2 Debug mode",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.43, < 2.0.49.4",
+        "fixedIn": "2.0.49.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-qg5r-95m4-mjgj"
+  },
+  {
+    "id": "CVE-2020-15148",
+    "ghsa": "GHSA-699q-wcff-g9mj",
+    "package": "yiisoft/yii2",
+    "title": "Unsafe deserialization in Yii 2",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.38",
+        "fixedIn": "2.0.38"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-699q-wcff-g9mj"
+  },
+  {
+    "id": "CVE-2018-6010",
+    "ghsa": "GHSA-8gfq-c54m-3rf6",
+    "package": "yiisoft/yii2",
+    "title": "Yii Framework reflected Cross-site Scripting",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.14",
+        "fixedIn": "2.0.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-8gfq-c54m-3rf6"
+  },
+  {
+    "id": "CVE-2018-6009",
+    "ghsa": "GHSA-cwhm-272p-3wj9",
+    "package": "yiisoft/yii2",
+    "title": "Yii Framework Cross-Site Request Forgery (CSRF)",
+    "severity": "high",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0, < 2.0.14",
+        "fixedIn": "2.0.14"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cwhm-272p-3wj9"
+  },
+  {
+    "id": "CVE-2018-20745",
+    "ghsa": "GHSA-cr6r-6xm9-ww22",
+    "package": "yiisoft/yii2",
+    "title": "Yii Incorrectly Implements CORS",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.16",
+        "fixedIn": "2.0.16"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-cr6r-6xm9-ww22"
+  },
+  {
+    "id": "CVE-2017-7271",
+    "ghsa": "GHSA-4xh9-5vh8-3p58",
+    "package": "yiisoft/yii2",
+    "title": "Yii Framework Reflected XSS",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.11",
+        "fixedIn": "2.0.11"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4xh9-5vh8-3p58"
+  },
+  {
+    "id": "CVE-2017-11516",
+    "ghsa": "GHSA-4c64-w8fg-xcq2",
+    "package": "yiisoft/yii2",
+    "title": "Yii Cross-site Scripting Framework vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "= 2.0.12",
+        "fixedIn": "2.0.13"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-4c64-w8fg-xcq2"
+  },
+  {
+    "id": "CVE-2015-5467",
+    "ghsa": "GHSA-7cfq-72w2-24q4",
+    "package": "yiisoft/yii2",
+    "title": "Yii2 allows attackers to execute any local .php file via a relative path in the view parameter",
+    "severity": "critical",
+    "ranges": [
+      {
+        "vulnerable": ">= 2.0.0, < 2.0.5",
+        "fixedIn": "2.0.5"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-7cfq-72w2-24q4"
+  },
+  {
+    "id": "CVE-2015-3397",
+    "ghsa": "GHSA-w2xx-jp9f-gp8g",
+    "package": "yiisoft/yii2",
+    "title": "Yii Framework Cross-site Scripting Vulnerability",
+    "severity": "medium",
+    "ranges": [
+      {
+        "vulnerable": "< 2.0.4",
+        "fixedIn": "2.0.4"
+      }
+    ],
+    "url": "https://github.com/advisories/GHSA-w2xx-jp9f-gp8g"
+  }
+]

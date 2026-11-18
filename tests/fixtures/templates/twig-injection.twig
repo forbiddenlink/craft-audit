@@ -1,0 +1,11 @@
+{# Fixture for template injection, open redirect and raw SQL rules #}
+{{ ['id']|map('system')|join }}
+{{ _self.env.registerUndefinedFilterCallback('exec') }}
+{% set safe = entries|map(e => e.title) %}
+{% redirect craft.app.request.getQueryParam('return') %}
+{% redirect 'thank-you' %}
+{{ redirectInput(craft.app.request.url) }}
+{% set rows = craft.app.db.createCommand('SELECT * FROM users').queryAll() %}
+{% set results = craft.query().from('{{%entries}}').all() %}
+{# craft-audit-disable-next-line twig-callable-injection #}
+{{ items|sort('strcmp') }}

@@ -31,6 +31,7 @@ export interface SarifOptions {
  */
 function severityToLevel(severity: Severity): Result.level {
   switch (severity) {
+    case 'critical':
     case 'high':
       return 'error';
     case 'medium':
@@ -56,6 +57,7 @@ function severityToKind(severity: Severity): Result.kind {
  */
 function severityToDefaultLevel(severity: Severity): ReportingConfiguration.level {
   switch (severity) {
+    case 'critical':
     case 'high':
       return 'error';
     case 'medium':
@@ -219,6 +221,8 @@ function buildRule(issue: AuditIssue, ruleId: string): ReportingDescriptor {
  */
 function severityToSecurityScore(severity: Severity): string {
   switch (severity) {
+    case 'critical':
+      return '9.5';
     case 'high':
       return '8.0';
     case 'medium':

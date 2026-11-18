@@ -64,6 +64,7 @@ export function compareToBaseline(
 
   // Calculate severity breakdown for new issues
   const newBySeverity: Record<Severity, number> = {
+    critical: 0,
     high: 0,
     medium: 0,
     low: 0,
@@ -97,6 +98,7 @@ export function renderDiffConsole(diff: DiffResult, suppressedCount = 0): void {
     console.log(chalk.red.bold(`NEW ISSUES (${diff.summary.new}):`));
     const bySeverity = diff.summary.newBySeverity;
     const parts: string[] = [];
+    if (bySeverity.critical > 0) parts.push(chalk.red.bold(`${bySeverity.critical} critical`));
     if (bySeverity.high > 0) parts.push(chalk.red(`${bySeverity.high} high`));
     if (bySeverity.medium > 0) parts.push(chalk.yellow(`${bySeverity.medium} medium`));
     if (bySeverity.low > 0) parts.push(chalk.blue(`${bySeverity.low} low`));
@@ -108,7 +110,9 @@ export function renderDiffConsole(diff: DiffResult, suppressedCount = 0): void {
 
     for (const issue of diff.newIssues) {
       const sevColor =
-        issue.severity === 'high'
+        issue.severity === 'critical'
+          ? chalk.red.bold
+          : issue.severity === 'high'
           ? chalk.red
           : issue.severity === 'medium'
             ? chalk.yellow

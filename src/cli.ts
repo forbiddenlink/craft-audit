@@ -31,6 +31,8 @@ import { executeAuditCommand } from './commands/audit';
 import { executeRecommendConfigCommand, RecommendConfigCommandOptions } from './commands/recommend-config';
 import { executeInitCommand } from './commands/init';
 import { executeUpdateCvesCommand } from './commands/update-cves';
+import { scanForCompromise } from './analyzers/ioc';
+import { summarizeIssues } from './core/summary';
 import { executeListRulesCommand, ListRulesCommandOptions } from './commands/list-rules';
 import { executeExplainCommand } from './commands/explain';
 
@@ -131,7 +133,7 @@ function addSharedOptions(cmd: Command): Command {
     )
     .option('--rules-dir <path>', 'Load custom rules from directory')
     .option('--quality-gate <name>', 'Use a named quality gate profile (strict, recommended, security-only, relaxed, ci)')
-    .option('--exit-threshold <level>', 'Fail on severity threshold: none|high|medium|low|info', 'high')
+    .option('--exit-threshold <level>', 'Fail on severity threshold: none|critical|high|medium|low|info', 'high')
     .option('--generate-csp', 'Generate a recommended Content-Security-Policy header based on template analysis')
     .option('--craft5-migration', 'Check for Craft 4→5 migration issues')
     .option('--log-level <level>', 'Set log level (debug, info, warn, error, silent)', 'info')
@@ -307,8 +309,42 @@ program
   });
 
 program
+  .command('ioc')
+  .description('Scan a copy of a server\'s files for signs the site was already compromised')
+  .argument('[path]', 'Path to the site files', '.')
+  .option('--file-limit <n>', 'Maximum number of files to scan', '20000')
+  .option('--json', 'Print findings as JSON')
+  .action(async (sitePath: string, options: { fileLimit: string; json?: boolean }) => {
+    const absolutePath = path.resolve(sitePath);
+    if (!fs.existsSync(absolutePath)) {
+      console.error(chalk.red(`Error: Path does not exist: ${absolutePath}`));
+      process.exitCode = 1;
+      return;
+    }
+    const fileLimit = Number.parseInt(options.fileLimit, 10);
+    if (!Number.isInteger(fileLimit) || fileLimit < 1) {
+      console.error(chalk.red('Error: --file-limit must be a positive integer'));
+      process.exitCode = 1;
+      return;
+    }
+    const issues = await scanForCompromise(absolutePath, { fileLimit });
+    const result = {
+      projectPath: absolutePath,
+      timestamp: new Date().toISOString(),
+      issues,
+      summary: summarizeIssues(issues),
+    };
+    if (options.json) {
+      process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+    } else {
+      new ConsoleReporter().report(result);
+    }
+    if (issues.some((issue) => issue.severity !== 'info')) process.exitCode = 1;
+  });
+
+program
   .command('update-cves')
-  .description('Fetch latest Craft CMS CVEs from GitHub Advisories and update the database')
+  .description('Refresh bundled Craft CMS, plugin and dependency advisories from GitHub and the CISA KEV catalog')
   .action(async () => {
     await executeUpdateCvesCommand();
   });

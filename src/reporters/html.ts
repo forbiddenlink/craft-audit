@@ -1,4 +1,5 @@
 import { AuditIssue, AuditResult, CraftInfo, PluginInfo } from '../types';
+import { SEVERITIES } from '../core/severity';
 
 function escapeHtml(value: string): string {
   return value
@@ -129,6 +130,7 @@ export class HtmlReporter {
         --text: #111827;
         --muted: #5b6472;
         --border: #e4e2dc;
+        --critical: #7f1d1d;
         --high: #b91c1c;
         --medium: #b45309;
         --low: #1e3a8a;
@@ -227,6 +229,7 @@ export class HtmlReporter {
       }
       .issue-table th { color: var(--muted); font-weight: 600; background: #f8fafc; }
       .issue-table tr:last-child td { border-bottom: none; }
+      .severity-critical { color: var(--critical); font-weight: 700; }
       .severity-high { color: var(--high); font-weight: 600; }
       .severity-medium { color: var(--medium); font-weight: 600; }
       .severity-low { color: var(--low); font-weight: 600; }
@@ -252,6 +255,7 @@ export class HtmlReporter {
     <main>
       <section class="grid">
         <div class="card"><div class="stat">${result.summary.total}</div><div class="label">Total</div></div>
+        <div class="card"><div class="stat" style="color: var(--critical)">${result.summary.critical}</div><div class="label">Critical</div></div>
         <div class="card"><div class="stat" style="color: var(--high)">${result.summary.high}</div><div class="label">High</div></div>
         <div class="card"><div class="stat" style="color: var(--medium)">${result.summary.medium}</div><div class="label">Medium</div></div>
         <div class="card"><div class="stat" style="color: var(--low)">${result.summary.low}</div><div class="label">Low</div></div>
@@ -300,7 +304,7 @@ export class HtmlReporter {
         const groupsEl = document.getElementById('issue-groups');
         const metaEl = document.getElementById('results-meta');
 
-        const severities = ['high', 'medium', 'low', 'info'];
+        const severities = ${JSON.stringify(SEVERITIES)};
         const state = {
           search: '',
           category: 'all',

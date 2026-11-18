@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 
 import { AuditIssue } from '../types';
+import { severityRank } from './severity';
 
 export interface DebugProfileEntry {
   path: string;
@@ -185,13 +186,6 @@ function findEntry(
 function formatDuration(value: number): string {
   if (Number.isInteger(value)) return `${value}ms`;
   return `${value.toFixed(1)}ms`;
-}
-
-function severityRank(value: AuditIssue['severity']): number {
-  if (value === 'high') return 4;
-  if (value === 'medium') return 3;
-  if (value === 'low') return 2;
-  return 1;
 }
 
 export function applyDebugProfileCorrelation(

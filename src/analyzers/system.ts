@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 
 import { CraftInfo, PluginInfo, SystemIssue } from '../types';
 import { collectComposerSystemIssues } from './composer-checks';
+import { craftSupport, phpSupport } from '../core/eol';
 
 const execFileAsync = promisify(execFile);
 
@@ -124,7 +125,8 @@ function buildCraftInfo(
 function buildIssues(
   projectPath: string,
   composer: ComposerJson | undefined,
-  craftInfo: CraftInfo | undefined
+  craftInfo: CraftInfo | undefined,
+  today: Date = new Date()
 ): SystemIssue[] {
   const issues: SystemIssue[] = [];
 
@@ -160,17 +162,31 @@ function buildIssues(
   }
 
   const craftMajor = parseMajorVersion(craftInfo.version);
+  const craftStatus = craftMajor !== undefined ? craftSupport(craftMajor, today) : undefined;
   if (craftMajor !== undefined && craftMajor <= 3) {
+    const ended = craftStatus?.endsOn ? ` Security support ended ${craftStatus.endsOn}.` : '';
     issues.push({
       severity: 'high',
       category: 'system',
       type: 'craft5-incompatible',
       ruleId: 'system/craft-version-legacy',
-      message: `Craft CMS appears to be on an older major range (${craftInfo.version}).`,
+      message: `Craft CMS appears to be on an older major range (${craftInfo.version}).${ended}`,
       suggestion: 'Plan an upgrade path before adding new plugin dependencies.',
       confidence: 0.8,
       docsUrl: 'https://craftcms.com/docs/5.x/upgrade',
       fingerprint: `system/craft-version-legacy:${craftInfo.version}`,
+    });
+  } else if (craftMajor === 4 && craftStatus?.state === 'eol') {
+    issues.push({
+      severity: 'high',
+      category: 'system',
+      type: 'craft-eol',
+      ruleId: 'system/craft-eol',
+      message: `Craft CMS ${craftMajor} (${craftInfo.version}) stopped receiving security fixes on ${craftStatus.endsOn}.`,
+      suggestion: 'Upgrade to Craft 5. Vulnerabilities found in Craft 4 after that date are not patched.',
+      confidence: 0.85,
+      docsUrl: 'https://craftcms.com/knowledge-base/supported-versions',
+      fingerprint: `system/craft-eol:${craftInfo.version}`,
     });
   } else if (craftMajor === 4) {
     issues.push({
@@ -201,7 +217,58 @@ function buildIssues(
     });
   }
 
+  issues.push(...platformPhpIssues(composer, today));
+
   return issues;
+}
+
+/**
+ * composer.json `config.platform.php` is the PHP version Composer resolves
+ * dependencies for, which teams set to match production. Flag it when that
+ * version is past or near the end of security support.
+ */
+function platformPhpIssues(composer: ComposerJson, today: Date): SystemIssue[] {
+  const declared = composer.config?.platform?.php;
+  const match = declared ? /^(\d+)\.(\d+)/.exec(declared) : null;
+  if (!declared || !match) return [];
+  const version = `${match[1]}.${match[2]}`;
+  const status = phpSupport(Number(match[1]), Number(match[2]), today);
+  const evidence = { details: `composer.json config.platform.php = ${declared}` };
+
+  if (status.state === 'eol') {
+    const ended = status.endsOn ? ` on ${status.endsOn}` : '';
+    return [
+      {
+        severity: 'high',
+        category: 'system',
+        type: 'php-version',
+        ruleId: 'system/php-platform-eol',
+        message: `composer.json targets PHP ${version}, which stopped receiving security fixes${ended}.`,
+        suggestion: 'Upgrade production to a supported PHP version, then raise config.platform.php to match.',
+        confidence: 0.8,
+        docsUrl: 'https://www.php.net/supported-versions.php',
+        evidence,
+        fingerprint: `system/php-platform-eol:${version}`,
+      },
+    ];
+  }
+  if (status.state === 'ending-soon') {
+    return [
+      {
+        severity: 'medium',
+        category: 'system',
+        type: 'php-version',
+        ruleId: 'system/php-platform-eol-soon',
+        message: `composer.json targets PHP ${version}, whose security support ends ${status.endsOn}.`,
+        suggestion: 'Plan the PHP upgrade before that date, then raise config.platform.php to match.',
+        confidence: 0.8,
+        docsUrl: 'https://www.php.net/supported-versions.php',
+        evidence,
+        fingerprint: `system/php-platform-eol-soon:${version}`,
+      },
+    ];
+  }
+  return [];
 }
 
 export const __testUtils = {
@@ -210,6 +277,7 @@ export const __testUtils = {
   findPlugins,
   buildCraftInfo,
   buildIssues,
+  platformPhpIssues,
   tryReadJson,
 };
 

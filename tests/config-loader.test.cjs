@@ -65,7 +65,7 @@ test('config validator rejects invalid integration modes', () => {
       preset: 'custom',
       ruleSettings: {
         'template/n-plus-one-loop': {
-          severity: 'critical',
+          severity: 'urgent',
           ignorePaths: [123],
         },
       },

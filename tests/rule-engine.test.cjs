@@ -592,7 +592,7 @@ pattern: "test"
 message: "Test message"
 meta:
   description: Test rule
-  severity: critical
+  severity: urgent
 `,
     'utf8'
   );

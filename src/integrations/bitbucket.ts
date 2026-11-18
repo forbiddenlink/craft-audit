@@ -1,3 +1,4 @@
+import { countHighOrWorse } from '../core/summary';
 import { BitbucketInsightsReporter } from '../reporters/bitbucket-insights';
 import { AuditResult } from '../types';
 import { IntegrationSendOn } from './slack';
@@ -18,7 +19,7 @@ function encodePath(value: string): string {
 
 export function shouldPublishBitbucketByMode(result: AuditResult, mode: IntegrationSendOn): boolean {
   if (mode === 'always') return true;
-  if (mode === 'high') return result.summary.high > 0;
+  if (mode === 'high') return countHighOrWorse(result.summary) > 0;
   return result.summary.total > 0;
 }
 

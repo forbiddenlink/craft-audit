@@ -1,3 +1,5 @@
+import { countHighOrWorse } from '../core/summary';
+import { severityRank } from '../core/severity';
 import { AuditResult, Severity } from '../types';
 import { IntegrationSendOn } from './slack';
 import { projectLabel } from './utils';
@@ -38,6 +40,8 @@ interface LinearGraphQLResponse {
 function severityToPriority(severity: Severity): number {
   // Linear priorities: 0 = No priority, 1 = Urgent, 2 = High, 3 = Medium, 4 = Low
   switch (severity) {
+    case 'critical':
+      return 1;
     case 'high':
       return 2;
     case 'medium':
@@ -52,6 +56,7 @@ function severityToPriority(severity: Severity): number {
 }
 
 function getHighestSeverity(result: AuditResult): Severity {
+  if (result.summary.critical > 0) return 'critical';
   if (result.summary.high > 0) return 'high';
   if (result.summary.medium > 0) return 'medium';
   if (result.summary.low > 0) return 'low';
@@ -60,7 +65,7 @@ function getHighestSeverity(result: AuditResult): Severity {
 
 export function shouldCreateLinearIssue(result: AuditResult, mode: IntegrationSendOn): boolean {
   if (mode === 'always') return true;
-  if (mode === 'high') return result.summary.high > 0;
+  if (mode === 'high') return countHighOrWorse(result.summary) > 0;
   return result.summary.total > 0;
 }
 
@@ -72,13 +77,10 @@ export function buildLinearIssuePayload(
   const label = projectLabel(result.projectPath);
   const findings = result.issues
     .slice()
-    .sort((a, b) => {
-      const rank = { high: 4, medium: 3, low: 2, info: 1 } as const;
-      return rank[b.severity] - rank[a.severity];
-    })
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity))
     .slice(0, maxItems);
 
-  const title = `craft-audit: ${label} (H:${result.summary.high} M:${result.summary.medium} L:${result.summary.low})`;
+  const title = `craft-audit: ${label} (C:${result.summary.critical} H:${result.summary.high} M:${result.summary.medium} L:${result.summary.low})`;
 
   const lines = [
     `## Craft Audit Summary`,
@@ -87,6 +89,7 @@ export function buildLinearIssuePayload(
     `|--------|-------|`,
     `| Project | \`${result.projectPath}\` |`,
     `| Timestamp | \`${result.timestamp}\` |`,
+    `| Critical | **${result.summary.critical}** |`,
     `| High | **${result.summary.high}** |`,
     `| Medium | **${result.summary.medium}** |`,
     `| Low | **${result.summary.low}** |`,
@@ -108,7 +111,7 @@ export function buildLinearIssuePayload(
   } else {
     for (const issue of findings) {
       const location = issue.file ? ` (\`${issue.file}${issue.line ? `:${issue.line}` : ''}\`)` : '';
-      const badge = issue.severity === 'high' ? '🔴' : issue.severity === 'medium' ? '🟠' : issue.severity === 'low' ? '🟡' : 'ℹ️';
+      const badge = issue.severity === 'critical' ? '🚨' : issue.severity === 'high' ? '🔴' : issue.severity === 'medium' ? '🟠' : issue.severity === 'low' ? '🟡' : 'ℹ️';
       lines.push(`- ${badge} **[${issue.severity.toUpperCase()}]** ${issue.message}${location}`);
     }
   }

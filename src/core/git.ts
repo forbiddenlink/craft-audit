@@ -41,10 +41,26 @@ function isSafeRelativePath(filePath: string): boolean {
   return true;
 }
 
+/**
+ * The untrusted-repo overrides below travel as GIT_CONFIG_COUNT pairs, which
+ * git reads from 2.31 on. Older git ignores them, so it counts as unavailable
+ * rather than running with the repository's own config.
+ */
+function supportsConfigEnv(versionOutput: string): boolean {
+  const match = /git version (\d+)\.(\d+)/.exec(versionOutput);
+  if (!match) return false;
+  const [major, minor] = [Number(match[1]), Number(match[2])];
+  return major > 2 || (major === 2 && minor >= 31);
+}
+
 function canRunGit(projectPath: string): boolean {
   try {
-    execFileSync('git', ['--version'], { cwd: projectPath, stdio: ['ignore', 'ignore', 'ignore'] });
-    return true;
+    const version = execFileSync('git', ['--version'], {
+      cwd: projectPath,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return supportsConfigEnv(version);
   } catch {
     return false;
   }
@@ -55,10 +71,66 @@ function isInsideWorkTree(projectPath: string): boolean {
   return value === 'true';
 }
 
+/**
+ * The audited repository is untrusted. Its .git/config can name programs that
+ * read-only git commands would otherwise run: an fsmonitor hook on any index
+ * read, clean/smudge/process filters when diffing the working tree, a gpg
+ * program when a log shows signatures, and remote helpers if a partial clone
+ * lazily fetches a missing object. Every git call here overrides those keys.
+ * Callers producing patch output must also pass --no-textconv and
+ * --no-ext-diff.
+ *
+ * Overrides travel as GIT_CONFIG_COUNT/KEY/VALUE environment pairs rather
+ * than `-c key=value`: a key carries the repo-chosen filter driver name, and
+ * `-c` splits at the first "=", so a driver named "x=y" would escape the
+ * override. Driver names are re-read before every call, never cached.
+ */
+const FIXED_OVERRIDES: ReadonlyArray<readonly [string, string]> = [
+  ['core.fsmonitor', 'false'],
+  ['log.showSignature', 'false'],
+  ['gpg.program', 'false'],
+  ['gpg.ssh.program', 'false'],
+  ['gpg.x509.program', 'false'],
+  ['protocol.allow', 'never'],
+];
+
+/** Names of filter drivers the repository configures. Reading config runs nothing. */
+function configuredFilterDrivers(projectPath: string): string[] {
+  try {
+    const stdout = execFileSync(
+      'git',
+      ['config', '--null', '--name-only', '--get-regexp', String.raw`^filter\..+\.(clean|smudge|process)$`],
+      { cwd: projectPath, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
+    );
+    const names = stdout
+      .split('\0')
+      .filter(Boolean)
+      .map((key) => key.slice('filter.'.length, key.lastIndexOf('.')));
+    return [...new Set(names)];
+  } catch {
+    return []; // exit 1: no filter drivers configured
+  }
+}
+
+function untrustedRepoEnv(projectPath: string): NodeJS.ProcessEnv {
+  const overrides: Array<readonly [string, string]> = [...FIXED_OVERRIDES];
+  for (const name of configuredFilterDrivers(projectPath)) {
+    for (const key of ['clean', 'smudge', 'process']) overrides.push([`filter.${name}.${key}`, '']);
+    overrides.push([`filter.${name}.required`, 'false']);
+  }
+  const env: NodeJS.ProcessEnv = { ...process.env, GIT_NO_LAZY_FETCH: '1', GIT_CONFIG_COUNT: String(overrides.length) };
+  overrides.forEach(([key, value], index) => {
+    env[`GIT_CONFIG_KEY_${index}`] = key;
+    env[`GIT_CONFIG_VALUE_${index}`] = value;
+  });
+  return env;
+}
+
 function runGitDiff(projectPath: string, args: string[]): string[] {
   try {
     const stdout = execFileSync('git', args, {
       cwd: projectPath,
+      env: untrustedRepoEnv(projectPath),
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
@@ -72,10 +144,22 @@ function runGitDiff(projectPath: string, args: string[]): string[] {
   }
 }
 
+/**
+ * Output lines of a read-only git command run in `projectPath`, or [] when
+ * git is missing or the path is not inside a work tree.
+ *
+ * Callers that produce patch output must pass --no-textconv and --no-ext-diff.
+ */
+export function gitOutputLines(projectPath: string, args: string[]): string[] {
+  if (!canRunGit(projectPath) || !isInsideWorkTree(projectPath)) return [];
+  return runGitDiff(projectPath, args);
+}
+
 function runGitValue(projectPath: string, args: string[]): string | undefined {
   try {
     const stdout = execFileSync('git', args, {
       cwd: projectPath,
+      env: untrustedRepoEnv(projectPath),
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
@@ -90,6 +174,7 @@ function refExists(projectPath: string, ref: string): boolean {
   try {
     execFileSync('git', ['rev-parse', '--verify', '--quiet', ref], {
       cwd: projectPath,
+      env: untrustedRepoEnv(projectPath),
       stdio: ['ignore', 'ignore', 'ignore'],
     });
     return true;
@@ -226,4 +311,5 @@ export function getChangedTemplateIssuePathsWithStatus(
 export const __testUtils = {
   isValidGitRef,
   isSafeRelativePath,
+  supportsConfigEnv,
 };

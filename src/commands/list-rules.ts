@@ -11,6 +11,7 @@ import {
   ExtendedRuleMetadata,
 } from '../core/rule-metadata';
 import type { Severity } from '../types';
+import { SEVERITIES } from '../core/severity';
 
 export interface ListRulesCommandOptions {
   category?: string;
@@ -19,7 +20,7 @@ export interface ListRulesCommandOptions {
 }
 
 const VALID_CATEGORIES = new Set<RuleCategory>(['template', 'security', 'system', 'visual', 'runtime']);
-const VALID_SEVERITIES = new Set<Severity>(['high', 'medium', 'low', 'info']);
+const VALID_SEVERITIES = new Set<Severity>(SEVERITIES);
 
 function isValidCategory(value: string): value is RuleCategory {
   return VALID_CATEGORIES.has(value as RuleCategory);
@@ -31,6 +32,8 @@ function isValidSeverity(value: string): value is Severity {
 
 function severityColor(severity: Severity): (text: string) => string {
   switch (severity) {
+    case 'critical':
+      return chalk.red.bold;
     case 'high':
       return chalk.red;
     case 'medium':

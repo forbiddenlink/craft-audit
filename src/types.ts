@@ -2,7 +2,7 @@
  * Craft Audit - Type Definitions
  */
 
-export type Severity = 'high' | 'medium' | 'low' | 'info';
+export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 export interface Fix {
   safe: boolean;
@@ -36,7 +36,7 @@ export interface AuditIssue {
 
 export interface TemplateIssue extends AuditIssue {
   category: 'template';
-  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf' | 'img-missing-alt' | 'input-missing-label' | 'empty-link' | 'missing-lang';
+  pattern: 'n+1' | 'missing-eager-load' | 'deprecated' | 'inefficient-query' | 'missing-limit' | 'mixed-loading-strategy' | 'xss-raw-output' | 'ssti-dynamic-include' | 'twig-callable-injection' | 'open-redirect' | 'raw-sql-in-template' | 'missing-status-filter' | 'dump-call' | 'include-tag' | 'form-missing-csrf' | 'img-missing-alt' | 'input-missing-label' | 'empty-link' | 'missing-lang';
 }
 
 export interface SystemIssue extends AuditIssue {
@@ -44,6 +44,7 @@ export interface SystemIssue extends AuditIssue {
   type:
     | 'update-available'
     | 'craft5-incompatible'
+    | 'craft-eol'
     | 'deprecated-plugin'
     | 'php-version'
     | 'composer-missing'
@@ -57,7 +58,7 @@ export interface SystemIssue extends AuditIssue {
 
 export interface SecurityIssue extends AuditIssue {
   category: 'security';
-  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'plugin-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
+  type: 'dev-mode' | 'admin-changes' | 'env-exposure' | 'permissions' | 'scan-truncated' | 'hardcoded-key' | 'security-key' | 'csrf-disabled' | 'dangerous-extensions' | 'known-cve' | 'plugin-cve' | 'dependency-cve' | 'insecure-production-config' | 'insecure-url' | 'http-header-check';
 }
 
 export interface VisualIssue extends AuditIssue {
@@ -110,6 +111,7 @@ export interface AuditResult {
   plugins?: PluginInfo[];
   issues: AuditIssue[];
   summary: {
+    critical: number;
     high: number;
     medium: number;
     low: number;

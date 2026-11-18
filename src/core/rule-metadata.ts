@@ -79,6 +79,36 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'A <form> tag was found without a {{ csrfInput() }} call, leaving it vulnerable to cross-site request forgery.',
     helpUri: 'https://craftcms.com/docs/5.x/development/forms#csrf',
   },
+  'security/security-key-committed': {
+    title: 'Security key committed to git',
+    description: 'A tracked env file holds the Craft security key, so everyone with repository access has it.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+  },
+  'security/security-key-in-git-history': {
+    title: 'Security key found in git history',
+    description: 'An env file with the Craft security key was committed at some point; the key stays exposed until rotated.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+  },
+  'security/security-key-reused': {
+    title: 'Security key shared between environments',
+    description: 'Two env files hold the same Craft security key.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+  },
+  'security/twig-callable-injection': {
+    title: 'Template injection payload in Twig',
+    description: 'A filter receives a PHP function name as a string, or the template reaches into the Twig environment.',
+    helpUri: 'https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/18-Testing_for_Server-side_Template_Injection',
+  },
+  'security/open-redirect': {
+    title: 'Open redirect from request data',
+    description: 'A template redirects to a URL taken from the request.',
+    helpUri: 'https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html',
+  },
+  'security/raw-sql-in-template': {
+    title: 'Raw database access in a template',
+    description: 'A template uses the database connection or createCommand() directly.',
+    helpUri: 'https://craftcms.com/docs/5.x/development/element-queries',
+  },
   'security/hardcoded-security-key': {
     title: 'Hardcoded security key in config',
     description: 'The security key appears to be hardcoded rather than loaded from an environment variable.',
@@ -112,6 +142,21 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'Legacy Craft CMS major version detected',
     description: 'Craft CMS major version appears to be 3.x or lower.',
     helpUri: 'https://craftcms.com/docs/5.x/upgrade',
+  },
+  'system/craft-eol': {
+    title: 'Craft CMS version past end of life',
+    description: 'The installed Craft CMS major version no longer receives security fixes.',
+    helpUri: 'https://craftcms.com/knowledge-base/supported-versions',
+  },
+  'system/php-platform-eol': {
+    title: 'composer.json targets end-of-life PHP',
+    description: 'config.platform.php names a PHP version that no longer receives security fixes.',
+    helpUri: 'https://www.php.net/supported-versions.php',
+  },
+  'system/php-platform-eol-soon': {
+    title: 'composer.json targets PHP nearing end of life',
+    description: 'config.platform.php names a PHP version whose security support ends within a year.',
+    helpUri: 'https://www.php.net/supported-versions.php',
   },
   'system/craft-major-upgrade-candidate': {
     title: 'Craft CMS major upgrade available',
@@ -162,6 +207,16 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'Known Craft CMS CVE detected',
     description: 'The installed Craft CMS version is affected by a known security vulnerability.',
     helpUri: 'https://github.com/advisories',
+  },
+  'security/plugin-cve': {
+    title: 'Known Craft plugin vulnerability detected',
+    description: 'An installed Craft plugin version is affected by a published security advisory.',
+    helpUri: 'https://github.com/advisories?query=ecosystem%3Acomposer',
+  },
+  'security/dependency-cve': {
+    title: 'Known vulnerability in a Craft dependency',
+    description: 'A library installed with Craft (Yii, Twig, Guzzle, Symfony and others) is affected by a published security advisory.',
+    helpUri: 'https://github.com/advisories?query=ecosystem%3Acomposer',
   },
   'security/allow-updates-enabled': {
     title: 'Auto-updates enabled in config',
@@ -315,6 +370,156 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     title: 'Visual analyzer execution failed',
     description: 'Visual regression scan did not complete and findings are incomplete.',
   },
+  'security/php-register-argc-argv': {
+    title: 'register_argc_argv enabled',
+    description: 'register_argc_argv = On lets CVE-2024-56145 run code without authentication on Craft CMS below 3.9.14, 4.13.2 or 5.5.2.',
+    helpUri: 'https://www.php.net/manual/en/ini.core.php#ini.register-argc-argv',
+  },
+  'security/php-display-errors': {
+    title: 'display_errors enabled',
+    description: 'display_errors = On can leak file paths, queries and credentials to visitors.',
+    helpUri: 'https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors',
+  },
+  'security/php-expose-php': {
+    title: 'expose_php enabled',
+    description: 'expose_php = On adds the PHP version to the X-Powered-By response header.',
+    helpUri: 'https://www.php.net/manual/en/ini.core.php#ini.expose-php',
+  },
+  'security/php-allow-url-include': {
+    title: 'allow_url_include enabled',
+    description: 'allow_url_include = On lets include and require load remote URLs, which turns file inclusion bugs into remote code execution.',
+    helpUri: 'https://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-include',
+  },
+  'security/php-dangerous-functions-unrestricted': {
+    title: 'disable_functions explicitly empty',
+    description: 'disable_functions is set to empty, so exec, system and passthru stay available.',
+    helpUri: 'https://www.php.net/manual/en/ini.core.php#ini.disable-functions',
+  },
+  'security/php-session-cookie-insecure': {
+    title: 'Insecure PHP session cookie flags',
+    description: 'session.cookie_secure or session.cookie_httponly is off, so session cookies can travel over HTTP or be read by JavaScript.',
+    helpUri: 'https://www.php.net/manual/en/session.configuration.php#ini.session.cookie-secure',
+  },
+  'security/docker-runs-as-root': {
+    title: 'Container runs as root',
+    description: 'The final Dockerfile stage has no USER instruction, or ends with USER root.',
+    helpUri: 'https://docs.docker.com/build/building/best-practices/#user',
+  },
+  'security/docker-php-eol-image': {
+    title: 'End-of-life PHP base image',
+    description: 'The Dockerfile uses a php image at 8.1 or older, which no longer receives security fixes.',
+    helpUri: 'https://www.php.net/supported-versions.php',
+  },
+  'security/ioc-known-malware': {
+    title: 'Known malware indicator (Mimo campaign)',
+    description: 'A file name or file content matches a public indicator of the Mimo campaign, which exploited CVE-2025-32432 in Craft CMS.',
+    helpUri: 'https://github.com/craftcms/cms/security/advisories/GHSA-f3gw-9ww9-jmc3',
+  },
+  'security/ioc-php-in-public-uploads': {
+    title: 'PHP file in an upload, asset or storage folder',
+    description: 'An executable PHP file sits under a web upload or asset folder, cpresources or storage. Craft never needs PHP there.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/ioc-webshell-pattern': {
+    title: 'Webshell pattern in a PHP file',
+    description: 'A PHP file passes request data to eval, assert or a process function, or decodes data straight into eval.',
+    helpUri: 'https://attack.mitre.org/techniques/T1505/003/',
+  },
+  'security/ioc-twig-template-injection': {
+    title: 'Twig template injection payload',
+    description: 'A template contains a known Twig server-side template injection payload such as _self.env or filter(\'system\').',
+    helpUri: 'https://portswigger.net/research/server-side-template-injection',
+  },
+  'security/ioc-scan-truncated': {
+    title: 'Compromise scan truncated',
+    description: 'The compromise scan reached its file limit, so results are incomplete.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/composer-allow-plugins-wildcard': {
+    title: 'Composer allow-plugins wildcard',
+    description: 'config.allow-plugins is true or uses a wildcard, so any newly added dependency can run code during composer install.',
+    helpUri: 'https://getcomposer.org/doc/06-config.md#allow-plugins',
+  },
+  'security/composer-plugin-untrusted': {
+    title: 'Unreviewed Composer plugin installed',
+    description: 'composer.lock contains a composer-plugin package that is not on the known-safe list. Plugins run code during install and update.',
+    helpUri: 'https://getcomposer.org/doc/articles/plugins.md',
+  },
+  'security/composer-audit-disabled': {
+    title: 'Composer security audit weakened',
+    description: 'config.audit turns off insecure-package blocking, ignores abandoned packages, or ignores specific advisories.',
+    helpUri: 'https://getcomposer.org/doc/06-config.md#audit',
+  },
+  'security/composer-secure-http-disabled': {
+    title: 'Composer secure-http disabled or HTTP repository',
+    description: 'config.secure-http is false or a repository uses http://, so packages can be tampered with in transit.',
+    helpUri: 'https://getcomposer.org/doc/06-config.md#secure-http',
+  },
+  'security/composer-vcs-repository': {
+    title: 'Composer repository bypasses Packagist',
+    description: 'A vcs, git, path, inline package or artifact repository bypasses Packagist and its advisory data.',
+    helpUri: 'https://getcomposer.org/doc/05-repositories.md',
+  },
+  'security/composer-no-audit-in-ci': {
+    title: 'Composer audit disabled in CI or build files',
+    description: 'COMPOSER_NO_AUDIT=1 or --no-audit turns off the Composer security audit in a CI, Docker, deploy or script file.',
+    helpUri: 'https://getcomposer.org/doc/03-cli.md#audit',
+  },
+  'security/composer-lock-missing': {
+    title: 'composer.lock missing',
+    description: 'composer.json exists without composer.lock, so installs are not reproducible and cannot be checked against pinned versions.',
+    helpUri: 'https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control',
+  },
+  'security/composer-minimum-stability-dev': {
+    title: 'Composer allows unstable releases',
+    description: 'minimum-stability is dev or alpha without prefer-stable: true, so unstable releases can be installed.',
+    helpUri: 'https://getcomposer.org/doc/04-schema.md#minimum-stability',
+  },
+  'security/exposed-env-file': {
+    title: 'Exposed .env file',
+    description: 'The .env file is publicly readable and can leak the security key, database credentials and other secrets.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/exposed-git-directory': {
+    title: 'Exposed .git directory',
+    description: 'The .git directory is served publicly, so source code and history can be downloaded.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/exposed-composer-files': {
+    title: 'Exposed Composer files',
+    description: 'composer.json or composer.lock is publicly readable and reveals exact package versions.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/exposed-storage': {
+    title: 'Exposed storage directory',
+    description: 'Files under storage/ (logs, runtime) are publicly accessible and can leak paths, queries and tokens.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/directory-listing': {
+    title: 'Directory listing enabled',
+    description: 'The web server lists directory contents (seen on /cpresources/).',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/control-panel-public': {
+    title: 'Control panel reachable from the internet',
+    description: 'The control panel responds at the default /admin path.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general.html#cptrigger',
+  },
+  'security/version-disclosure': {
+    title: 'Software version disclosure',
+    description: 'The X-Powered-By header reveals Craft CMS or the PHP version.',
+    helpUri: 'https://craftcms.com/knowledge-base/securing-craft',
+  },
+  'security/php-eol-live': {
+    title: 'Live site runs end-of-life PHP',
+    description: 'The site reports a PHP version that no longer receives security fixes.',
+    helpUri: 'https://www.php.net/supported-versions.php',
+  },
+  'security/php-eol-soon': {
+    title: 'Live site PHP nearing end of life',
+    description: 'The site reports a PHP version whose security support ends within a year.',
+    helpUri: 'https://www.php.net/supported-versions.php',
+  },
 };
 
 export function getRuleMetadata(ruleId: string): RuleMetadata | undefined {
@@ -439,6 +644,42 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     examples: ['{{ dump(entry) }}', '<?php dd($variable); ?>'],
     fixGuidance: 'Remove dump(), dd(), and var_dump() calls before deploying to production.',
   },
+  'security/twig-callable-injection': {
+    ...RULE_METADATA['security/twig-callable-injection'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Replace string callables with arrow functions; if the line is unexpected, investigate the template for tampering.',
+  },
+  'security/open-redirect': {
+    ...RULE_METADATA['security/open-redirect'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Redirect only to relative paths or allowlisted hosts.',
+  },
+  'security/raw-sql-in-template': {
+    ...RULE_METADATA['security/raw-sql-in-template'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Use element queries or craft.query() with bound parameters.',
+  },
+  'security/security-key-committed': {
+    ...RULE_METADATA['security/security-key-committed'],
+    severity: 'critical',
+    category: 'security',
+    fixGuidance: 'Rotate the key on every environment (php craft setup/security-key), then untrack the env file and add it to .gitignore.',
+  },
+  'security/security-key-in-git-history': {
+    ...RULE_METADATA['security/security-key-in-git-history'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Rotate the key on every environment (php craft setup/security-key).',
+  },
+  'security/security-key-reused': {
+    ...RULE_METADATA['security/security-key-reused'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Generate a separate key per environment (php craft setup/security-key).',
+  },
   'security/hardcoded-security-key': {
     ...RULE_METADATA['security/hardcoded-security-key'],
     severity: 'high',
@@ -468,6 +709,18 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     severity: 'high',
     category: 'security',
     fixGuidance: 'Update Craft CMS to a patched version: composer update craftcms/cms',
+  },
+  'security/plugin-cve': {
+    ...RULE_METADATA['security/plugin-cve'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Update the plugin to the fixed version named in the finding: composer update <vendor/plugin>',
+  },
+  'security/dependency-cve': {
+    ...RULE_METADATA['security/dependency-cve'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Update the library to the fixed version named in the finding: composer update <vendor/package> --with-dependencies',
   },
   'security/allow-updates-enabled': {
     ...RULE_METADATA['security/allow-updates-enabled'],
@@ -627,6 +880,24 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     category: 'system',
     fixGuidance: 'Plan migration to Craft 4 or 5.',
   },
+  'system/craft-eol': {
+    ...RULE_METADATA['system/craft-eol'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Upgrade to Craft 5: https://craftcms.com/docs/5.x/upgrade',
+  },
+  'system/php-platform-eol': {
+    ...RULE_METADATA['system/php-platform-eol'],
+    severity: 'high',
+    category: 'system',
+    fixGuidance: 'Upgrade production PHP, then set config.platform.php to the new version.',
+  },
+  'system/php-platform-eol-soon': {
+    ...RULE_METADATA['system/php-platform-eol-soon'],
+    severity: 'medium',
+    category: 'system',
+    fixGuidance: 'Schedule the PHP upgrade before security support ends.',
+  },
   'system/craft-major-upgrade-candidate': {
     ...RULE_METADATA['system/craft-major-upgrade-candidate'],
     severity: 'info',
@@ -726,6 +997,186 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     severity: 'high',
     category: 'runtime',
     fixGuidance: 'Check error details and fix analyzer configuration.',
+  },
+  'security/php-register-argc-argv': {
+    ...RULE_METADATA['security/php-register-argc-argv'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Set register_argc_argv = Off for the web SAPI (php-fpm, mod_php).',
+  },
+  'security/php-display-errors': {
+    ...RULE_METADATA['security/php-display-errors'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Set display_errors = Off in production and log errors instead.',
+  },
+  'security/php-expose-php': {
+    ...RULE_METADATA['security/php-expose-php'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Set expose_php = Off.',
+  },
+  'security/php-allow-url-include': {
+    ...RULE_METADATA['security/php-allow-url-include'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Set allow_url_include = Off.',
+  },
+  'security/php-dangerous-functions-unrestricted': {
+    ...RULE_METADATA['security/php-dangerous-functions-unrestricted'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Disable the process functions your site does not need.',
+  },
+  'security/php-session-cookie-insecure': {
+    ...RULE_METADATA['security/php-session-cookie-insecure'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Set session.cookie_secure = 1 and session.cookie_httponly = 1.',
+  },
+  'security/docker-runs-as-root': {
+    ...RULE_METADATA['security/docker-runs-as-root'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Add USER www-data (or another unprivileged user) to the final stage.',
+  },
+  'security/docker-php-eol-image': {
+    ...RULE_METADATA['security/docker-php-eol-image'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Move the base image to PHP 8.3 or newer.',
+  },
+  'security/ioc-known-malware': {
+    ...RULE_METADATA['security/ioc-known-malware'],
+    severity: 'critical',
+    category: 'security',
+    fixGuidance: 'Treat the server as compromised: isolate it, rebuild from a clean source, and rotate CRAFT_SECURITY_KEY, database and API credentials.',
+  },
+  'security/ioc-php-in-public-uploads': {
+    ...RULE_METADATA['security/ioc-php-in-public-uploads'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Inspect the file, remove it if unknown, and block PHP execution in upload folders at the web server.',
+  },
+  'security/ioc-webshell-pattern': {
+    ...RULE_METADATA['security/ioc-webshell-pattern'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Inspect the file. If it is not your code, treat the server as compromised.',
+  },
+  'security/ioc-twig-template-injection': {
+    ...RULE_METADATA['security/ioc-twig-template-injection'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Remove the payload, find how it was written, and treat the server as compromised.',
+  },
+  'security/ioc-scan-truncated': {
+    ...RULE_METADATA['security/ioc-scan-truncated'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Raise --file-limit to scan every file.',
+  },
+  'security/composer-allow-plugins-wildcard': {
+    ...RULE_METADATA['security/composer-allow-plugins-wildcard'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'List each trusted plugin by name in config.allow-plugins.',
+  },
+  'security/composer-plugin-untrusted': {
+    ...RULE_METADATA['security/composer-plugin-untrusted'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Confirm the plugin is needed and trusted, or remove it.',
+  },
+  'security/composer-audit-disabled': {
+    ...RULE_METADATA['security/composer-audit-disabled'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Remove the audit overrides, or document why each ignored advisory does not apply.',
+  },
+  'security/composer-secure-http-disabled': {
+    ...RULE_METADATA['security/composer-secure-http-disabled'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Use https:// repositories and remove secure-http: false.',
+  },
+  'security/composer-vcs-repository': {
+    ...RULE_METADATA['security/composer-vcs-repository'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Prefer the Packagist release, or track advisories for this source by hand.',
+  },
+  'security/composer-no-audit-in-ci': {
+    ...RULE_METADATA['security/composer-no-audit-in-ci'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Remove the flag so installs warn about known vulnerable packages.',
+  },
+  'security/composer-lock-missing': {
+    ...RULE_METADATA['security/composer-lock-missing'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Commit composer.lock.',
+  },
+  'security/composer-minimum-stability-dev': {
+    ...RULE_METADATA['security/composer-minimum-stability-dev'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Set prefer-stable: true or raise minimum-stability to stable.',
+  },
+  'security/exposed-env-file': {
+    ...RULE_METADATA['security/exposed-env-file'],
+    severity: 'critical',
+    category: 'security',
+    fixGuidance: 'Point the web root at web/, block dotfiles at the web server, then rotate every secret in .env.',
+  },
+  'security/exposed-git-directory': {
+    ...RULE_METADATA['security/exposed-git-directory'],
+    severity: 'critical',
+    category: 'security',
+    fixGuidance: 'Block /.git at the web server and rotate any secret ever committed.',
+  },
+  'security/exposed-composer-files': {
+    ...RULE_METADATA['security/exposed-composer-files'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Point the web root at web/ so project files are not served.',
+  },
+  'security/exposed-storage': {
+    ...RULE_METADATA['security/exposed-storage'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Point the web root at web/ and block storage/ at the web server.',
+  },
+  'security/directory-listing': {
+    ...RULE_METADATA['security/directory-listing'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Turn off autoindex or Options +Indexes.',
+  },
+  'security/control-panel-public': {
+    ...RULE_METADATA['security/control-panel-public'],
+    severity: 'info',
+    category: 'security',
+    fixGuidance: 'Restrict the control panel by IP, or set a non-default cpTrigger.',
+  },
+  'security/version-disclosure': {
+    ...RULE_METADATA['security/version-disclosure'],
+    severity: 'low',
+    category: 'security',
+    fixGuidance: 'Set sendPoweredByHeader to false and expose_php = Off.',
+  },
+  'security/php-eol-live': {
+    ...RULE_METADATA['security/php-eol-live'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Upgrade PHP to 8.3 or newer.',
+  },
+  'security/php-eol-soon': {
+    ...RULE_METADATA['security/php-eol-soon'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Plan the PHP upgrade before security support ends.',
   },
 };
 

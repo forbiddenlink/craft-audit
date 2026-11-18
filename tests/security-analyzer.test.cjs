@@ -333,10 +333,14 @@ test('security analyzer does not flag CVEs for fully patched version', async () 
 });
 
 test('security analyzer skips a CVE whose range starts above the installed version', async () => {
-  const cves = require('../data/known-cves.json');
-  const cve = cves.find((c) => c.affects.length === 1 && c.affects[0].minVersion);
+  const advisories = require('../data/advisories.json');
+  const cve = advisories.find(
+    (a) => a.package === 'craftcms/cms' && a.ranges.length === 1 && /^>= \d+\.\d+\.\d+, </.test(a.ranges[0].vulnerable)
+      && !/\.0\.0,/.test(a.ranges[0].vulnerable)
+  );
   assert.ok(cve, 'data should hold at least one advisory with a mid-major lower bound');
-  const [maj, min, pat] = cve.affects[0].minVersion.split('.').map(Number);
+  const minVersion = /^>= (\d+\.\d+\.\d+)/.exec(cve.ranges[0].vulnerable)[1];
+  const [maj, min, pat] = minVersion.split('.').map(Number);
   const below = pat > 0 ? `${maj}.${min}.${pat - 1}` : `${maj}.${min - 1}.0`;
 
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cve-min-'));
@@ -347,18 +351,33 @@ test('security analyzer skips a CVE whose range starts above the installed versi
   );
   const issues = await collectSecurityIssues(tempRoot);
   const ids = issues.filter(i => i.ruleId === 'security/known-cve').map(i => i.fingerprint.split(':')[1]);
-  assert.ok(!ids.includes(cve.id), `${below} is below ${cve.affects[0].minVersion} and must not match ${cve.id}`);
+  assert.ok(!ids.includes(cve.id), `${below} is below ${minVersion} and must not match ${cve.id}`);
 
   fs.writeFileSync(
     path.join(tempRoot, 'composer.lock'),
-    JSON.stringify({ packages: [{ name: 'craftcms/cms', version: cve.affects[0].minVersion }] }),
+    JSON.stringify({ packages: [{ name: 'craftcms/cms', version: minVersion }] }),
     'utf8'
   );
   const atMin = await collectSecurityIssues(tempRoot);
   assert.ok(
     atMin.some(i => i.ruleId === 'security/known-cve' && i.fingerprint.split(':')[1] === cve.id),
-    `${cve.affects[0].minVersion} is inside the range and must match ${cve.id}`
+    `${minVersion} is inside the range and must match ${cve.id}`
   );
+});
+
+test('security analyzer escalates an actively exploited Craft CVE to critical', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-cve-kev-'));
+  fs.writeFileSync(
+    path.join(tempRoot, 'composer.lock'),
+    JSON.stringify({ packages: [{ name: 'craftcms/cms', version: '5.5.0' }] }),
+    'utf8'
+  );
+  const issues = await collectSecurityIssues(tempRoot);
+  // CVE-2025-35939 is rated medium by GitHub but is on the CISA KEV catalog.
+  const kev = issues.find(i => i.fingerprint === 'security/known-cve:CVE-2025-35939:5.5.0');
+  assert.ok(kev, '5.5.0 is inside >= 5.0.0-alpha.1, < 5.7.5');
+  assert.equal(kev.severity, 'critical');
+  assert.match(kev.message, /CISA lists it as actively exploited/);
 });
 
 test('security analyzer detects all production config issues together', async () => {

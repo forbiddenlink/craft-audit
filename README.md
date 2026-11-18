@@ -4,13 +4,13 @@ Comprehensive audit tool for Craft CMS projects. Detects template performance is
 
 ## Features
 
-- **Template Analysis** — N+1 queries, missing eager loading, deprecated APIs, unbounded queries, mixed loading strategies, XSS risks, SSTI patterns, missing CSRF tokens, accessibility checks (missing alt, labels, lang)
-- **Security Scanning** — 10 known CVEs (2026), 10 plugin CVEs, production config hardening (5 checks), HTTPS enforcement, file permission checks, web-exposed sensitive files, hardcoded security keys, disabled CSRF, devMode in production, dangerous file extensions, debug output patterns
-- **Plugin Vulnerability Scanner** — Checks installed Craft plugins against a curated database of 10 known plugin CVEs
+- **Template Analysis** — N+1 queries, missing eager loading, deprecated APIs, unbounded queries, mixed loading strategies, XSS risks, SSTI patterns, Twig callable-injection payloads (`|map('system')`, `_self.env`), open redirects from request parameters, raw SQL in templates, missing CSRF tokens, accessibility checks (missing alt, labels, lang)
+- **Security Scanning** — Craft core, plugin and dependency advisories from the GitHub Advisory Database (actively exploited CVEs on the CISA KEV list rank as critical), committed or reused `CRAFT_SECURITY_KEY` values, end-of-life Craft 4 and PHP, PHP runtime hardening, Composer supply-chain settings, indicators of compromise (webshell patterns, PHP in public uploads, known malware files), live exposure probes for `.env`, `.git` and storage, production config hardening (5 checks), HTTPS enforcement, file permission checks, web-exposed sensitive files, hardcoded security keys, disabled CSRF, devMode in production, dangerous file extensions, debug output patterns
+- **Plugin Vulnerability Scanner** — Checks every installed package in `composer.lock` against `data/advisories.json`, refreshed weekly by `update-cves`
 - **HTTP Security Headers** — Opt-in `--site-url` check for HSTS (with preload eligibility), X-Content-Type-Options, X-Frame-Options, CSP (including Report-Only mode detection), Referrer-Policy, Permissions-Policy, CORS misconfiguration, deprecated X-XSS-Protection warning, plus Server/X-Powered-By leak detection
 - **CSP Header Generator** — `--generate-csp` scans templates and generates Content-Security-Policy recommendations
 - **Craft 5 Migration Checker** — `--craft5-migration` detects Craft 4→5 breaking changes
-- **CVE Auto-Update** — `update-cves` command fetches latest advisories from GitHub
+- **CVE Auto-Update** — `update-cves` rebuilds `data/advisories.json` from the GitHub Advisory Database for Craft, every Craft plugin on Packagist and Craft's core libraries, and flags CISA KEV entries
 - **System Checks** — Craft CMS version, PHP version, composer validate/audit/outdated with per-advisory severity, plugin inventory
 - **Visual Regression** — BackstopJS-powered screenshot comparison across desktop, tablet, and mobile viewports
 - **Interactive Fix** — Guided remediation with safe auto-fixes, fix preview (`--fix-dry-run`), and suppression comments
@@ -207,6 +207,9 @@ See [docs/presets.md](docs/presets.md) for details.
 | `template/input-missing-label` | Form input missing accessible label |
 | `template/empty-link` | Empty link with no accessible text |
 | `template/missing-lang` | HTML element missing lang attribute |
+| `security/open-redirect` | Open redirect from request data |
+| `security/raw-sql-in-template` | Raw database access in a template |
+| `security/twig-callable-injection` | Template injection payload in Twig |
 
 ### Security Rules
 
@@ -219,8 +222,8 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/csrf-disabled` | CSRF protection disabled |
 | `security/dangerous-file-extensions` | Executable file types in allowed extensions |
 | `security/debug-output-pattern` | dump/dd/var_dump in code files |
-| `security/known-cve` | Craft version affected by known CVE (10 CVEs tracked) |
-| `security/plugin-cve` | Installed plugin affected by known CVE (10 plugin CVEs tracked) |
+| `security/known-cve` | Craft version affected by a known advisory (from `data/advisories.json`) |
+| `security/plugin-cve` | Installed Craft plugin affected by a known advisory |
 | `security/allow-updates-enabled` | allowUpdates enabled in production |
 | `security/template-caching-disabled` | Template caching disabled in production |
 | `security/test-email-configured` | testToEmailAddress intercepting emails |
@@ -243,6 +246,40 @@ See [docs/presets.md](docs/presets.md) for details.
 | `security/deprecated-x-xss-protection` | Deprecated X-XSS-Protection header should be removed |
 | `security/hsts-preload-not-eligible` | HSTS header not eligible for browser preload list |
 | `security/csp-report-only-mode` | CSP in Report-Only mode without enforcing policy |
+| `security/composer-allow-plugins-wildcard` | Composer allow-plugins wildcard |
+| `security/composer-audit-disabled` | Composer security audit weakened |
+| `security/composer-lock-missing` | composer.lock missing |
+| `security/composer-minimum-stability-dev` | Composer allows unstable releases |
+| `security/composer-no-audit-in-ci` | Composer audit disabled in CI or build files |
+| `security/composer-plugin-untrusted` | Unreviewed Composer plugin installed |
+| `security/composer-secure-http-disabled` | Composer secure-http disabled or HTTP repository |
+| `security/composer-vcs-repository` | Composer repository bypasses Packagist |
+| `security/control-panel-public` | Control panel reachable from the internet |
+| `security/dependency-cve` | Known vulnerability in a Craft dependency |
+| `security/directory-listing` | Directory listing enabled |
+| `security/docker-php-eol-image` | End-of-life PHP base image |
+| `security/docker-runs-as-root` | Container runs as root |
+| `security/exposed-composer-files` | Exposed Composer files |
+| `security/exposed-env-file` | Exposed .env file |
+| `security/exposed-git-directory` | Exposed .git directory |
+| `security/exposed-storage` | Exposed storage directory |
+| `security/ioc-known-malware` | Known malware indicator (Mimo campaign) |
+| `security/ioc-php-in-public-uploads` | PHP file in an upload, asset or storage folder |
+| `security/ioc-scan-truncated` | Compromise scan truncated |
+| `security/ioc-twig-template-injection` | Twig template injection payload |
+| `security/ioc-webshell-pattern` | Webshell pattern in a PHP file |
+| `security/php-allow-url-include` | allow_url_include enabled |
+| `security/php-dangerous-functions-unrestricted` | disable_functions explicitly empty |
+| `security/php-display-errors` | display_errors enabled |
+| `security/php-eol-live` | Live site runs end-of-life PHP |
+| `security/php-eol-soon` | Live site PHP nearing end of life |
+| `security/php-expose-php` | expose_php enabled |
+| `security/php-register-argc-argv` | register_argc_argv enabled |
+| `security/php-session-cookie-insecure` | Insecure PHP session cookie flags |
+| `security/security-key-committed` | Security key committed to git |
+| `security/security-key-in-git-history` | Security key found in git history |
+| `security/security-key-reused` | Security key shared between environments |
+| `security/version-disclosure` | Software version disclosure |
 
 ### System Rules
 
@@ -259,6 +296,9 @@ See [docs/presets.md](docs/presets.md) for details.
 | `system/composer-audit-advisory` | Individual advisory with severity (high/medium/low) |
 | `system/composer-audit-abandoned` | Abandoned packages |
 | `system/composer-outdated-direct` | Outdated direct dependencies |
+| `system/craft-eol` | Craft CMS version past end of life |
+| `system/php-platform-eol-soon` | composer.json targets PHP nearing end of life |
+| `system/php-platform-eol` | composer.json targets end-of-life PHP |
 
 ### Visual Rules
 
@@ -380,8 +420,7 @@ src/
   integrations/          # Slack, ClickUp, Linear, Bitbucket clients
   reporters/             # Console, JSON, JSON stream, SARIF, HTML, Bitbucket formatters
 data/
-  known-cves.json        # Craft CMS core CVEs (10 entries)
-  known-plugin-cves.json # Plugin CVEs (10 entries)
+  advisories.json        # Craft core, plugin and dependency advisories (generated by update-cves)
 php/
   analyze-templates.php  # Twig template regex analyzer
 tests/                   # Node.js test runner (.test.cjs)

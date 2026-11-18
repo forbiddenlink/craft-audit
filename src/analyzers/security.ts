@@ -1,9 +1,11 @@
-import * as fs from 'node:fs';
+import { parseVersion } from '../core/semver';
+import { effectiveSeverity, findAdvisories, fixSuggestion, kevNote, loadAdvisories } from '../core/advisories';
 import * as path from 'node:path';
 
 import { SecurityIssue } from '../types';
 import { checkFilePermissions } from './security/file-permissions';
 import { checkHttpHeaders } from './security/http-headers';
+import { checkSecurityKeys } from './security/security-key';
 import { walkFiles, safeReadFile } from '../utils/fs';
 
 const TEXT_FILE_EXTENSIONS = new Set([
@@ -305,55 +307,6 @@ async function scanDebugPatterns(
   return { issues, truncated, scannedFiles: allFiles.length };
 }
 
-export interface CveEntry {
-  id: string;
-  title: string;
-  severity: 'high' | 'medium';
-  affects: Array<{ minMajor: number; maxMajor: number; fixedAt: string; minVersion?: string }>;
-  docsUrl: string;
-}
-
-const CVE_JSON_PATH = path.resolve(__dirname, '../../data/known-cves.json');
-
-function loadKnownCves(): CveEntry[] {
-  const raw = fs.readFileSync(CVE_JSON_PATH, 'utf-8');
-  return JSON.parse(raw) as CveEntry[];
-}
-
-function parseVersion(versionStr: string): { major: number; minor: number; patch: number } | undefined {
-  const match = /(\d+)\.(\d+)\.(\d+)/.exec(versionStr);
-  if (!match) return undefined;
-  return {
-    major: Number.parseInt(match[1], 10),
-    minor: Number.parseInt(match[2], 10),
-    patch: Number.parseInt(match[3], 10),
-  };
-}
-
-function isBelow(
-  version: { major: number; minor: number; patch: number },
-  bound: { major: number; minor: number; patch: number }
-): boolean {
-  if (version.major !== bound.major) return version.major < bound.major;
-  if (version.minor !== bound.minor) return version.minor < bound.minor;
-  return version.patch < bound.patch;
-}
-
-function isVersionAffected(
-  version: { major: number; minor: number; patch: number },
-  affects: CveEntry['affects']
-): boolean {
-  for (const range of affects) {
-    if (version.major < range.minMajor || version.major > range.maxMajor) continue;
-    const fixed = parseVersion(range.fixedAt);
-    if (!fixed) continue;
-    const min = range.minVersion ? parseVersion(range.minVersion) : undefined;
-    if (min && isBelow(version, min)) continue;
-    if (isBelow(version, fixed)) return true;
-  }
-  return false;
-}
-
 async function readCraftVersion(projectPath: string): Promise<string | undefined> {
   // Try composer.lock first
   const lockContent = await safeReadFile(path.join(projectPath, 'composer.lock'));
@@ -386,29 +339,23 @@ async function readCraftVersion(projectPath: string): Promise<string | undefined
 async function scanKnownCves(projectPath: string): Promise<SecurityIssue[]> {
   const issues: SecurityIssue[] = [];
   const craftVersion = await readCraftVersion(projectPath);
-  if (!craftVersion) return issues;
+  if (!craftVersion || !parseVersion(craftVersion)) return issues;
 
-  const version = parseVersion(craftVersion);
-  if (!version) return issues;
-
-  const knownCves = loadKnownCves();
-  for (const cve of knownCves) {
-    if (isVersionAffected(version, cve.affects)) {
-      issues.push({
-        severity: cve.severity,
-        category: 'security',
-        type: 'known-cve',
-        ruleId: 'security/known-cve',
-        message: `${cve.id}: ${cve.title}. Installed version ${craftVersion} is affected.`,
-        suggestion: `Update Craft CMS to the fixed version to resolve ${cve.id}.`,
-        docsUrl: cve.docsUrl,
-        confidence: 0.95,
-        evidence: {
-          details: `craftcms/cms@${craftVersion} major=${version.major}.${version.minor}.${version.patch}`,
-        },
-        fingerprint: `security/known-cve:${cve.id}:${craftVersion}`,
-      });
-    }
+  for (const { advisory, range } of findAdvisories(loadAdvisories(), 'craftcms/cms', craftVersion)) {
+    issues.push({
+      severity: effectiveSeverity(advisory),
+      category: 'security',
+      type: 'known-cve',
+      ruleId: 'security/known-cve',
+      message: `${advisory.id}: ${advisory.title}. Installed version ${craftVersion} is affected.${kevNote(advisory)}`,
+      suggestion: fixSuggestion('Craft CMS', advisory, range),
+      docsUrl: advisory.url,
+      confidence: 0.95,
+      evidence: {
+        details: `craftcms/cms@${craftVersion} is in ${range.vulnerable}`,
+      },
+      fingerprint: `security/known-cve:${advisory.id}:${craftVersion}`,
+    });
   }
 
   return issues;
@@ -420,12 +367,13 @@ export async function collectSecurityIssues(
   fileLimit = DEFAULT_FILE_LIMIT,
   siteUrl?: string
 ): Promise<SecurityIssue[]> {
-  const [generalIssues, envIssues, debugScan, cveIssues, permissionIssues] = await Promise.all([
+  const [generalIssues, envIssues, debugScan, cveIssues, permissionIssues, keyIssues] = await Promise.all([
     scanGeneralConfig(projectPath),
     scanEnvFile(projectPath),
     scanDebugPatterns(projectPath, fileLimit),
     scanKnownCves(projectPath),
     checkFilePermissions(projectPath),
+    checkSecurityKeys(projectPath),
   ]);
 
   const issues = [
@@ -434,6 +382,7 @@ export async function collectSecurityIssues(
     ...debugScan.issues,
     ...cveIssues,
     ...permissionIssues,
+    ...keyIssues,
   ];
 
   // HTTP security headers check (opt-in via --site-url)

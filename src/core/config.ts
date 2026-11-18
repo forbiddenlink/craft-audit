@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { Severity } from '../types';
+import { isSeverity } from './severity';
 
 export const SUPPORTED_OUTPUT_FORMATS = ['console', 'json', 'json-stream', 'sarif', 'bitbucket', 'html'] as const;
 export type SupportedOutputFormat = (typeof SUPPORTED_OUTPUT_FORMATS)[number];
@@ -8,7 +9,7 @@ export const SUPPORTED_AUDIT_CI_OUTPUT_FORMATS = ['json', 'sarif', 'bitbucket'] 
 export type SupportedAuditCiOutputFormat = (typeof SUPPORTED_AUDIT_CI_OUTPUT_FORMATS)[number];
 export const SUPPORTED_RECOMMEND_OUTPUT_FORMATS = ['console', 'json'] as const;
 export type SupportedRecommendOutputFormat = (typeof SUPPORTED_RECOMMEND_OUTPUT_FORMATS)[number];
-export type SupportedExitThreshold = 'none' | 'high' | 'medium' | 'low' | 'info';
+export type SupportedExitThreshold = 'none' | 'critical' | 'high' | 'medium' | 'low' | 'info';
 export type SendOnMode = 'always' | 'issues' | 'high';
 
 export interface AuditFileConfig {
@@ -92,6 +93,7 @@ export function isSupportedRecommendOutputFormat(format: string): format is Supp
 }
 const SUPPORTED_EXIT_THRESHOLDS = new Set<SupportedExitThreshold>([
   'none',
+  'critical',
   'high',
   'medium',
   'low',
@@ -216,13 +218,10 @@ function validateSingleRuleSetting(
   }
 
   if (ruleValue.severity !== undefined) {
-    if (
-      typeof ruleValue.severity === 'string' &&
-      ['high', 'medium', 'low', 'info'].includes(ruleValue.severity)
-    ) {
-      setting.severity = ruleValue.severity as Severity;
+    if (isSeverity(ruleValue.severity)) {
+      setting.severity = ruleValue.severity;
     } else {
-      errors.push(`ruleSettings["${ruleId}"].severity must be one of: high, medium, low, info.`);
+      errors.push(`ruleSettings["${ruleId}"].severity must be one of: critical, high, medium, low, info.`);
     }
   }
 
@@ -328,7 +327,7 @@ function validateSpecialCaseFields(
   const outputValue = validateEnumField<SupportedOutputFormat>(raw, 'output', SUPPORTED_OUTPUT_FORMATS_SET, SUPPORTED_OUTPUT_FORMATS.join(', '), errors);
   if (outputValue !== undefined) values.output = outputValue;
 
-  const exitThresholdValue = validateEnumField<SupportedExitThreshold>(raw, 'exitThreshold', SUPPORTED_EXIT_THRESHOLDS, 'none, high, medium, low, info', errors);
+  const exitThresholdValue = validateEnumField<SupportedExitThreshold>(raw, 'exitThreshold', SUPPORTED_EXIT_THRESHOLDS, 'none, critical, high, medium, low, info', errors);
   if (exitThresholdValue !== undefined) values.exitThreshold = exitThresholdValue;
 
   const presetValue = validateEnumField<'strict' | 'balanced' | 'legacy-migration'>(raw, 'preset', VALID_PRESETS, 'strict, balanced, legacy-migration', errors);
