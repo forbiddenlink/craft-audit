@@ -98,8 +98,30 @@ function findPath(tokens: Token[], path: string[]): number {
   return -1;
 }
 
+function isInterpolated(token: Token): boolean {
+  return token.type === 'string' && token.value.startsWith('"') && token.value.includes('#{');
+}
+
 function referencesRequest(tokens: Token[]): boolean {
-  return findPath(tokens, ['craft', 'app', 'request']) !== -1 || findPath(tokens, ['craft', 'request']) !== -1;
+  return (
+    findPath(tokens, ['craft', 'app', 'request']) !== -1 ||
+    findPath(tokens, ['craft', 'request']) !== -1 ||
+    tokens.some((t) => isInterpolated(t) && /\bcraft\s*\.\s*(?:app\s*\.\s*)?request\b/.test(t.value))
+  );
+}
+
+/** Built only from string literals and filters, such as 'Read more'|t|replace(' ', '<br>'). */
+function isLiteralOnly(tokens: Token[]): boolean {
+  return (
+    tokens[0]?.type === 'string' &&
+    tokens.every(
+      (t, i) =>
+        (t.type === 'string' && !isInterpolated(t)) ||
+        t.type === 'number' ||
+        t.type === 'punctuation' ||
+        (t.type === 'name' && isPunct(tokens[i - 1], '|'))
+    )
+  );
 }
 
 function isQueryOf(tokens: Token[], kinds: string[]): boolean {
@@ -485,13 +507,11 @@ function checkCodeNode(analysis: TemplateAnalysis, node: TemplateNode, lexed: Le
         suggestion: `Replace {% include '${templatePath}' %} with {{ include('${templatePath}') }}`,
         fix:
           plainDelimiters && node.line === node.endLine
-            ? { safe: true, search: node.raw, replacement: `{{ include('${templatePath}') }}`, description: 'Convert to include() function' }
+            ? { safe: true, search: node.raw, replacement: `{{ include(${tokens[1].value}) }}`, description: 'Convert to include() function' }
             : undefined,
       });
     }
   }
-
-  if (node.tagName === 'dump' || node.tagName === 'dd') return;
 
   for (const injection of CALLABLE_INJECTION_PATTERNS) {
     const match = injection.pattern.exec(node.raw);
@@ -530,8 +550,8 @@ function checkRawOutput(analysis: TemplateAnalysis, tokens: Token[], rawIndex: n
   }
   const before = tokens.slice(start, rawIndex - 1);
   const sanitized = before.some((t, i) => isPunct(before[i - 1], '|') && XSS_SAFE_FILTERS.has(t.value));
-  // A string literal written in the template, such as 'Read more'|t|raw, is developer content.
-  if (sanitized || before[0]?.type === 'string') return;
+  // Text written in the template, such as 'Read more'|t|raw, is developer content.
+  if (sanitized || isLiteralOnly(before)) return;
   analysis.report({
     severity: 'medium',
     pattern: 'xss-raw-output',

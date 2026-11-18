@@ -148,7 +148,7 @@ function findTemplateFiles(dir: string): string[] {
 
 export async function analyzeTwigTemplates(
   templatesPath: string,
-  verbose = false,
+  _verbose = false,
   cache?: AnalysisCache
 ): Promise<TemplateIssue[]> {
   if (!fs.existsSync(templatesPath)) {
@@ -169,9 +169,7 @@ export async function analyzeTwigTemplates(
     try {
       fileIssues = analyzeTemplateSource(content, relativePath).map(toTemplateIssue);
     } catch (error) {
-      // One unreadable template must not hide findings in the rest.
-      if (verbose) logger.warn(`Skipped ${relativePath}: ${(error as Error).message}`);
-      continue;
+      throw new Error(`Template analysis failed on ${relativePath}: ${(error as Error).message}`, { cause: error });
     }
     cache?.set(filePath, content, fileIssues);
     issues.push(...fileIssues);

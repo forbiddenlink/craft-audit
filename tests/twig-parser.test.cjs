@@ -144,3 +144,24 @@ test('|raw message names only the filtered operand', () => {
   );
   assert.equal(issue.message, 'Variable rendered with |raw filter: template_from_string(heading)');
 });
+
+test('include-tag fix keeps the original quoted path', () => {
+  const [issue] = analyzeTemplateSource(`{% include "it's.twig" %}`, 'test.twig').filter((i) => i.pattern === 'include-tag');
+  assert.equal(issue.fix.replacement, `{{ include("it's.twig") }}`);
+});
+
+test('callable injection is detected inside a dump tag', () => {
+  assert.ok(findings("{% dump ['id']|map('system') %}").includes('1:twig-callable-injection'));
+});
+
+test('|raw on an interpolated string is reported, and request data in it is high', () => {
+  const issues = analyzeTemplateSource('{{ "Hi #{craft.app.request.getParam(\'n\')}"|raw }}', 'test.twig');
+  assert.deepEqual(
+    issues.map((i) => `${i.pattern}:${i.severity}`),
+    ['xss-raw-output:high']
+  );
+});
+
+test('|raw on a literal with a variable filter argument is reported', () => {
+  assert.deepEqual(findings("{{ 'x'|replace({'x': userInput})|raw }}"), ['1:xss-raw-output']);
+});
