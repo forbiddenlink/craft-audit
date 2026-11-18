@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { SecurityIssue } from '../types';
 import { checkFilePermissions } from './security/file-permissions';
 import { checkHttpHeaders } from './security/http-headers';
+import { checkSecurityKeys } from './security/security-key';
 import { walkFiles, safeReadFile } from '../utils/fs';
 
 const TEXT_FILE_EXTENSIONS = new Set([
@@ -366,12 +367,13 @@ export async function collectSecurityIssues(
   fileLimit = DEFAULT_FILE_LIMIT,
   siteUrl?: string
 ): Promise<SecurityIssue[]> {
-  const [generalIssues, envIssues, debugScan, cveIssues, permissionIssues] = await Promise.all([
+  const [generalIssues, envIssues, debugScan, cveIssues, permissionIssues, keyIssues] = await Promise.all([
     scanGeneralConfig(projectPath),
     scanEnvFile(projectPath),
     scanDebugPatterns(projectPath, fileLimit),
     scanKnownCves(projectPath),
     checkFilePermissions(projectPath),
+    checkSecurityKeys(projectPath),
   ]);
 
   const issues = [
@@ -380,6 +382,7 @@ export async function collectSecurityIssues(
     ...debugScan.issues,
     ...cveIssues,
     ...permissionIssues,
+    ...keyIssues,
   ];
 
   // HTTP security headers check (opt-in via --site-url)

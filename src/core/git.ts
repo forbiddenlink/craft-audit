@@ -72,6 +72,15 @@ function runGitDiff(projectPath: string, args: string[]): string[] {
   }
 }
 
+/**
+ * Output lines of a read-only git command run in `projectPath`, or [] when
+ * git is missing or the path is not inside a work tree.
+ */
+export function gitOutputLines(projectPath: string, args: string[]): string[] {
+  if (!canRunGit(projectPath) || !isInsideWorkTree(projectPath)) return [];
+  return runGitDiff(projectPath, args);
+}
+
 function runGitValue(projectPath: string, args: string[]): string | undefined {
   try {
     const stdout = execFileSync('git', args, {

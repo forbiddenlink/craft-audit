@@ -79,6 +79,21 @@ const RULE_METADATA: Record<string, RuleMetadata> = {
     description: 'A <form> tag was found without a {{ csrfInput() }} call, leaving it vulnerable to cross-site request forgery.',
     helpUri: 'https://craftcms.com/docs/5.x/development/forms#csrf',
   },
+  'security/security-key-committed': {
+    title: 'Security key committed to git',
+    description: 'A tracked env file holds the Craft security key, so everyone with repository access has it.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+  },
+  'security/security-key-in-git-history': {
+    title: 'Security key found in git history',
+    description: 'An env file with the Craft security key was committed at some point; the key stays exposed until rotated.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+  },
+  'security/security-key-reused': {
+    title: 'Security key shared between environments',
+    description: 'Two env files hold the same Craft security key.',
+    helpUri: 'https://craftcms.com/docs/5.x/reference/config/general#securitykey',
+  },
   'security/hardcoded-security-key': {
     title: 'Hardcoded security key in config',
     description: 'The security key appears to be hardcoded rather than loaded from an environment variable.',
@@ -613,6 +628,24 @@ const EXTENDED_RULE_METADATA: Record<string, ExtendedRuleMetadata> = {
     category: 'security',
     examples: ['{{ dump(entry) }}', '<?php dd($variable); ?>'],
     fixGuidance: 'Remove dump(), dd(), and var_dump() calls before deploying to production.',
+  },
+  'security/security-key-committed': {
+    ...RULE_METADATA['security/security-key-committed'],
+    severity: 'critical',
+    category: 'security',
+    fixGuidance: 'Rotate the key on every environment (php craft setup/security-key), then untrack the env file and add it to .gitignore.',
+  },
+  'security/security-key-in-git-history': {
+    ...RULE_METADATA['security/security-key-in-git-history'],
+    severity: 'high',
+    category: 'security',
+    fixGuidance: 'Rotate the key on every environment (php craft setup/security-key).',
+  },
+  'security/security-key-reused': {
+    ...RULE_METADATA['security/security-key-reused'],
+    severity: 'medium',
+    category: 'security',
+    fixGuidance: 'Generate a separate key per environment (php craft setup/security-key).',
   },
   'security/hardcoded-security-key': {
     ...RULE_METADATA['security/hardcoded-security-key'],
