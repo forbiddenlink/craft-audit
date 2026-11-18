@@ -203,3 +203,30 @@ test('parseComposerAuditOutput returns empty advisoryDetails for malformed JSON'
   assert.equal(parsed.advisoryDetails.length, 0);
 });
 
+
+test('composer runs with plugins and scripts disabled in the audited project', async () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const { collectComposerSystemIssues } = require('../dist/analyzers/composer-checks');
+
+  const bin = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-fake-composer-'));
+  const log = path.join(bin, 'calls.log');
+  fs.writeFileSync(path.join(bin, 'composer'), `#!/bin/sh\necho "$@" >> "${log}"\necho '{}'\n`, { mode: 0o755 });
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'craft-audit-composer-project-'));
+
+  const originalPath = process.env.PATH;
+  process.env.PATH = `${bin}${path.delimiter}${originalPath}`;
+  try {
+    await collectComposerSystemIssues(project);
+  } finally {
+    process.env.PATH = originalPath;
+  }
+
+  const calls = fs.readFileSync(log, 'utf8').trim().split('\n');
+  assert.ok(calls.length >= 3, `expected validate, audit and outdated, got ${calls.length}`);
+  for (const call of calls) {
+    assert.match(call, /--no-plugins/, call);
+    assert.match(call, /--no-scripts/, call);
+  }
+});

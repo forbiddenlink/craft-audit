@@ -23,9 +23,16 @@ function safeJsonParse(value: string): JsonValue | undefined {
   }
 }
 
+/**
+ * The audited project is untrusted. Composer activates plugins installed in
+ * its vendor/ directory and can run composer.json scripts, so every call
+ * turns both off.
+ */
+const UNTRUSTED_PROJECT_FLAGS = ['--no-plugins', '--no-scripts', '--no-interaction'];
+
 async function runComposer(projectPath: string, args: string[]): Promise<ComposerRunResult> {
   try {
-    const { stdout, stderr } = await execFileAsync('composer', args, {
+    const { stdout, stderr } = await execFileAsync('composer', [...args, ...UNTRUSTED_PROJECT_FLAGS], {
       cwd: projectPath,
       maxBuffer: 20 * 1024 * 1024,
       timeout: 30_000,
