@@ -1,3 +1,4 @@
+import { satisfiesRange } from '../core/semver';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -41,47 +42,8 @@ function loadKnownPluginCves(): PluginCveEntry[] {
   }
 }
 
-function parseVersion(versionStr: string): { major: number; minor: number; patch: number } | undefined {
-  const cleaned = versionStr.replace(/^v/i, '');
-  const match = /^(\d+)\.(\d+)\.(\d+)/.exec(cleaned);
-  if (!match) return undefined;
-  return {
-    major: Number.parseInt(match[1], 10),
-    minor: Number.parseInt(match[2], 10),
-    patch: Number.parseInt(match[3], 10),
-  };
-}
-
-function compareVersions(
-  a: { major: number; minor: number; patch: number },
-  b: { major: number; minor: number; patch: number }
-): number {
-  if (a.major !== b.major) return a.major - b.major;
-  if (a.minor !== b.minor) return a.minor - b.minor;
-  return a.patch - b.patch;
-}
-
 function isVersionAffected(installedVersion: string, affectedVersions: string): boolean {
-  const installed = parseVersion(installedVersion);
-  if (!installed) return false;
-
-  // Handle "<X.Y.Z" constraint
-  const ltMatch = /^<\s*(.+)$/.exec(affectedVersions);
-  if (ltMatch) {
-    const threshold = parseVersion(ltMatch[1]);
-    if (!threshold) return false;
-    return compareVersions(installed, threshold) < 0;
-  }
-
-  // Handle "<=X.Y.Z" constraint
-  const lteMatch = /^<=\s*(.+)$/.exec(affectedVersions);
-  if (lteMatch) {
-    const threshold = parseVersion(lteMatch[1]);
-    if (!threshold) return false;
-    return compareVersions(installed, threshold) <= 0;
-  }
-
-  return false;
+  return satisfiesRange(installedVersion, affectedVersions);
 }
 
 function isCraftPlugin(pkg: ComposerLockPackage): boolean {

@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { Severity } from '../types';
+import { isSeverity } from './severity';
 
 export const SUPPORTED_OUTPUT_FORMATS = ['console', 'json', 'json-stream', 'sarif', 'bitbucket', 'html'] as const;
 export type SupportedOutputFormat = (typeof SUPPORTED_OUTPUT_FORMATS)[number];
@@ -216,11 +217,8 @@ function validateSingleRuleSetting(
   }
 
   if (ruleValue.severity !== undefined) {
-    if (
-      typeof ruleValue.severity === 'string' &&
-      ['high', 'medium', 'low', 'info'].includes(ruleValue.severity)
-    ) {
-      setting.severity = ruleValue.severity as Severity;
+    if (isSeverity(ruleValue.severity)) {
+      setting.severity = ruleValue.severity;
     } else {
       errors.push(`ruleSettings["${ruleId}"].severity must be one of: high, medium, low, info.`);
     }

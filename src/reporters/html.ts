@@ -1,4 +1,5 @@
 import { AuditIssue, AuditResult, CraftInfo, PluginInfo } from '../types';
+import { SEVERITIES } from '../core/severity';
 
 function escapeHtml(value: string): string {
   return value
@@ -300,7 +301,7 @@ export class HtmlReporter {
         const groupsEl = document.getElementById('issue-groups');
         const metaEl = document.getElementById('results-meta');
 
-        const severities = ['high', 'medium', 'low', 'info'];
+        const severities = ${JSON.stringify(SEVERITIES)};
         const state = {
           search: '',
           category: 'all',

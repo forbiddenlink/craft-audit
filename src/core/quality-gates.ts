@@ -1,4 +1,5 @@
 import { AuditIssue, Severity } from '../types';
+import { meetsSeverity } from './severity';
 
 export interface QualityGate {
   name: string;
@@ -18,13 +19,6 @@ export interface QualityGateResult {
   reason?: string;
   summary: string;
 }
-
-const SEVERITY_ORDER: Record<string, number> = {
-  info: 0,
-  low: 1,
-  medium: 2,
-  high: 3,
-};
 
 const BUILT_IN_GATES: QualityGate[] = [
   {
@@ -92,9 +86,7 @@ function matchesRuleFilter(issue: AuditIssue, rules: QualityGate['rules']): bool
 }
 
 function meetsThreshold(severity: Severity, failOn: string): boolean {
-  const issueLevel = SEVERITY_ORDER[severity] ?? 0;
-  const minLevel = SEVERITY_ORDER[failOn] ?? 0;
-  return issueLevel >= minLevel;
+  return meetsSeverity(severity, failOn);
 }
 
 export function filterIssuesForGate(issues: AuditIssue[], gate: QualityGate): AuditIssue[] {

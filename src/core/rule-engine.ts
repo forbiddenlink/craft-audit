@@ -9,6 +9,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { AuditIssue, Severity } from '../types';
 import { logger } from './logger';
+import { isSeverity } from './severity';
 import { safeReadFileSync } from '../utils/fs';
 
 /** Context passed to custom rule `create()` functions */
@@ -172,7 +173,7 @@ function yamlRuleToDefinition(data: Record<string, unknown>, fileName: string): 
   }
 
   const severity = meta.severity as Severity;
-  if (!['high', 'medium', 'low', 'info'].includes(severity)) {
+  if (!isSeverity(severity)) {
     logger.warn(`Skipping "${fileName}": invalid severity "${severity}".`);
     return undefined;
   }

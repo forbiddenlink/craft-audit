@@ -1,3 +1,4 @@
+import { compareVersions, parseVersion, type ParsedVersion } from '../core/semver';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -320,36 +321,14 @@ function loadKnownCves(): CveEntry[] {
   return JSON.parse(raw) as CveEntry[];
 }
 
-function parseVersion(versionStr: string): { major: number; minor: number; patch: number } | undefined {
-  const match = /(\d+)\.(\d+)\.(\d+)/.exec(versionStr);
-  if (!match) return undefined;
-  return {
-    major: Number.parseInt(match[1], 10),
-    minor: Number.parseInt(match[2], 10),
-    patch: Number.parseInt(match[3], 10),
-  };
-}
-
-function isBelow(
-  version: { major: number; minor: number; patch: number },
-  bound: { major: number; minor: number; patch: number }
-): boolean {
-  if (version.major !== bound.major) return version.major < bound.major;
-  if (version.minor !== bound.minor) return version.minor < bound.minor;
-  return version.patch < bound.patch;
-}
-
-function isVersionAffected(
-  version: { major: number; minor: number; patch: number },
-  affects: CveEntry['affects']
-): boolean {
+function isVersionAffected(version: ParsedVersion, affects: CveEntry['affects']): boolean {
   for (const range of affects) {
     if (version.major < range.minMajor || version.major > range.maxMajor) continue;
     const fixed = parseVersion(range.fixedAt);
     if (!fixed) continue;
     const min = range.minVersion ? parseVersion(range.minVersion) : undefined;
-    if (min && isBelow(version, min)) continue;
-    if (isBelow(version, fixed)) return true;
+    if (min && compareVersions(version, min) < 0) continue;
+    if (compareVersions(version, fixed) < 0) return true;
   }
   return false;
 }
