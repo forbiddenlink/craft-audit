@@ -51,3 +51,27 @@ test('sarif reporter outputs v2.1.0 with rule/result mapping', () => {
     'templates/index.twig'
   );
 });
+
+test('sarif reporter gives file-less issues a project-level location', () => {
+  // GitHub Code Scanning rejects the whole upload when any result has no
+  // location ("locationFromSarifResult: expected at least one location").
+  const reporter = new SarifReporter();
+  const output = reporter.toSarif({
+    projectPath: '/tmp/project',
+    timestamp: '2026-11-21T00:00:00.000Z',
+    issues: [
+      {
+        severity: 'high',
+        category: 'security',
+        ruleId: 'security/nginx-vulnerable-release',
+        message: 'nginx release is affected by a known vulnerability',
+      },
+    ],
+    summary: { high: 1, medium: 0, low: 0, info: 0, total: 1 },
+  });
+
+  const result = JSON.parse(output).runs[0].results[0];
+  assert.equal(result.locations.length, 1);
+  assert.equal(result.locations[0].physicalLocation.artifactLocation.uri, 'composer.json');
+  assert.equal(result.locations[0].physicalLocation.region, undefined);
+});

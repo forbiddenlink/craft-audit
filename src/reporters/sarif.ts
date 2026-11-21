@@ -78,6 +78,9 @@ function stableRuleId(issue: AuditIssue): string {
   return issue.ruleId ?? `${issue.category}/unspecified`;
 }
 
+/** Anchor for findings that belong to the project, not one file. */
+const PROJECT_LEVEL_URI = 'composer.json';
+
 /**
  * Builds a SARIF physical location from an issue's file/line info.
  */
@@ -85,7 +88,11 @@ function toPhysicalLocation(
   issue: AuditIssue,
   includeSnippet: boolean
 ): PhysicalLocation | undefined {
-  if (!issue.file) return undefined;
+  // GitHub Code Scanning rejects the whole upload when any result lacks a
+  // location, so project-wide findings (no file) anchor to the manifest.
+  if (!issue.file) {
+    return { artifactLocation: { uri: PROJECT_LEVEL_URI } };
+  }
 
   const region: Region | undefined = issue.line
     ? {
