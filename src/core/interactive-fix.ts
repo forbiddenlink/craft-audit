@@ -175,7 +175,7 @@ function applyAutoFix(issue: AuditIssue, basePath: string): boolean {
     }
 
     // Replace first occurrence on the line
-    const newLine = originalLine.replace(fix.search, fix.replacement);
+    const newLine = originalLine.replace(fix.search, () => fix.replacement);
     lines[lineIndex] = newLine;
 
     fs.writeFileSync(filePath, lines.join('\n'));

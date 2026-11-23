@@ -3,13 +3,6 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const { execSync } = require('node:child_process');
-
-let phpAvailable = false;
-try {
-  execSync('php -v', { stdio: 'ignore' });
-  phpAvailable = true;
-} catch {}
 
 const { analyzeTwigTemplates } = require('../dist/analyzers/twig');
 
@@ -23,7 +16,7 @@ function makeTempTemplates(files) {
   return dir;
 }
 
-test('accessibility: detects img without alt', { skip: !phpAvailable && 'PHP not available' }, async () => {
+test('accessibility: detects img without alt', async () => {
   const dir = makeTempTemplates({
     'page.twig': '<img src="photo.jpg">',
   });
@@ -32,7 +25,7 @@ test('accessibility: detects img without alt', { skip: !phpAvailable && 'PHP not
   assert.ok(imgIssues.length > 0, 'should detect img without alt attribute');
 });
 
-test('accessibility: no issue for img with alt', { skip: !phpAvailable && 'PHP not available' }, async () => {
+test('accessibility: no issue for img with alt', async () => {
   const dir = makeTempTemplates({
     'page.twig': '<img src="photo.jpg" alt="A photo">',
   });
@@ -41,7 +34,7 @@ test('accessibility: no issue for img with alt', { skip: !phpAvailable && 'PHP n
   assert.equal(imgIssues.length, 0, 'should not flag img with alt attribute');
 });
 
-test('accessibility: detects empty link', { skip: !phpAvailable && 'PHP not available' }, async () => {
+test('accessibility: detects empty link', async () => {
   const dir = makeTempTemplates({
     'nav.twig': '<a href="/page"></a>',
   });
@@ -50,7 +43,7 @@ test('accessibility: detects empty link', { skip: !phpAvailable && 'PHP not avai
   assert.ok(linkIssues.length > 0, 'should detect empty link');
 });
 
-test('accessibility: detects missing lang on html', { skip: !phpAvailable && 'PHP not available' }, async () => {
+test('accessibility: detects missing lang on html', async () => {
   const dir = makeTempTemplates({
     'layout.twig': '<html><head><title>Test</title></head><body></body></html>',
   });
@@ -59,7 +52,7 @@ test('accessibility: detects missing lang on html', { skip: !phpAvailable && 'PH
   assert.ok(langIssues.length > 0, 'should detect html without lang attribute');
 });
 
-test('accessibility: no issue for html with lang', { skip: !phpAvailable && 'PHP not available' }, async () => {
+test('accessibility: no issue for html with lang', async () => {
   const dir = makeTempTemplates({
     'layout.twig': '<html lang="en"><head><title>Test</title></head><body></body></html>',
   });

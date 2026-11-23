@@ -19,8 +19,8 @@ Bitbucket. Repo: github.com/forbiddenlink/craft-audit.
   workspace via `pnpm-workspace.yaml`) - not npm, despite what older docs in this repo say
 - CLI framework: Commander.js. Dependencies are intentionally minimal: `chalk`, `commander`,
   `minimatch`, `next-safe-action`, `ora`, `pino`. `backstopjs` is optional (visual regression)
-- Template analysis shells out to a PHP script (`php/analyze-templates.php`) via
-  `child_process.execFile` - PHP is required at runtime for template checks
+- Template analysis is pure TypeScript: `src/analyzers/twig-lexer.ts` tokenizes Twig and
+  `src/analyzers/twig-rules.ts` runs the rules on the tokens. No PHP runtime is needed
 - Both **ESLint** (`eslint.config.mjs`, primary `lint`/`lint:fix` scripts) and **Biome**
   (`biome.json`, `biome:check`/`biome:fix`/`biome:format`/`lint-baseline` scripts) are
   configured; ESLint is what CI and the `lint` script run
@@ -64,7 +64,6 @@ built before testing** (the `test` script already does this). Fixtures live in
 - `src/core/` - config merging, baseline/suppression, rule engine + rule metadata, caching,
   git diffing, quality gates, logger, watcher
 - `src/integrations/`, `src/lib/`, `src/utils/`, `src/mocks/`
-- `php/analyze-templates.php` - the Twig template analyzer, invoked as a subprocess
 - `data/advisories.json` - generated advisory database (core, plugins, core libraries, KEV
   flags); rebuilt by `craft-audit update-cves`, never hand-edited
 - The audited project is untrusted: every git call goes through the overrides in

@@ -10,7 +10,6 @@
   "files": [
     "dist/",
     "data/",
-    "php/analyze-templates.php",
     "craft-audit.config.schema.json"
   ],
   "scripts": {

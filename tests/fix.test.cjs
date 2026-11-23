@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const { analyzeTwigTemplates } = require('../dist/analyzers/twig');
 
-test('PHP analyzer returns fix metadata for missing-limit issues', async () => {
+test('template analyzer returns fix metadata for missing-limit issues', async () => {
   const fixturesPath = path.join(__dirname, 'fixtures', 'templates');
   const issues = await analyzeTwigTemplates(fixturesPath, false);
 
@@ -21,7 +21,7 @@ test('PHP analyzer returns fix metadata for missing-limit issues', async () => {
   }
 });
 
-test('PHP analyzer returns fix metadata for deprecated patterns', async () => {
+test('template analyzer returns fix metadata for deprecated patterns', async () => {
   const fixturesPath = path.join(__dirname, 'fixtures', 'templates');
   const issues = await analyzeTwigTemplates(fixturesPath, false);
 
@@ -40,7 +40,7 @@ test('PHP analyzer returns fix metadata for deprecated patterns', async () => {
   }
 });
 
-test('PHP analyzer returns fix metadata for xss-raw-output issues (unsafe)', async () => {
+test('template analyzer returns fix metadata for xss-raw-output issues (unsafe)', async () => {
   const fixturesPath = path.join(__dirname, 'fixtures', 'templates');
   const issues = await analyzeTwigTemplates(fixturesPath, false);
 
@@ -56,7 +56,7 @@ test('PHP analyzer returns fix metadata for xss-raw-output issues (unsafe)', asy
   }
 });
 
-test('PHP analyzer detects dump calls with fix metadata', async () => {
+test('template analyzer detects dump calls with fix metadata', async () => {
   const fixturesPath = path.join(__dirname, 'fixtures', 'templates');
   const issues = await analyzeTwigTemplates(fixturesPath, false);
 
@@ -70,7 +70,7 @@ test('PHP analyzer detects dump calls with fix metadata', async () => {
   }
 });
 
-test('PHP analyzer detects include tag with fix metadata', async () => {
+test('template analyzer detects include tag with fix metadata', async () => {
   const fixturesPath = path.join(__dirname, 'fixtures', 'templates');
   const issues = await analyzeTwigTemplates(fixturesPath, false);
 

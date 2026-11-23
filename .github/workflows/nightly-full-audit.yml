@@ -43,11 +43,6 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
-        with:
-          php-version: '8.2'
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
